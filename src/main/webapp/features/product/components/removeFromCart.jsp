@@ -16,12 +16,12 @@ Connection conn = null;
 PreparedStatement pstmt = null;
 
 try {
-    Class.forName("com.mysql.cj.jdbc.Driver");
+	Class.forName("org.postgresql.Driver");
     conn = DriverManager.getConnection(
-        "jdbc:mysql://your-host:3306/neondb?useSSL=false&serverTimezone=UTC",
-        "your-username",
-        "your-password"
-    );
+    	    "jdbc:postgresql://ep-calm-water-a18qegew-pooler.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require",
+    	    "neondb_owner",
+    	    "npg_6dLgQzjR9OEa"
+    	);
     
     String sql = "DELETE FROM cart_item WHERE cart_item_id = ?";
     pstmt = conn.prepareStatement(sql);
