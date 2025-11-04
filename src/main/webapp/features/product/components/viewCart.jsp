@@ -19,6 +19,25 @@
     <a href="products.jsp">Continue Shopping</a>
     <br><br>
     
+    <% 
+    String message = request.getParameter("msg");
+    if (message != null) {
+        if (message.equals("updated")) {
+    %>
+        <p>Quantity updated successfully!</p>
+    <% 
+        } else if (message.equals("error")) {
+    %>
+        <p>Error updating quantity. Please try again.</p>
+    <% 
+        } else if (message.equals("invalid_quantity")) {
+    %>
+        <p>Invalid quantity. Please enter a number between 1 and 99.</p>
+    <% 
+        }
+    }
+    %>
+    
     <%
     Integer userId = (Integer) session.getAttribute("userId");
     
@@ -34,13 +53,13 @@
     try {
         Class.forName("org.postgresql.Driver");
         conn = DriverManager.getConnection(
-        	    "jdbc:postgresql://ep-calm-water-a18qegew-pooler.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require",
-        	    "neondb_owner",
-        	    "npg_6dLgQzjR9OEa"
-        	);
+            "jdbc:postgresql://ep-calm-water-a18qegew-pooler.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require",
+            "neondb_owner",
+            "npg_6dLgQzjR9OEa"
+        );
         
         // Get cart items
-        String sql = "SELECT ci.cart_item_id, ci.special_requests, p.product_id, p.name, p.price, " +
+        String sql = "SELECT ci.cart_item_id, ci.special_requests, ci.quantity, p.product_id, p.name, p.price, " +
                      "ci.caregiver_id, ci.client_id, c.cart_id " +
                      "FROM cart_item ci " +
                      "JOIN cart c ON ci.cart_id = c.cart_id " +
@@ -61,11 +80,19 @@
             item.put("productId", rs.getInt("product_id"));
             item.put("name", rs.getString("name"));
             item.put("price", rs.getDouble("price"));
+            
+            // Get quantity, default to 1 if null (for backwards compatibility)
+            Integer quantity = (Integer) rs.getObject("quantity");
+            if (quantity == null) {
+                quantity = 1;
+            }
+            item.put("quantity", quantity);
+            
             item.put("caregiverId", rs.getObject("caregiver_id"));
             item.put("clientId", rs.getObject("client_id"));
             item.put("specialRequests", rs.getString("special_requests"));
             items.add(item);
-            total += rs.getDouble("price");
+            total += rs.getDouble("price") * quantity;
             cartId = rs.getInt("cart_id");
         }
         
@@ -81,6 +108,8 @@
                 <tr>
                     <th>Product</th>
                     <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
                     <th>Caregiver ID</th>
                     <th>Client ID</th>
                     <th>Special Requests</th>
@@ -90,10 +119,21 @@
             <tbody>
             <%
             for (Map<String, Object> item : items) {
+                Integer quantity = (Integer) item.get("quantity");
+                Double price = (Double) item.get("price");
+                double subtotal = price * quantity;
             %>
                 <tr>
                     <td><%= item.get("name") %></td>
-                    <td>$<%= String.format("%.2f", (Double)item.get("price")) %></td>
+                    <td>$<%= String.format("%.2f", price) %></td>
+                    <td>
+                        <form action="updateCartQuantity.jsp" method="post" style="margin: 0;">
+                            <input type="hidden" name="cartItemId" value="<%= item.get("cartItemId") %>">
+                            <input type="number" name="quantity" value="<%= quantity %>" min="1" max="99" style="width: 60px;">
+                            <button type="submit">Update</button>
+                        </form>
+                    </td>
+                    <td>$<%= String.format("%.2f", subtotal) %></td>
                     <td><%= item.get("caregiverId") != null ? item.get("caregiverId") : "N/A" %></td>
                     <td><%= item.get("clientId") != null ? item.get("clientId") : "N/A" %></td>
                     <td><%= item.get("specialRequests") != null ? item.get("specialRequests") : "" %></td>
