@@ -27,7 +27,7 @@
 Integer userId = (Integer) session.getAttribute("userId");
 
 if (userId == null) {
-    response.sendRedirect("login.jsp");
+    response.sendRedirect("../../auth/login.jsp");
     return;
 }
 
