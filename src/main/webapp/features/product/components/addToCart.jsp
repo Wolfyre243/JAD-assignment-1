@@ -6,7 +6,7 @@
 Author: Goh Yi Xin Karys (DIT-2B-01, P2424431)
 Last Edited: 06/11/2025
 Description: Secure cart addition with session auth and DB transaction
-======================================= */ 
+======================================= */
 --%>
 <%!
     // Helper method to parse integer safely
@@ -61,18 +61,20 @@ Description: Secure cart addition with session auth and DB transaction
     // -------------------------------------------------
     String redirectMsg = "added";
 
-    try (
-        Connection conn = JDBC.connect();
-        PreparedStatement pstmt = conn.prepareStatement(
-            "SELECT cart_id FROM cart WHERE user_id = ? AND checked_out = false"
-        );
-        ResultSet rs = pstmt.executeQuery()
-    ) {
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+
+    try {
+        conn = JDBC.connect();
         if (conn == null) throw new SQLException("Connection failed");
 
         conn.setAutoCommit(false);
 
         // --- Step 1: Get or create cart ---
+        pstmt = conn.prepareStatement(
+            "SELECT cart_id FROM cart WHERE user_id = ? AND checked_out = false"
+        );
         pstmt.setInt(1, userId);
         rs = pstmt.executeQuery();
 
@@ -126,6 +128,10 @@ Description: Secure cart addition with session auth and DB transaction
         if (conn != null) try { conn.rollback(); } catch (SQLException ignored) {}
         e.printStackTrace();
         redirectMsg = "error";
+    } finally {
+        if (rs != null) try { rs.close(); } catch (SQLException ignored) {}
+        if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
+        if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
     }
 
     // -------------------------------------------------
