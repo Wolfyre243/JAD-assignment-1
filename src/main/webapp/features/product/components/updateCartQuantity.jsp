@@ -3,6 +3,7 @@
 <%@ page import="java.sql.DriverManager" %>
 <%@ page import="java.sql.PreparedStatement" %>
 <%@ page import="java.sql.SQLException" %>
+<%@ page import='db.JDBC' %>
 <%
 Integer userId = (Integer) session.getAttribute("userId");
 String cartItemIdStr = request.getParameter("cartItemId");
@@ -25,12 +26,13 @@ try {
         return;
     }
     
-    Class.forName("org.postgresql.Driver");
-    conn = DriverManager.getConnection(
-        "jdbc:postgresql://ep-calm-water-a18qegew-pooler.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require",
-        "neondb_owner",
-        "npg_6dLgQzjR9OEa"
-    );
+    conn = JDBC.connect();
+    if (conn == null) {
+        throw new SQLException("Failed to connect to database using JDBC utility.");
+    }
+
+    // Start transaction
+    conn.setAutoCommit(false);
     
     String sql = "UPDATE cart_item SET quantity = ?, updated_at = CURRENT_TIMESTAMP WHERE cart_item_id = ?";
     pstmt = conn.prepareStatement(sql);

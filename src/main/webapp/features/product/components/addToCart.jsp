@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
+<%@ page import="db.JDBC" %>
 <%!
     // Helper method to parse integer safely
     private Integer parseIntSafely(String value) {
@@ -48,16 +49,11 @@ PreparedStatement pstmt = null;
 ResultSet rs = null;
 
 try {
-    // Load PostgreSQL driver
-    Class.forName("org.postgresql.Driver");
-    
-    // Establish database connection
-    conn = DriverManager.getConnection(
-	    "jdbc:postgresql://ep-calm-water-a18qegew-pooler.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require",
-	    "neondb_owner",
-	    "npg_6dLgQzjR9OEa"
-	);
-    
+	conn = JDBC.connect();
+    if (conn == null) {
+        throw new SQLException("Failed to connect to database using JDBC utility.");
+    }
+
     // Start transaction
     conn.setAutoCommit(false);
     

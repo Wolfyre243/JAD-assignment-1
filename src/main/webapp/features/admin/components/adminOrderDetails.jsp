@@ -12,7 +12,7 @@
     String userRole = (String) session.getAttribute("userRole");
     
     if (userId == null || !"admin".equals(userRole)) {
-        response.sendRedirect("login.jsp");
+        response.sendRedirect("../../auth/components/login.jsp");
         return;
     }
     

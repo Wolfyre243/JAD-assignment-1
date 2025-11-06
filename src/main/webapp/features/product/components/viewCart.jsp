@@ -8,6 +8,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
+<%@ page import='db.JDBC' %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -51,12 +52,13 @@
     ResultSet rs = null;
     
     try {
-        Class.forName("org.postgresql.Driver");
-        conn = DriverManager.getConnection(
-            "jdbc:postgresql://ep-calm-water-a18qegew-pooler.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require",
-            "neondb_owner",
-            "npg_6dLgQzjR9OEa"
-        );
+    	conn = JDBC.connect();
+        if (conn == null) {
+            throw new SQLException("Failed to connect to database using JDBC utility.");
+        }
+
+        // Start transaction
+        conn.setAutoCommit(false);
         
         // Get cart items
         String sql = "SELECT ci.cart_item_id, ci.special_requests, ci.quantity, p.product_id, p.name, p.price, " +

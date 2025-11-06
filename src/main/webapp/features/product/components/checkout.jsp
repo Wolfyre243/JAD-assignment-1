@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
+<%@ page import='db.JDBC' %>
 <%
 Integer userId = (Integer) session.getAttribute("userId");
 String cartIdStr = request.getParameter("cartId");
@@ -14,13 +15,12 @@ PreparedStatement pstmt = null;
 ResultSet rs = null;
 
 try {
-    Class.forName("org.postgresql.Driver");
-    conn = DriverManager.getConnection(
-        "jdbc:postgresql://your-host:5432/neondb",
-        "your-username",
-        "your-password"
-    );
-    
+	conn = JDBC.connect();
+    if (conn == null) {
+        throw new SQLException("Failed to connect to database using JDBC utility.");
+    }
+
+    // Start transaction
     conn.setAutoCommit(false);
     
     int cartId = Integer.parseInt(cartIdStr);
