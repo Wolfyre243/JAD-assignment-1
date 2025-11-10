@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class JDBC {
   private static Connection conn = null;
-  private static String connURL = "jdbc:postgresql://ep-polished-darkness-a1xc7woz-pooler.ap-southeast-1.aws.neon.tech/jad-practical?user=dbs-maindb_owner&password=npg_C5qQ3ydIzrve&sslmode=require&channelBinding=require";
+  private static String connURL = "jdbc:postgresql://ep-calm-water-a18qegew-pooler.ap-southeast-1.aws.neon.tech/neondb?user=neondb_owner&password=npg_6dLgQzjR9OEa&sslmode=require&channelBinding=require";
   private static String username = "neondb_owner";
   private static String password = "npg_6dLgQzjR9OEa";
 
