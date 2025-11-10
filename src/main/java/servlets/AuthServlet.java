@@ -13,8 +13,9 @@ import java.io.IOException;
 class AuthController {
   public static void login(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
+
     final HttpSession session = request.getSession();
-    
+
     final String email = request.getParameter("email");
     final String password = request.getParameter("password");
 
@@ -26,15 +27,21 @@ class AuthController {
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid email or password.");
         return;
       }
-      
+
+      final int userRoleId = user.getRole().getRoleId();
       // TODO: Send cookie instead
       session.setAttribute("userId", user.getUserId());
-      session.setAttribute("userRoleId", user.getRole().getRoleId());
-      
+      session.setAttribute("userRoleId", userRoleId);
+
       response.setStatus(HttpServletResponse.SC_OK);
       // TODO: Redirect to dashboard or home page
-      
-      
+      if (userRoleId == 1) {
+        response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+        return;
+      }
+      response.sendRedirect(request.getContextPath() + "/");
+      return;
+
     } catch (Exception e) {
       e.printStackTrace();
       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during login.");
@@ -56,12 +63,18 @@ public class AuthServlet extends HttpServlet {
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     // TODO Auto-generated method stub
-    response.getWriter().append("Served at: ").append(request.getContextPath());
+    response.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested resource was not found.");
   }
 
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    // TODO Auto-generated method stub
-    doGet(request, response);
-  }
+    final String path = request.getServletPath();
 
+    if (path.endsWith("/auth/login")) {
+      AuthController.login(request, response);
+    } else if (path.endsWith("/auth/register")) {
+      // AuthController.register(request, response);
+    } else {
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested resource was not found.");
+    }
+  }
 }

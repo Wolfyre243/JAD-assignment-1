@@ -66,9 +66,13 @@ public class User {
   public static User getUserByEmail(String _email) throws SQLException {
     Connection conn = JDBC.connect();
 
-    String sql = "SELECT u.*, r.role_id, r.name as role_name\r\n" + "FROM public.user u\r\n"
-        + "JOIN user_role ur ON u.user_id = ur.user_id\r\n" + "JOIN role r ON r.role_id = ur.role_id\r\n"
-        + "WHERE u.email = ?;";
+    String sql = new StringBuilder()
+        .append("SELECT u.*, r.role_id, r.name as role_name ")
+        .append("FROM public.user u ")
+        .append("JOIN user_role ur ON u.user_id = ur.user_id ")
+        .append("JOIN role r ON r.role_id = ur.role_id ")
+        .append("WHERE u.email = ?")
+        .toString();
 
     PreparedStatement stmt = conn.prepareStatement(sql);
     stmt.setString(1, _email);
