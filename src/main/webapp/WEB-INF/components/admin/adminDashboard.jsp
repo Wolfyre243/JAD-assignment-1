@@ -1,5 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
+<%@ page import="db.JDBC" %>
+<%--
+  Author: Goh Yi Xin Karys
+  Admin No: P2424431
+  Class: DIT-2B-01
+  Last Edited: 06/11/2025
+  Description: Admin dashboard with real-time statistics using JDBC utility and AuthServlet session
+--%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,98 +16,76 @@
 </head>
 <body>
     <%
-    Integer userId = (Integer) session.getAttribute("userId");
-    String userRole = (String) session.getAttribute("userRole");
-    
-    if (userId == null || !"admin".equals(userRole)) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
+        // === 1. AUTHENTICATION & AUTHORIZATION (via AuthServlet) ===
+        Integer userId = (Integer) session.getAttribute("userId");
+        String userRole = (String) session.getAttribute("userRole");
+
+        if (userId == null || !"admin".equals(userRole)) {
+            response.sendRedirect(request.getContextPath() + "/auth/login");
+            return;
+        }
     %>
-    
+
     <h1>Admin Dashboard</h1>
     <p>Welcome, Admin!</p>
     <hr>
-    
+
     <%
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
-    
-    try {
-        Class.forName("org.postgresql.Driver");
-        conn = DriverManager.getConnection(
-            "jdbc:postgresql://ep-calm-water-a18qegew-pooler.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require",
-            "neondb_owner",
-            "npg_6dLgQzjR9OEa"
-        );
-        
-        // Get statistics
-        int totalUsers = 0;
-        int totalOrders = 0;
-        int totalFeedback = 0;
-        int totalProducts = 0;
-        
-        // Count users
-        pstmt = conn.prepareStatement("SELECT COUNT(*) FROM \"user\"");
-        rs = pstmt.executeQuery();
-        if (rs.next()) totalUsers = rs.getInt(1);
-        rs.close();
-        pstmt.close();
-        
-        // Count orders
-        pstmt = conn.prepareStatement("SELECT COUNT(*) FROM \"order\"");
-        rs = pstmt.executeQuery();
-        if (rs.next()) totalOrders = rs.getInt(1);
-        rs.close();
-        pstmt.close();
-        
-        // Count feedback
-        pstmt = conn.prepareStatement("SELECT COUNT(*) FROM feedback");
-        rs = pstmt.executeQuery();
-        if (rs.next()) totalFeedback = rs.getInt(1);
-        rs.close();
-        pstmt.close();
-        
-        // Count products
-        pstmt = conn.prepareStatement("SELECT COUNT(*) FROM product");
-        rs = pstmt.executeQuery();
-        if (rs.next()) totalProducts = rs.getInt(1);
-        rs.close();
-        pstmt.close();
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        // Initialize counters
+        int totalUsers = 0, totalOrders = 0, totalFeedback = 0, totalProducts = 0;
+
+        try {
+            // === 2. JDBC: Get connection via utility ===
+            conn = JDBC.connect();
+            if (conn == null) throw new SQLException("Database connection failed");
+
+            // === 3. FETCH STATISTICS ===
+            String[] queries = {
+                "SELECT COUNT(*) FROM \"user\"",
+                "SELECT COUNT(*) FROM \"order\"",
+                "SELECT COUNT(*) FROM feedback",
+                "SELECT COUNT(*) FROM product"
+            };
+            int[] results = {0, 0, 0, 0};
+
+            for (int i = 0; i < queries.length; i++) {
+                pstmt = conn.prepareStatement(queries[i]);
+                rs = pstmt.executeQuery();
+                if (rs.next()) results[i] = rs.getInt(1);
+                rs.close(); pstmt.close();
+            }
+
+            totalUsers = results[0];
+            totalOrders = results[1];
+            totalFeedback = results[2];
+            totalProducts = results[3];
     %>
-    
+
     <h2>Statistics</h2>
-    <table border="1">
-        <tr>
-            <td><strong>Total Users:</strong></td>
-            <td><%= totalUsers %></td>
-        </tr>
-        <tr>
-            <td><strong>Total Orders:</strong></td>
-            <td><%= totalOrders %></td>
-        </tr>
-        <tr>
-            <td><strong>Total Feedback:</strong></td>
-            <td><%= totalFeedback %></td>
-        </tr>
-        <tr>
-            <td><strong>Total Products:</strong></td>
-            <td><%= totalProducts %></td>
-        </tr>
+    <table border="1" cellpadding="8" cellspacing="0">
+        <tr><th>Metric</th><th>Count</th></tr>
+        <tr><td><strong>Total Users</strong></td><td><%= totalUsers %></td></tr>
+        <tr><td><strong>Total Orders</strong></td><td><%= totalOrders %></td></tr>
+        <tr><td><strong>Total Feedback</strong></td><td><%= totalFeedback %></td></tr>
+        <tr><td><strong>Total Products</strong></td><td><%= totalProducts %></td></tr>
     </table>
-    
+
     <%
-    } catch (Exception e) {
-        out.println("<p>Error loading statistics: " + e.getMessage() + "</p>");
-        e.printStackTrace();
-    } finally {
-        if (rs != null) try { rs.close(); } catch (SQLException e) {}
-        if (pstmt != null) try { pstmt.close(); } catch (SQLException e) {}
-        if (conn != null) try { conn.close(); } catch (SQLException e) {}
-    }
+        } catch (Exception e) {
+            out.println("<p style='color:red;'>Error loading statistics: " + e.getMessage() + "</p>");
+            e.printStackTrace();
+        } finally {
+            // === 4. RESOURCE CLEANUP ===
+            if (rs != null) try { rs.close(); } catch (SQLException ignored) {}
+            if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
+            if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
+        }
     %>
-    
+
     <hr>
     <h2>Management Sections</h2>
     <ul>
@@ -108,8 +94,8 @@
         <li><a href="adminOrders.jsp">Order Management</a></li>
         <li><a href="adminServices.jsp">Services Management</a></li>
     </ul>
-    
+
     <hr>
-    <a href="logout.jsp">Logout</a>
+    <a href="${pageContext.request.contextPath}/auth/logout">Logout</a>
 </body>
 </html>

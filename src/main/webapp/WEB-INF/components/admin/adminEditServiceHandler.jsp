@@ -1,50 +1,90 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
+<%@ page import="db.JDBC" %>
+<%--
+  Author: Goh Yi Xin Karys
+  Admin No: P2424431
+  Class: DIT-2B-01
+  Last Edited: 06/11/2025
+  Description: Secure handler to update product/service using JDBC utility and AuthServlet session
+--%>
 <%
-Integer adminId = (Integer) session.getAttribute("userId");
-String userRole = (String) session.getAttribute("userRole");
+    // === 1. AUTHENTICATION & AUTHORIZATION (via AuthServlet) ===
+    Integer adminId = (Integer) session.getAttribute("userId");
+    String userRole = (String) session.getAttribute("userRole");
 
-if (adminId == null || !"admin".equals(userRole)) {
-    response.sendRedirect("login.jsp");
-    return;
-}
+    if (adminId == null || !"admin".equals(userRole)) {
+        response.sendRedirect(request.getContextPath() + "/auth/login");
+        return;
+    }
 
-String productIdStr = request.getParameter("productId");
-String name = request.getParameter("name");
-String categoryIdStr = request.getParameter("categoryId");
-String description = request.getParameter("description");
-String priceStr = request.getParameter("price");
-String isActiveStr = request.getParameter("isActive");
+    // === 2. INPUT PARAMETERS & VALIDATION ===
+    String productIdStr = request.getParameter("productId");
+    String name = request.getParameter("name");
+    String categoryIdStr = request.getParameter("categoryId");
+    String description = request.getParameter("description");
+    String priceStr = request.getParameter("price");
+    String isActiveStr = request.getParameter("isActive");
 
-Connection conn = null;
-PreparedStatement pstmt = null;
+    // Validate required fields
+    if (productIdStr == null || name == null || name.trim().isEmpty() ||
+        categoryIdStr == null || priceStr == null || isActiveStr == null) {
+        response.sendRedirect("adminEditService.jsp?productId=" + productIdStr + "&msg=invalid");
+        return;
+    }
 
-try {
-    Class.forName("org.postgresql.Driver");
-    conn = DriverManager.getConnection(
-        "jdbc:postgresql://ep-calm-water-a18qegew-pooler.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require",
-        "neondb_owner",
-        "npg_6dLgQzjR9OEa"
-    );
-    
-    String sql = "UPDATE product SET category_id = ?, name = ?, description = ?, price = ?, " +
-                 "is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE product_id = ?";
-    pstmt = conn.prepareStatement(sql);
-    pstmt.setInt(1, Integer.parseInt(categoryIdStr));
-    pstmt.setString(2, name);
-    pstmt.setString(3, description);
-    pstmt.setDouble(4, Double.parseDouble(priceStr));
-    pstmt.setBoolean(5, Boolean.parseBoolean(isActiveStr));
-    pstmt.setInt(6, Integer.parseInt(productIdStr));
-    pstmt.executeUpdate();
-    
-    response.sendRedirect("adminServices.jsp?msg=updated");
-    
-} catch (Exception e) {
-    e.printStackTrace();
-    response.sendRedirect("adminEditService.jsp?productId=" + productIdStr + "&msg=error");
-} finally {
-    if (pstmt != null) try { pstmt.close(); } catch (SQLException e) {}
-    if (conn != null) try { conn.close(); } catch (SQLException e) {}
-}
+    int productId, categoryId;
+    double price;
+    try {
+        productId = Integer.parseInt(productIdStr.trim());
+        categoryId = Integer.parseInt(categoryIdStr.trim());
+        price = Double.parseDouble(priceStr.trim());
+        if (price < 0) throw new NumberFormatException();
+    } catch (NumberFormatException e) {
+        response.sendRedirect("adminEditService.jsp?productId=" + productIdStr + "&msg=invalid");
+        return;
+    }
+
+    boolean isActive = Boolean.parseBoolean(isActiveStr);
+
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+
+    try {
+        // === 3. JDBC: Update product using utility class ===
+        conn = JDBC.connect();
+        if (conn == null) throw new SQLException("Connection failed");
+
+        String sql = 
+            "UPDATE product SET " +
+            "    category_id = ?, name = ?, description = ?, price = ?, " +
+            "    is_active = ?, updated_at = CURRENT_TIMESTAMP " +
+            "WHERE product_id = ?";
+
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, categoryId);
+        pstmt.setString(2, name.trim());
+        pstmt.setString(3, description != null ? description.trim() : null);
+        pstmt.setDouble(4, price);
+        pstmt.setBoolean(5, isActive);
+        pstmt.setInt(6, productId);
+
+        int rows = pstmt.executeUpdate();
+        if (rows == 0) {
+            response.sendRedirect("adminEditService.jsp?productId=" + productId + "&msg=not_found");
+        } else {
+            response.sendRedirect("adminServices.jsp?msg=updated");
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        response.sendRedirect("adminEditService.jsp?productId=" + productId + "&msg=db_error");
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.sendRedirect("adminEditService.jsp?productId=" + productId + "&msg=error");
+    } finally {
+        // === 4. RESOURCE CLEANUP ===
+        if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
+        if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
+    }
 %>

@@ -1,5 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
+<%@ page import="db.JDBC" %>
+<%--
+  Author: Goh Yi Xin Karys
+  Admin No: P2424431
+  Class: DIT-2B-01
+  Last Edited: 06/11/2025
+  Description: Admin form to add new service with category dropdown using JDBC utility and AuthServlet session
+--%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,19 +16,21 @@
 </head>
 <body>
     <%
-    Integer userId = (Integer) session.getAttribute("userId");
-    String userRole = (String) session.getAttribute("userRole");
-    
-    if (userId == null || !"admin".equals(userRole)) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
+        // === 1. AUTHENTICATION & AUTHORIZATION (via AuthServlet) ===
+        Integer userId = (Integer) session.getAttribute("userId");
+        String userRole = (String) session.getAttribute("userRole");
+
+        if (userId == null || !"admin".equals(userRole)) {
+            response.sendRedirect(request.getContextPath() + "/auth/login");
+            return;
+        }
     %>
-    
+
     <h1>Add New Service</h1>
     <a href="adminServices.jsp">Back to Services</a>
     <hr>
-    
+
+    <!-- Form submits to handler JSP -->
     <form action="adminAddServiceHandler.jsp" method="post">
         <table>
             <tr>
@@ -33,37 +43,35 @@
                     <select name="categoryId" required>
                         <option value="">Select Category</option>
                         <%
-                        Connection conn = null;
-                        PreparedStatement pstmt = null;
-                        ResultSet rs = null;
-                        
-                        try {
-                            Class.forName("org.postgresql.Driver");
-                            conn = DriverManager.getConnection(
-                                "jdbc:postgresql://ep-calm-water-a18qegew-pooler.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require",
-                                "neondb_owner",
-                                "npg_6dLgQzjR9OEa"
-                            );
-                            
-                            String sql = "SELECT category_id, name FROM category ORDER BY name";
-                            pstmt = conn.prepareStatement(sql);
-                            rs = pstmt.executeQuery();
-                            
-                            while (rs.next()) {
-                                int categoryId = rs.getInt("category_id");
-                                String categoryName = rs.getString("name");
+                            // === 2. JDBC: Fetch categories using utility class ===
+                            Connection conn = null;
+                            PreparedStatement pstmt = null;
+                            ResultSet rs = null;
+
+                            try {
+                                conn = JDBC.connect();
+                                if (conn == null) throw new SQLException("Connection failed");
+
+                                String sql = "SELECT category_id, name FROM category ORDER BY name";
+                                pstmt = conn.prepareStatement(sql);
+                                rs = pstmt.executeQuery();
+
+                                while (rs.next()) {
+                                    int categoryId = rs.getInt("category_id");
+                                    String categoryName = rs.getString("name");
                         %>
-                        <option value="<%= categoryId %>"><%= categoryName %></option>
+                                    <option value="<%= categoryId %>"><%= categoryName %></option>
                         <%
+                                }
+                            } catch (Exception e) {
+                                out.println("<option>Error loading categories</option>");
+                                e.printStackTrace();
+                            } finally {
+                                // === 3. RESOURCE CLEANUP ===
+                                if (rs != null) try { rs.close(); } catch (SQLException ignored) {}
+                                if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
+                                if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
                             }
-                        } catch (Exception e) {
-                            out.println("<option>Error loading categories</option>");
-                            e.printStackTrace();
-                        } finally {
-                            if (rs != null) try { rs.close(); } catch (SQLException e) {}
-                            if (pstmt != null) try { pstmt.close(); } catch (SQLException e) {}
-                            if (conn != null) try { conn.close(); } catch (SQLException e) {}
-                        }
                         %>
                     </select>
                 </td>

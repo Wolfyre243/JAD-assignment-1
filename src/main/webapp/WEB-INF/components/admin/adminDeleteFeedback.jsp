@@ -1,39 +1,66 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
+<%@ page import="db.JDBC" %>
+<%--
+  Author: Goh Yi Xin Karys
+  Admin No: P2424431
+  Class: DIT-2B-01
+  Last Edited: 06/11/2025
+  Description: Secure handler to delete feedback using JDBC utility and AuthServlet session
+--%>
 <%
-Integer adminId = (Integer) session.getAttribute("userId");
-String userRole = (String) session.getAttribute("userRole");
+    // === 1. AUTHENTICATION & AUTHORIZATION (via AuthServlet) ===
+    Integer adminId = (Integer) session.getAttribute("userId");
+    String userRole = (String) session.getAttribute("userRole");
 
-if (adminId == null || !"admin".equals(userRole)) {
-    response.sendRedirect("login.jsp");
-    return;
-}
+    if (adminId == null || !"admin".equals(userRole)) {
+        response.sendRedirect(request.getContextPath() + "/auth/login");
+        return;
+    }
 
-String feedbackIdStr = request.getParameter("feedbackId");
+    // === 2. INPUT VALIDATION ===
+    String feedbackIdStr = request.getParameter("feedbackId");
+    if (feedbackIdStr == null || feedbackIdStr.trim().isEmpty()) {
+        response.sendRedirect("adminFeedback.jsp?msg=invalid");
+        return;
+    }
 
-Connection conn = null;
-PreparedStatement pstmt = null;
+    int feedbackId;
+    try {
+        feedbackId = Integer.parseInt(feedbackIdStr.trim());
+    } catch (NumberFormatException e) {
+        response.sendRedirect("adminFeedback.jsp?msg=invalid");
+        return;
+    }
 
-try {
-    Class.forName("org.postgresql.Driver");
-    conn = DriverManager.getConnection(
-        "jdbc:postgresql://ep-calm-water-a18qegew-pooler.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require",
-        "neondb_owner",
-        "npg_6dLgQzjR9OEa"
-    );
-    
-    String sql = "DELETE FROM feedback WHERE feedback_id = ?";
-    pstmt = conn.prepareStatement(sql);
-    pstmt.setInt(1, Integer.parseInt(feedbackIdStr));
-    pstmt.executeUpdate();
-    
-    response.sendRedirect("adminFeedback.jsp?msg=deleted");
-    
-} catch (Exception e) {
-    e.printStackTrace();
-    response.sendRedirect("adminFeedback.jsp?msg=error");
-} finally {
-    if (pstmt != null) try { pstmt.close(); } catch (SQLException e) {}
-    if (conn != null) try { conn.close(); } catch (SQLException e) {}
-}
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+
+    try {
+        // === 3. JDBC: Delete feedback using utility class ===
+        conn = JDBC.connect();
+        if (conn == null) throw new SQLException("Connection failed");
+
+        String sql = "DELETE FROM feedback WHERE feedback_id = ?";
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, feedbackId);
+
+        int rows = pstmt.executeUpdate();
+        if (rows == 0) {
+            response.sendRedirect("adminFeedback.jsp?msg=not_found");
+        } else {
+            response.sendRedirect("adminFeedback.jsp?msg=deleted");
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        response.sendRedirect("adminFeedback.jsp?msg=db_error");
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.sendRedirect("adminFeedback.jsp?msg=error");
+    } finally {
+        // === 4. RESOURCE CLEANUP ===
+        if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
+        if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
+    }
 %>
