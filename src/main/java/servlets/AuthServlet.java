@@ -47,6 +47,20 @@ class AuthController {
       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during login.");
     }
   }
+  
+  public static void register(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  	final HttpSession session = request.getSession();
+  	
+  	// Get form fields
+  	final String email = request.getParameter("email");
+    final String password = request.getParameter("password");
+    
+    try {
+    	
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+  }
 }
 
 /**
