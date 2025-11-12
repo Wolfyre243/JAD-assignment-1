@@ -17,11 +17,12 @@
 <body>
 
     <h1>Add New Service</h1>
-    <a href="adminServices.jsp">Back to Services</a>
+    <a href="<%= request.getContextPath() %>/admin/services">Back to Services</a>
     <hr>
 
-    <!-- Form submits to handler JSP -->
-    <form action="adminAddServiceHandler.jsp" method="post">
+    <!-- Form submits to AdminServiceServlet -->
+    <form action="<%= request.getContextPath() %>/admin/service" method="post">
+        <input type="hidden" name="action" value="add" />
         <table>
             <tr>
                 <td><label>Service Name:</label></td>
@@ -84,7 +85,7 @@
             <tr>
                 <td colspan="2">
                     <button type="submit">Add Service</button>
-                    <a href="adminServices.jsp">Cancel</a>
+                    <a href="<%= request.getContextPath() %>/admin/services">Cancel</a>
                 </td>
             </tr>
         </table>

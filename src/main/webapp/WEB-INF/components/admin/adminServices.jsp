@@ -13,10 +13,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Services Management</title>
+    <style>
+        .msg-success { color: green; font-weight: bold; }
+        .msg-error { color: red; font-weight: bold; }
+        .status-active { color: green; font-weight: bold; }
+        .status-inactive { color: red; font-weight: bold; }
+    </style>
 </head>
 <body>
     <h1>Services Management</h1>
-    <a href="adminDashboard.jsp">Back to Dashboard</a>
+    <a href="<%= request.getContextPath() %>/admin/dashboard">Back to Dashboard</a>
     <hr>
 
     <%
@@ -36,13 +42,14 @@
                 default:           text = "Action completed.";                color = "green";
             }
     %>
-        <p style="color: <%= color %>; font-weight: bold;"><%= text %></p>
+    <% String _msgClass = "msg-success"; if ("red".equals(color)) _msgClass = "msg-error"; %>
+    <p class="<%= _msgClass %>"><%= text %></p>
     <%
         }
     %>
 
     <h2>All Services/Products</h2>
-    <a href="adminAddService.jsp">Add New Service</a>
+    <a href="<%= request.getContextPath() %>/admin/services?include=add">Add New Service</a>
     <br><br>
 
     <%
@@ -99,21 +106,22 @@
                             <td><%= categoryName %></td>
                             <td><%= description != null && !description.trim().isEmpty() ? description : "—" %></td>
                             <td>$<%= String.format("%.2f", price) %></td>
-                            <td style="color: <%= isActive ? "green" : "red" %>; font-weight: bold;">
+                            <% String statusClass = isActive ? "status-active" : "status-inactive"; %>
+                            <td class="<%= statusClass %>">
                                 <%= isActive ? "Active" : "Inactive" %>
                             </td>
                             <td>
                                 <% if (isActive) { %>
-                                    <a href="adminServiceAction.jsp?action=deactivate&productId=<%= productId %>"
-                                       onclick="return confirm('Deactivate this service?');"
-                                       style="color: orange;">Deactivate</a>
+                                                <a href="<%= request.getContextPath() %>/admin/service?action=deactivate&productId=<%= productId %>"
+                                                    onclick="return confirm('Deactivate this service?');"
+                                                    style="color: orange;">Deactivate</a>
                                 <% } else { %>
-                                    <a href="adminServiceAction.jsp?action=activate&productId=<%= productId %>"
-                                       onclick="return confirm('Activate this service?');"
-                                       style="color: green;">Activate</a>
+                                                <a href="<%= request.getContextPath() %>/admin/service?action=activate&productId=<%= productId %>"
+                                                    onclick="return confirm('Activate this service?');"
+                                                    style="color: green;">Activate</a>
                                 <% } %>
-                                |
-                                <a href="adminEditService.jsp?productId=<%= productId %>">Edit</a>
+                                          |
+                                          <a href="<%= request.getContextPath() %>/admin/services?include=edit&productId=<%= productId %>">Edit</a>
                             </td>
                         </tr>
                     <%
