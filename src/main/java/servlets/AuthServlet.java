@@ -14,10 +14,11 @@ class AuthController {
   public static void login(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
+    System.out.println("Processing login request");
     final HttpSession session = request.getSession();
-if(session==null) {
- response.sendRedirect(request.getContextPath() + "/admin/dashboard/loginError.jsp");
-}
+//    if (session == null) {
+//      response.sendRedirect(request.getContextPath() + "/admin/dashboard/loginError.jsp");
+//    }
     final String email = request.getParameter("email");
     final String password = request.getParameter("password");
 
