@@ -15,16 +15,6 @@
     <title>Add New Service</title>
 </head>
 <body>
-    <%
-        // === 1. AUTHENTICATION & AUTHORIZATION (via AuthServlet) ===
-        Integer userId = (Integer) session.getAttribute("userId");
-        String userRole = (String) session.getAttribute("userRole");
-
-        if (userId == null || !"admin".equals(userRole)) {
-            response.sendRedirect(request.getContextPath() + "/auth/login");
-            return;
-        }
-    %>
 
     <h1>Add New Service</h1>
     <a href="adminServices.jsp">Back to Services</a>

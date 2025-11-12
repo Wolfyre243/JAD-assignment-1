@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/components/auth/protected.jsp" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="db.JDBC" %>
 <%--
@@ -9,16 +10,7 @@
   Description: Secure handler to activate/deactivate user account using JDBC utility and AuthServlet session
 --%>
 <%
-    // === 1. AUTHENTICATION & AUTHORIZATION (via AuthServlet) ===
-    Integer adminId = (Integer) session.getAttribute("userId");
-    String userRole = (String) session.getAttribute("userRole");
-
-    if (adminId == null || !"admin".equals(userRole)) {
-        response.sendRedirect(request.getContextPath() + "/auth/login");
-        return;
-    }
-
-    // === 2. INPUT VALIDATION ===
+    // === INPUT VALIDATION ===
     String action = request.getParameter("action");
     String userIdStr = request.getParameter("userId");
 
@@ -31,7 +23,8 @@
     int targetUserId;
     try {
         targetUserId = Integer.parseInt(userIdStr.trim());
-        if (targetUserId == adminId) {
+        // Check if trying to deactivate themselves
+        if (targetUserId == sessUserId) {
             response.sendRedirect("adminUsers.jsp?msg=self_action_denied");
             return;
         }
@@ -46,11 +39,11 @@
     PreparedStatement pstmt = null;
 
     try {
-        // === 3. JDBC: Update user status using utility class ===
+        // === JDBC: Update user status using utility class ===
         conn = JDBC.connect();
         if (conn == null) throw new SQLException("Connection failed");
 
-        String sql = 
+        String sql =
             "UPDATE \"user\" SET is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?";
 
         pstmt = conn.prepareStatement(sql);
@@ -71,7 +64,7 @@
         e.printStackTrace();
         response.sendRedirect("adminUsers.jsp?msg=error");
     } finally {
-        // === 4. RESOURCE CLEANUP ===
+        // === RESOURCE CLEANUP ===
         if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
         if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
     }

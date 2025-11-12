@@ -15,23 +15,19 @@
     <title>User Management</title>
 </head>
 <body>
-    <%
-        // === 1. AUTHENTICATION & AUTHORIZATION (via AuthServlet) ===
-        Integer userId = (Integer) session.getAttribute("userId");
-        String userRole = (String) session.getAttribute("userRole");
-
-        if (userId == null || !"admin".equals(userRole)) {
-            response.sendRedirect(request.getContextPath() + "/auth/login");
-            return;
-        }
-    %>
-
     <h1>User Management</h1>
     <a href="adminDashboard.jsp">Back to Dashboard</a>
     <hr>
 
     <%
-        // === 2. DISPLAY FEEDBACK MESSAGES ===
+        // Get the current logged-in user ID from session
+        Integer currentUserId = (Integer) session.getAttribute("userId");
+        if (currentUserId == null) {
+            response.sendRedirect(request.getContextPath() + "/auth/login/");
+            return;
+        }
+    
+        // === DISPLAY FEEDBACK MESSAGES ===
         String msg = request.getParameter("msg");
         if (msg != null) {
             String text = "";
@@ -59,7 +55,7 @@
         ResultSet rs = null;
 
         try {
-            // === 3. JDBC: Fetch users with roles using utility class ===
+            // === JDBC: Fetch users with roles using utility class ===
             conn = JDBC.connect();
             if (conn == null) throw new SQLException("Connection failed");
 
@@ -108,7 +104,8 @@
                                 ? lastLogin.toString().substring(0, 19).replace("T", " ") 
                                 : "Never";
 
-                            boolean isCurrentAdmin = (uid == userId);
+                            // Check if this is the currently logged-in admin
+                            boolean isCurrentAdmin = (uid == currentUserId);
                     %>
                         <tr>
                             <td><%= uid %></td>
@@ -148,7 +145,7 @@
             out.println("<p style='color:red;'>Error loading users: " + e.getMessage() + "</p>");
             e.printStackTrace();
         } finally {
-            // === 4. RESOURCE CLEANUP ===
+            // === RESOURCE CLEANUP ===
             if (rs != null) try { rs.close(); } catch (SQLException ignored) {}
             if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
             if (conn != null) try { conn.close(); } catch (SQLException ignored) {}

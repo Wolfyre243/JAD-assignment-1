@@ -29,14 +29,16 @@ class AuthController {
       }
 
       final int userRoleId = user.getRole().getRoleId();
+      final String userRoleName = user.getRole().getRoleName();
       // TODO: Send cookie instead
       session.setAttribute("userId", user.getUserId());
       session.setAttribute("userRoleId", userRoleId);
+      session.setAttribute("userRoleName", userRoleName);
 
       response.setStatus(HttpServletResponse.SC_OK);
       // TODO: Redirect to dashboard or home page
-      if (userRoleId == 1) {
-        response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+      if (userRoleId == 1 && userRoleName == "admin") {
+        response.sendRedirect(request.getContextPath() + "/admin/dashboard/");
         return;
       }
       response.sendRedirect(request.getContextPath() + "/");

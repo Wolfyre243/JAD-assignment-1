@@ -9,16 +9,7 @@
   Description: Secure handler to activate/deactivate product using JDBC utility and AuthServlet session
 --%>
 <%
-    // === 1. AUTHENTICATION & AUTHORIZATION (via AuthServlet) ===
-    Integer adminId = (Integer) session.getAttribute("userId");
-    String userRole = (String) session.getAttribute("userRole");
-
-    if (adminId == null || !"admin".equals(userRole)) {
-        response.sendRedirect(request.getContextPath() + "/auth/login");
-        return;
-    }
-
-    // === 2. INPUT VALIDATION ===
+    // === INPUT VALIDATION ===
     String action = request.getParameter("action");
     String productIdStr = request.getParameter("productId");
 
@@ -42,7 +33,7 @@
     PreparedStatement pstmt = null;
 
     try {
-        // === 3. JDBC: Update product status using utility class ===
+        // === JDBC: Update product status using utility class ===
         conn = JDBC.connect();
         if (conn == null) throw new SQLException("Connection failed");
 
@@ -67,7 +58,7 @@
         e.printStackTrace();
         response.sendRedirect("adminServices.jsp?msg=error");
     } finally {
-        // === 4. RESOURCE CLEANUP ===
+        // === RESOURCE CLEANUP ===
         if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
         if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
     }

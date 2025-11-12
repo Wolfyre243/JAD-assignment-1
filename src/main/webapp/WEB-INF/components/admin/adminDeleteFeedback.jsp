@@ -9,7 +9,6 @@
   Description: Secure handler to delete feedback using JDBC utility and AuthServlet session
 --%>
 <%
-    // === 1. AUTHENTICATION & AUTHORIZATION (via AuthServlet) ===
     Integer adminId = (Integer) session.getAttribute("userId");
     String userRole = (String) session.getAttribute("userRole");
 
@@ -18,7 +17,7 @@
         return;
     }
 
-    // === 2. INPUT VALIDATION ===
+    // === INPUT VALIDATION ===
     String feedbackIdStr = request.getParameter("feedbackId");
     if (feedbackIdStr == null || feedbackIdStr.trim().isEmpty()) {
         response.sendRedirect("adminFeedback.jsp?msg=invalid");
@@ -37,7 +36,7 @@
     PreparedStatement pstmt = null;
 
     try {
-        // === 3. JDBC: Delete feedback using utility class ===
+        // === JDBC: Delete feedback using utility class ===
         conn = JDBC.connect();
         if (conn == null) throw new SQLException("Connection failed");
 
@@ -59,7 +58,7 @@
         e.printStackTrace();
         response.sendRedirect("adminFeedback.jsp?msg=error");
     } finally {
-        // === 4. RESOURCE CLEANUP ===
+        // === RESOURCE CLEANUP ===
         if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
         if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
     }
