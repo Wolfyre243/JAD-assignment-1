@@ -15,5 +15,6 @@ Page: /
 <body>
 <h1>This is the landing page!</h1>
 <h1>User ID <%= sessUserId %></h1>
+<h1>User ID <%= sessRoleId %></h1>
 </body>
 </html>

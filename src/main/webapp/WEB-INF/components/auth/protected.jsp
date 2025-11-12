@@ -1,8 +1,7 @@
 <%-- /WEB-INF/components/auth/protected.jsp --%>
 <%@ page import="jakarta.servlet.http.HttpSession" %>
 <%
-    // HttpSession sess = request.getSession(false);
-    HttpSession sess = session;
+    HttpSession sess = request.getSession(false);
     Integer sessUserId = (sess != null) ? (Integer) sess.getAttribute("userId") : null;
     Integer sessRoleId = (sess != null) ? (Integer) sess.getAttribute("userRoleId") : null;
 
@@ -23,8 +22,9 @@
         }
         
         // Redirect to login with return URL
-        response.sendRedirect(request.getContextPath() + "/auth/login/?returnUrl=" + 
-                              java.net.URLEncoder.encode(requestedURL, "UTF-8"));
+        out.println(sessRoleId);
+        // response.sendRedirect(request.getContextPath() + "/auth/login/?returnUrl=" + 
+                              // java.net.URLEncoder.encode(requestedURL, "UTF-8"));
         return;
     }
     

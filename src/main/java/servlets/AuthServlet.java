@@ -15,7 +15,9 @@ class AuthController {
       throws ServletException, IOException {
 
     final HttpSession session = request.getSession();
-
+if(session==null) {
+ response.sendRedirect(request.getContextPath() + "/admin/dashboard/loginError.jsp");
+}
     final String email = request.getParameter("email");
     final String password = request.getParameter("password");
 
@@ -33,8 +35,9 @@ class AuthController {
       // TODO: Send cookie instead
       session.setAttribute("userId", user.getUserId());
       session.setAttribute("userRoleId", userRoleId);
-      System.out.println("User Role: " + userRoleId);
       session.setAttribute("userRoleName", userRoleName);
+      
+      System.out.println("User logged in: " + user.getEmail() + " with role: " + userRoleName);
 
       response.setStatus(HttpServletResponse.SC_OK);
       // TODO: Redirect to dashboard or home page
@@ -90,6 +93,7 @@ public class AuthServlet extends HttpServlet {
     final String path = request.getServletPath();
 
     if (path.endsWith("/auth/login")) {
+      System.out.println("Login attempt"); 
       AuthController.login(request, response);
     } else if (path.endsWith("/auth/register")) {
       AuthController.register(request, response);
