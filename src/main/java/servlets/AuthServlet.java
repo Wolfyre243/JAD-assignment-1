@@ -15,9 +15,7 @@ class AuthController {
       throws ServletException, IOException {
 
     final HttpSession session = request.getSession();
-//    if (session == null) {
-//      response.sendRedirect(request.getContextPath() + "/admin/dashboard/loginError.jsp");
-//    }
+    
     final String email = request.getParameter("email");
     final String password = request.getParameter("password");
 
