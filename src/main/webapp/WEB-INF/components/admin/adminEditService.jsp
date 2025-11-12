@@ -33,7 +33,7 @@
     %>
 
     <h1>Edit Service</h1>
-    <a href="adminServices.jsp">Back to Services</a>
+    <a href="<%= request.getContextPath() %>/admin/services">Back to Services</a>
     <hr>
 
     <%
@@ -71,8 +71,9 @@
             pstmt.close();
     %>
 
-    <form action="adminEditServiceHandler.jsp" method="post">
+    <form action="<%= request.getContextPath() %>/admin/service" method="post">
         <input type="hidden" name="productId" value="<%= productId %>">
+        <input type="hidden" name="action" value="edit" />
         <table>
             <tr>
                 <td><label>Service Name:</label></td>
@@ -118,7 +119,7 @@
             <tr>
                 <td colspan="2">
                     <button type="submit">Update Service</button>
-                    <a href="adminServices.jsp">Cancel</a>
+                    <a href="<%= request.getContextPath() %>/admin/services">Cancel</a>
                 </td>
             </tr>
         </table>
