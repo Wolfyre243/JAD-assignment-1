@@ -4,7 +4,7 @@
 HttpSession sess = request.getSession(false);
 Integer sessUserId = (sess != null) ? (Integer) sess.getAttribute("userId") : null;
 Integer sessRoleId = (sess != null) ? (Integer) sess.getAttribute("userRoleId") : null;
-System.out.println("Protected JSP accessed by userId: " + sessRoleId);
+
 // Check if user is logged in
 if (sessUserId == null) {
   // Store the current URL they were trying to access
