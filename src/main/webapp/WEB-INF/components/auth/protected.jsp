@@ -31,7 +31,7 @@ if (sessUserId == null) {
 // Check if user is admin (roleId = 1)
 if (sessRoleId == null || sessRoleId != 1) {
   // Not an admin - redirect to home page
-  // response.sendRedirect(request.getContextPath() + "/");
+  response.sendRedirect(request.getContextPath() + "/");
   return;
 }
 %>
