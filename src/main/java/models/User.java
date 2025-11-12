@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import db.JDBC;
-import io.micrometer.core.instrument.Statistic;
 
 public class User {
   private int userId;
