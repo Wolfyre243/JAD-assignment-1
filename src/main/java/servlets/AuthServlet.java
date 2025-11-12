@@ -14,7 +14,6 @@ class AuthController {
   public static void login(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
-    System.out.println("Processing login request");
     final HttpSession session = request.getSession();
 //    if (session == null) {
 //      response.sendRedirect(request.getContextPath() + "/admin/dashboard/loginError.jsp");
@@ -37,12 +36,10 @@ class AuthController {
       session.setAttribute("userId", user.getUserId());
       session.setAttribute("userRoleId", userRoleId);
       session.setAttribute("userRoleName", userRoleName);
-      
-      System.out.println("User logged in: " + user.getEmail() + " with role: " + userRoleName);
 
       response.setStatus(HttpServletResponse.SC_OK);
       // TODO: Redirect to dashboard or home page
-      if (userRoleId == 1 && userRoleName == "admin") {
+      if (userRoleId == 1) {
         response.sendRedirect(request.getContextPath() + "/admin/dashboard/");
         return;
       }
