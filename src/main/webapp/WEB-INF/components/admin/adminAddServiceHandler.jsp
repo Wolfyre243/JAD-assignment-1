@@ -9,23 +9,15 @@
   Description: Secure handler to add new product/service using JDBC utility and AuthServlet session
 --%>
 <%
-    // === 1. AUTHENTICATION & AUTHORIZATION (via AuthServlet) ===
-    Integer adminId = (Integer) session.getAttribute("userId");
-    String userRole = (String) session.getAttribute("userRole");
 
-    if (adminId == null || !"admin".equals(userRole)) {
-        response.sendRedirect(request.getContextPath() + "/auth/login");
-        return;
-    }
-
-    // === 2. INPUT PARAMETERS ===
+    // === INPUT PARAMETERS ===
     String name = request.getParameter("name");
     String categoryIdStr = request.getParameter("categoryId");
     String description = request.getParameter("description");
     String priceStr = request.getParameter("price");
     String isActiveStr = request.getParameter("isActive");
 
-    // === 3. VALIDATION ===
+    // === VALIDATION ===
     if (name == null || name.trim().isEmpty() ||
         categoryIdStr == null || priceStr == null || isActiveStr == null) {
         response.sendRedirect("adminAddService.jsp?msg=invalid");
@@ -49,7 +41,7 @@
     PreparedStatement pstmt = null;
 
     try {
-        // === 4. JDBC: Insert new product using utility class ===
+        // === JDBC: Insert new product using utility class ===
         conn = JDBC.connect();
         if (conn == null) throw new SQLException("Connection failed");
 
@@ -76,7 +68,7 @@
         e.printStackTrace();
         response.sendRedirect("adminAddService.jsp?msg=error");
     } finally {
-        // === 5. RESOURCE CLEANUP ===
+        // === RESOURCE CLEANUP ===
         if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
         if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
     }

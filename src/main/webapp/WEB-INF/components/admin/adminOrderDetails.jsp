@@ -16,16 +16,7 @@
 </head>
 <body>
     <%
-        // === 1. AUTHENTICATION & AUTHORIZATION (via AuthServlet) ===
-        Integer userId = (Integer) session.getAttribute("userId");
-        String userRole = (String) session.getAttribute("userRole");
-
-        if (userId == null || !"admin".equals(userRole)) {
-            response.sendRedirect(request.getContextPath() + "/auth/login");
-            return;
-        }
-
-        // === 2. INPUT VALIDATION ===
+        // === INPUT VALIDATION ===
         String orderIdStr = request.getParameter("orderId");
         if (orderIdStr == null || orderIdStr.trim().isEmpty()) {
             response.sendRedirect("adminOrders.jsp?msg=invalid");
@@ -51,11 +42,11 @@
         ResultSet rs = null;
 
         try {
-            // === 3. JDBC: Get connection via utility ===
+            // === JDBC: Get connection via utility ===
             conn = JDBC.connect();
             if (conn == null) throw new SQLException("Connection failed");
 
-            // === 4. FETCH ORDER HEADER ===
+            // === FETCH ORDER HEADER ===
             String orderSql = 
                 "SELECT o.order_id, o.created_at, u.email " +
                 "FROM \"order\" o " +
@@ -89,7 +80,7 @@
             rs.close();
             pstmt.close();
 
-            // === 5. FETCH BOOKINGS ===
+            // === FETCH BOOKINGS ===
             String bookingSql = 
                 "SELECT b.booking_id, p.name AS product_name, " +
                 "       b.special_requests, b.created_at " +
@@ -144,7 +135,7 @@
             out.println("<p style='color:red;'>Error loading order details: " + e.getMessage() + "</p>");
             e.printStackTrace();
         } finally {
-            // === 6. RESOURCE CLEANUP ===
+            // === RESOURCE CLEANUP ===
             if (rs != null) try { rs.close(); } catch (SQLException ignored) {}
             if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
             if (conn != null) try { conn.close(); } catch (SQLException ignored) {}

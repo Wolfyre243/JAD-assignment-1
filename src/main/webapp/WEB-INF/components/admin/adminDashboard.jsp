@@ -15,17 +15,6 @@
     <title>Admin Dashboard</title>
 </head>
 <body>
-    <%
-        // === 1. AUTHENTICATION & AUTHORIZATION (via AuthServlet) ===
-        Integer userId = (Integer) session.getAttribute("userId");
-        String userRole = (String) session.getAttribute("userRole");
-
-        if (userId == null || !"admin".equals(userRole)) {
-            response.sendRedirect(request.getContextPath() + "/auth/login");
-            return;
-        }
-    %>
-
     <h1>Admin Dashboard</h1>
     <p>Welcome, Admin!</p>
     <hr>
@@ -39,11 +28,11 @@
         int totalUsers = 0, totalOrders = 0, totalFeedback = 0, totalProducts = 0;
 
         try {
-            // === 2. JDBC: Get connection via utility ===
+            // === JDBC: Get connection via utility ===
             conn = JDBC.connect();
             if (conn == null) throw new SQLException("Database connection failed");
 
-            // === 3. FETCH STATISTICS ===
+            // === FETCH STATISTICS ===
             String[] queries = {
                 "SELECT COUNT(*) FROM \"user\"",
                 "SELECT COUNT(*) FROM \"order\"",

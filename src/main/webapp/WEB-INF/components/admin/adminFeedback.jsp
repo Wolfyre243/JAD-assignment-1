@@ -15,17 +15,6 @@
     <title>Feedback Management</title>
 </head>
 <body>
-    <%
-        // === 1. AUTHENTICATION & AUTHORIZATION (via AuthServlet) ===
-        Integer userId = (Integer) session.getAttribute("userId");
-        String userRole = (String) session.getAttribute("userRole");
-
-        if (userId == null || !"admin".equals(userRole)) {
-            response.sendRedirect(request.getContextPath() + "/auth/login");
-            return;
-        }
-    %>
-
     <h1>Feedback Management</h1>
     <a href="adminDashboard.jsp">Back to Dashboard</a>
     <hr>
@@ -38,7 +27,7 @@
         ResultSet rs = null;
 
         try {
-            // === 2. JDBC: Fetch feedback using utility class ===
+            // === JDBC: Fetch feedback using utility class ===
             conn = JDBC.connect();
             if (conn == null) throw new SQLException("Connection failed");
 
@@ -105,7 +94,7 @@
             out.println("<p style='color:red;'>Error loading feedback: " + e.getMessage() + "</p>");
             e.printStackTrace();
         } finally {
-            // === 3. RESOURCE CLEANUP ===
+            // === RESOURCE CLEANUP ===
             if (rs != null) try { rs.close(); } catch (SQLException ignored) {}
             if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
             if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
