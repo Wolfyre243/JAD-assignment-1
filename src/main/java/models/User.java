@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import db.JDBC;
+import io.micrometer.core.instrument.Statistic;
 
 public class User {
   private int userId;
@@ -97,5 +98,9 @@ public class User {
     rs.close();
     stmt.close();
     return user;
+  }
+  
+  public static User createUser() {
+  	
   }
 }
