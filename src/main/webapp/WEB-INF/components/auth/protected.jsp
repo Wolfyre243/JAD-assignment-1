@@ -1,9 +1,10 @@
 <%-- /WEB-INF/components/auth/protected.jsp --%>
 <%@ page import="jakarta.servlet.http.HttpSession" %>
 <%
-    HttpSession sess = request.getSession(false);
+    // HttpSession sess = request.getSession(false);
+    HttpSession sess = session;
     Integer sessUserId = (sess != null) ? (Integer) sess.getAttribute("userId") : null;
-    Integer sessRoleId = (sess != null) ? (Integer) sess.getAttribute("roleId") : null;
+    Integer sessRoleId = (sess != null) ? (Integer) sess.getAttribute("userRoleId") : null;
 
     // Check if user is logged in
     if (sessUserId == null) {
@@ -27,6 +28,7 @@
         return;
     }
     
+    System.out.println("Protected JSP accessed by userId: " + sessRoleId);
     // Check if user is admin (roleId = 1)
     if (sessRoleId == null || sessRoleId != 1) {
         // Not an admin - redirect to home page
