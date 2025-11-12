@@ -59,21 +59,17 @@ public class User {
   public Date getLastLogin() {
     return lastLogin;
   }
-  
+
   public Role getRole() {
     return role;
   }
 
   public static User getUserByEmail(String _email) throws SQLException {
-    Connection conn = JDBC.connect();
+    final Connection conn = JDBC.connect();
 
-    String sql = new StringBuilder()
-        .append("SELECT u.*, r.role_id, r.name as role_name ")
-        .append("FROM public.user u ")
-        .append("JOIN user_role ur ON u.user_id = ur.user_id ")
-        .append("JOIN role r ON r.role_id = ur.role_id ")
-        .append("WHERE u.email = ?")
-        .toString();
+    String sql = new StringBuilder().append("SELECT u.*, r.role_id, r.name as role_name ").append("FROM public.user u ")
+        .append("JOIN user_role ur ON u.user_id = ur.user_id ").append("JOIN role r ON r.role_id = ur.role_id ")
+        .append("WHERE u.email = ?").toString();
 
     PreparedStatement stmt = conn.prepareStatement(sql);
     stmt.setString(1, _email);
@@ -99,8 +95,57 @@ public class User {
     stmt.close();
     return user;
   }
-  
-  public static User createUser() {
-  	
+
+  public static void createUser(String email, String password, int roleId) throws SQLException {
+
+    final Connection conn = JDBC.connect();
+    
+    final String userSQL = new StringBuilder()
+        .append("INSERT INTO public.user ")
+        .append("(email, password) ")
+        .append("VALUES ")
+        .append("(?, ?) ")
+        .append("RETURNING *;")
+        .toString();
+    
+    final String userRoleSQL = new StringBuilder()
+        .append("INSERT INTO user_role ")
+        .append("(user_id, role_id) ")
+        .append("VALUES ")
+        .append("(?, ?);")
+        .toString();
+    
+    PreparedStatement psUser = conn.prepareStatement(userSQL);
+    PreparedStatement psUserRole = conn.prepareStatement(userRoleSQL);
+    
+    try {
+      // Start transaction
+      conn.setAutoCommit(false);
+      
+      int insertedUserId = -1;
+      
+      // Perform user insertion
+      psUser.setString(1, email);
+      psUser.setString(2, password);
+      
+      ResultSet rs = psUser.executeQuery();
+      
+      if (rs.next()) {
+        insertedUserId = rs.getInt("user_id");
+      }
+      
+      // Perform user_role insertion
+      psUserRole.setInt(1, insertedUserId);
+      psUserRole.setInt(2, roleId);
+      rs = psUserRole.executeQuery();
+      
+    } catch (SQLException e) {
+      try {
+        conn.rollback();
+      } catch (Exception ignored) {
+        e.printStackTrace();
+        ignored.printStackTrace();
+      }
+    }
   }
 }
