@@ -84,17 +84,17 @@ h1 {
 		<!-- Sidebar -->
 		<div class="sidebar">
 			<h2>Admin Panel</h2>
-			<a href="adminDashboard.jsp"
-				class="<%=request.getRequestURI().endsWith("adminDashboard.jsp") && request.getParameter("page") == null ? "active" : ""%>">Dashboard</a>
-			<a href="adminDashboard.jsp?page=users"
-				class="<%="users".equals(request.getParameter("page")) ? "active" : ""%>">User
-				Management</a> <a href="adminDashboard.jsp?page=orders"
-				class="<%="orders".equals(request.getParameter("page")) ? "active" : ""%>">Order
-				Management</a> <a href="adminDashboard.jsp?page=services"
-				class="<%="services".equals(request.getParameter("page")) ? "active" : ""%>">Services
-				Management</a> <a href="adminDashboard.jsp?page=feedback"
-				class="<%="feedback".equals(request.getParameter("page")) ? "active" : ""%>">Feedback
-				Management</a>
+			<a href="${pageContext.request.contextPath}/admin/dashboard"
+				class="${requestScope.activePage == 'dashboard' ? 'active' : ''}">Dashboard</a>
+			<a href="${pageContext.request.contextPath}/admin/users"
+				class="${requestScope.activePage == 'users' ? 'active' : ''}">User Management</a>
+			<a href="${pageContext.request.contextPath}/admin/orders"
+				class="${requestScope.activePage == 'orders' ? 'active' : ''}">Order Management</a>
+			<a href="${pageContext.request.contextPath}/admin/services"
+				class="${requestScope.activePage == 'services' ? 'active' : ''}">Services Management</a>
+			<a href="${pageContext.request.contextPath}/admin/feedback"
+				class="${requestScope.activePage == 'feedback' ? 'active' : ''}">Feedback Management</a>
+
 			<div class="logout">
 				<a href="${pageContext.request.contextPath}/auth/logout">Logout</a>
 			</div>
@@ -102,31 +102,7 @@ h1 {
 
 		<!-- Main Content -->
 		<div class="content">
-			<%
-			String pageParam = request.getParameter("page");
-			String includeFile = "/WEB-INF/components/admin/adminDashboard.jsp"; // default - FULL PATH
-
-			if ("users".equals(pageParam)) {
-			  includeFile = "/WEB-INF/components/admin/adminUsers.jsp";
-			} else if ("orders".equals(pageParam)) {
-			  includeFile = "/WEB-INF/components/admin/adminOrders.jsp";
-			} else if ("services".equals(pageParam)) {
-			  includeFile = "/WEB-INF/components/admin/adminServices.jsp";
-			} else if ("feedback".equals(pageParam)) {
-			  includeFile = "/WEB-INF/components/admin/adminFeedback.jsp";
-			} else if ("orderDetails".equals(pageParam)) {
-			  String orderId = request.getParameter("orderId");
-			  if (orderId != null && orderId.matches("\\d+")) {
-			    // Set orderId as request attribute so the included page can access it
-			    request.setAttribute("orderId", orderId);
-			    includeFile = "/WEB-INF/components/admin/adminOrderDetails.jsp";
-			  } else {
-			    includeFile = "/WEB-INF/components/admin/adminOrders.jsp";
-			  }
-			}
-			%>
-
-			<jsp:include page="<%=includeFile%>" />
+			<jsp:include page="${requestScope.includeFile}" />
 		</div>
 	</div>
 </body>
