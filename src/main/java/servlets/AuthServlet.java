@@ -33,6 +33,7 @@ class AuthController {
       // TODO: Send cookie instead
       session.setAttribute("userId", user.getUserId());
       session.setAttribute("userRoleId", userRoleId);
+      System.out.println("User Role: " + userRoleId);
       session.setAttribute("userRoleName", userRoleName);
 
       response.setStatus(HttpServletResponse.SC_OK);
