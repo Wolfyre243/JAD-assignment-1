@@ -53,16 +53,6 @@ body {
 			<form action="${pageContext.request.contextPath}/auth/register"
 				method="post" class="space-y-5">
 
-				<!-- Full Name -->
-				<div>
-					<label for="name"
-						class="block text-sm font-medium text-gray-700 mb-1"> Full
-						Name <span class="text-red-500">*</span>
-					</label> <input type="text" id="name" name="name"
-						class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus transition"
-						required maxlength="100">
-				</div>
-
 				<!-- Email -->
 				<div>
 					<label for="email"
@@ -89,7 +79,7 @@ body {
 					<label for="userType"
 						class="block text-sm font-medium text-gray-700 mb-1"> I am
 						<span class="text-red-500">*</span>
-					</label> <select id="userType" name="userType"
+					</label> <select id="roleId" name="roleId"
 						class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus transition"
 						required>
 						<option value="" disabled>-- Select --</option>

@@ -74,7 +74,7 @@ public class AuthServlet extends HttpServlet {
     if (path.endsWith("/auth/login")) {
       AuthController.login(request, response);
     } else if (path.endsWith("/auth/register")) {
-      // AuthController.register(request, response);
+      AuthController.register(request, response);
     } else {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested resource was not found.");
     }
