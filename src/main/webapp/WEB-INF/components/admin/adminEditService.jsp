@@ -16,16 +16,7 @@
 </head>
 <body>
     <%
-        // === 1. AUTHENTICATION & AUTHORIZATION (via AuthServlet) ===
-        Integer userId = (Integer) session.getAttribute("userId");
-        String userRole = (String) session.getAttribute("userRole");
-
-        if (userId == null || !"admin".equals(userRole)) {
-            response.sendRedirect(request.getContextPath() + "/auth/login");
-            return;
-        }
-
-        // === 2. INPUT VALIDATION ===
+        // === INPUT VALIDATION ===
         String productIdStr = request.getParameter("productId");
         if (productIdStr == null || productIdStr.trim().isEmpty()) {
             response.sendRedirect("adminServices.jsp?msg=invalid");
@@ -51,7 +42,7 @@
         ResultSet rs = null;
 
         try {
-            // === 3. JDBC: Fetch product details using utility ===
+            // === JDBC: Fetch product details using utility ===
             conn = JDBC.connect();
             if (conn == null) throw new SQLException("Connection failed");
 
@@ -92,7 +83,7 @@
                 <td>
                     <select name="categoryId" required>
                         <%
-                            // === 4. JDBC: Load categories ===
+                            // === JDBC: Load categories ===
                             String catSql = "SELECT category_id, name FROM category ORDER BY name";
                             pstmt = conn.prepareStatement(catSql);
                             rs = pstmt.executeQuery();
@@ -138,7 +129,7 @@
             out.println("<p style='color:red;'>Error loading service: " + e.getMessage() + "</p>");
             e.printStackTrace();
         } finally {
-            // === 5. RESOURCE CLEANUP ===
+            // === RESOURCE CLEANUP ===
             if (rs != null) try { rs.close(); } catch (SQLException ignored) {}
             if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
             if (conn != null) try { conn.close(); } catch (SQLException ignored) {}

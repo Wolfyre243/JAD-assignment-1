@@ -9,16 +9,8 @@
   Description: Secure handler to update product/service using JDBC utility and AuthServlet session
 --%>
 <%
-    // === 1. AUTHENTICATION & AUTHORIZATION (via AuthServlet) ===
-    Integer adminId = (Integer) session.getAttribute("userId");
-    String userRole = (String) session.getAttribute("userRole");
 
-    if (adminId == null || !"admin".equals(userRole)) {
-        response.sendRedirect(request.getContextPath() + "/auth/login");
-        return;
-    }
-
-    // === 2. INPUT PARAMETERS & VALIDATION ===
+    // === INPUT PARAMETERS & VALIDATION ===
     String productIdStr = request.getParameter("productId");
     String name = request.getParameter("name");
     String categoryIdStr = request.getParameter("categoryId");
@@ -51,7 +43,7 @@
     PreparedStatement pstmt = null;
 
     try {
-        // === 3. JDBC: Update product using utility class ===
+        // === JDBC: Update product using utility class ===
         conn = JDBC.connect();
         if (conn == null) throw new SQLException("Connection failed");
 
@@ -83,7 +75,7 @@
         e.printStackTrace();
         response.sendRedirect("adminEditService.jsp?productId=" + productId + "&msg=error");
     } finally {
-        // === 4. RESOURCE CLEANUP ===
+        // === RESOURCE CLEANUP ===
         if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
         if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
     }
