@@ -13,10 +13,16 @@
 <head>
     <meta charset="UTF-8">
     <title>User Management</title>
+    <style>
+        .msg-success { color: green; font-weight: bold; }
+        .msg-error { color: red; font-weight: bold; }
+        .status-active { color: green; font-weight: bold; }
+        .status-inactive { color: red; font-weight: bold; }
+    </style>
 </head>
 <body>
     <h1>User Management</h1>
-    <a href="adminDashboard.jsp">Back to Dashboard</a>
+    <a href="<%= request.getContextPath() %>/admin/dashboard">Back to Dashboard</a>
     <hr>
 
     <%
@@ -42,7 +48,8 @@
                 default:               text = "Action completed.";                 color = "green";
             }
     %>
-        <p style="color: <%= color %>; font-weight: bold;"><%= text %></p>
+    <% String _msgClass = "msg-success"; if ("red".equals(color)) _msgClass = "msg-error"; %>
+    <p class="<%= _msgClass %>"><%= text %></p>
     <%
         }
     %>
@@ -111,7 +118,8 @@
                             <td><%= uid %></td>
                             <td><%= email %></td>
                             <td><%= roles %></td>
-                            <td style="color: <%= isActive ? "green" : "red" %>; font-weight: bold;">
+                            <% String _statusClass = isActive ? "status-active" : "status-inactive"; %>
+                            <td class="<%= _statusClass %>">
                                 <%= isActive ? "Active" : "Inactive" %>
                             </td>
                             <td><%= formattedCreated %></td>
@@ -119,20 +127,20 @@
                             <td>
                                 <% if (isActive) { %>
                                     <% if (!isCurrentAdmin) { %>
-                                        <a href="adminUserAction.jsp?action=deactivate&userId=<%= uid %>"
+                                        <a href="<%= request.getContextPath() %>/admin/user?action=deactivate&userId=<%= uid %>"
                                            onclick="return confirm('Deactivate this user?');"
                                            style="color: orange;">Deactivate</a>
                                     <% } else { %>
                                         <span style="color: #999;">Deactivate (self)</span>
                                     <% } %>
                                 <% } else { %>
-                                    <a href="adminUserAction.jsp?action=activate&userId=<%= uid %>"
-                                       onclick="return confirm('Activate this user?');"
-                                       style="color: green;">Activate</a>
+                                                     <a href="<%= request.getContextPath() %>/admin/user?action=deactivate&userId=<%= uid %>"
+                                                         onclick="return confirm('Deactivate this user?');"
+                                                         style="color: orange;">Deactivate</a>
                                 <% } %>
-                                |
-                                <a href="adminUserDetails.jsp?userId=<%= uid %>">View Details</a>
-                            </td>
+                                                <a href="<%= request.getContextPath() %>/admin/user?action=activate&userId=<%= uid %>"
+                                                    onclick="return confirm('Activate this user?');"
+                                                    style="color: green;">Activate</a>
                         </tr>
                     <%
                         }

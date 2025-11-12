@@ -78,10 +78,10 @@
     <hr>
     <h2>Management Sections</h2>
     <ul>
-        <li><a href="adminUsers.jsp">User Management</a></li>
-        <li><a href="adminFeedback.jsp">Feedback Management</a></li>
-        <li><a href="adminOrders.jsp">Order Management</a></li>
-        <li><a href="adminServices.jsp">Services Management</a></li>
+        <li><a href="<%= request.getContextPath() %>/admin/users">User Management</a></li>
+        <li><a href="<%= request.getContextPath() %>/admin/feedback">Feedback Management</a></li>
+        <li><a href="<%= request.getContextPath() %>/admin/orders">Order Management</a></li>
+        <li><a href="<%= request.getContextPath() %>/admin/services">Services Management</a></li>
     </ul>
 
     <hr>
