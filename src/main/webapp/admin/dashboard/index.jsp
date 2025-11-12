@@ -102,7 +102,18 @@ h1 {
 
 		<!-- Main Content -->
 		<div class="content">
-			<jsp:include page="${requestScope.includeFile}" />
+			<%
+			    String inc = (String) request.getAttribute("includeFile");
+			    if (inc != null && !inc.isEmpty()) {
+			%>
+				<jsp:include page="<%= inc %>" />
+			<%
+			    } else {
+			%>
+				<jsp:include page="/WEB-INF/components/admin/adminDashboard.jsp" />
+			<%
+			    }
+			%>
 		</div>
 	</div>
 </body>

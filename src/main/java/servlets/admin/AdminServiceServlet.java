@@ -82,6 +82,9 @@ public class AdminServiceServlet extends HttpServlet {
         if ("add".equals(action)) {
             handleAdd(request, response);
             return;
+        } else if ("edit".equals(action)) {
+            handleEdit(request, response);
+            return;
         }
         // Other POST actions can be implemented (edit)
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -130,6 +133,65 @@ public class AdminServiceServlet extends HttpServlet {
             if (rows == 0) throw new SQLException("Insert failed");
 
             response.sendRedirect(request.getContextPath() + "/admin/services?msg=added");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/admin/services?msg=db_error");
+        } finally {
+            if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
+            if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
+        }
+    }
+
+    private void handleEdit(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String productIdStr = request.getParameter("productId");
+        String name = request.getParameter("name");
+        String categoryIdStr = request.getParameter("categoryId");
+        String description = request.getParameter("description");
+        String priceStr = request.getParameter("price");
+        String isActiveStr = request.getParameter("isActive");
+
+        if (productIdStr == null || productIdStr.trim().isEmpty() || name == null || name.trim().isEmpty() || categoryIdStr == null || priceStr == null || isActiveStr == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/services?msg=invalid");
+            return;
+        }
+
+        int productId;
+        int categoryId;
+        double price;
+        try {
+            productId = Integer.parseInt(productIdStr);
+            categoryId = Integer.parseInt(categoryIdStr);
+            price = Double.parseDouble(priceStr);
+            if (price < 0) throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/admin/services?msg=invalid");
+            return;
+        }
+
+        boolean isActive = Boolean.parseBoolean(isActiveStr);
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            conn = JDBC.connect();
+            if (conn == null) throw new SQLException("Connection failed");
+
+            String sql = "UPDATE product SET category_id = ?, name = ?, description = ?, price = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE product_id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, categoryId);
+            pstmt.setString(2, name.trim());
+            pstmt.setString(3, description != null ? description.trim() : null);
+            pstmt.setDouble(4, price);
+            pstmt.setBoolean(5, isActive);
+            pstmt.setInt(6, productId);
+
+            int rows = pstmt.executeUpdate();
+            if (rows == 0) {
+                response.sendRedirect(request.getContextPath() + "/admin/services?msg=not_found");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/admin/services?msg=updated");
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();

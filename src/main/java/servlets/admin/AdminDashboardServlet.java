@@ -1,47 +1,47 @@
 package servlets.admin;
 
-import jakarta.servlet.ServletException;
+import db.JDBC;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import jakarta.servlet.http.HttpSession;
-import lib.SessionManagement;
+import jakarta.servlet.http.*;
+import java.sql.*;
 
-/**
- * Servlet implementation class AdminDashboardServlet
- */
-@WebServlet("/admin/dashboard/")
+@WebServlet("/admin/dashboard/stats")
 public class AdminDashboardServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
 
-	public AdminDashboardServlet() {
-		super();
-	}
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws jakarta.servlet.ServletException, java.io.IOException {
 
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// Check session and role
-		HttpSession sess = request.getSession(false);
-		if (sess == null || !SessionManagement.isLoggedIn(request)) {
-			response.sendRedirect(request.getContextPath() + "/auth/login/");
-			return;
-		}
+        // 1. Check if admin is logged in
+        HttpSession session = req.getSession();
+        if (session.getAttribute("admin") == null) {
+            resp.sendRedirect(req.getContextPath() + "/auth/login.jsp");
+            return;
+        }
 
-		if (!SessionManagement.isAdmin(request)) {
-			// Not an admin - redirect to home
-			response.sendRedirect(request.getContextPath() + "/");
-			return;
-		}
+        // 2. Get numbers from database
+        int totalUsers = countFromTable("user");
+        int totalOrders = countFromTable("order");
+        int totalFeedback = countFromTable("feedback");
+        int totalProducts = countFromTable("product");
 
-		// Forward to the admin dashboard JSP (JSP performs the DB queries)
-		request.getRequestDispatcher("/WEB-INF/components/admin/adminDashboard.jsp").forward(request, response);
-	}
+        // 3. Send numbers to JSP
+        req.setAttribute("totalUsers", totalUsers);
+        req.setAttribute("totalOrders", totalOrders);
+        req.setAttribute("totalFeedback", totalFeedback);
+        req.setAttribute("totalProducts", totalProducts);
 
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-	}
+          // 4. Show the dashboard component (used by AJAX or direct stats view)
+          req.getRequestDispatcher("/WEB-INF/components/admin/adminDashboard.jsp")
+              .forward(req, resp);
+    }
 
+    private int countFromTable(String table) {
+        try (Connection c = JDBC.connect();
+             PreparedStatement ps = c.prepareStatement("SELECT COUNT(*) FROM \"" + table + "\"");
+             ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? rs.getInt(1) : 0;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 }

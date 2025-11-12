@@ -12,15 +12,21 @@ public class SessionManagement {
 		return userId != null;
 	}
 
+	// No javax.* overloads — project targets Jakarta servlet API
+
 	public static Integer getUserId(HttpServletRequest req) {
 		HttpSession sess = req.getSession(false);
 		return (sess == null) ? null : (Integer) sess.getAttribute("userId");
 	}
 
+    
+
 	public static Integer getUserRoleId(HttpServletRequest req) {
 		HttpSession sess = req.getSession(false);
 		return (sess == null) ? null : (Integer) sess.getAttribute("userRoleId");
 	}
+
+    
 
 	public static boolean isAdmin(HttpServletRequest req) {
 		Integer roleId = getUserRoleId(req);
