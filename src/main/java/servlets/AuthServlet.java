@@ -68,7 +68,7 @@ class AuthController {
 		}
 		
 		response.setStatus(HttpServletResponse.SC_CREATED);
-		response.sendRedirect(request.getContextPath() + "/auth/login");
+		response.sendRedirect(request.getContextPath() + "/auth/login/");
 	}
 
 	public static void logout(HttpServletRequest request, HttpServletResponse response)

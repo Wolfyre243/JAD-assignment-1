@@ -105,7 +105,7 @@ public class User {
         .append("(email, password) ")
         .append("VALUES ")
         .append("(?, ?) ")
-        .append("RETURNING *;")
+        .append("RETURNING user_id;")
         .toString();
     
     final String userRoleSQL = new StringBuilder()
@@ -128,22 +128,28 @@ public class User {
       psUser.setString(1, email);
       psUser.setString(2, password);
       
+      System.out.println("Inserting user...");
       ResultSet rs = psUser.executeQuery();
       
       if (rs.next()) {
         insertedUserId = rs.getInt("user_id");
+        System.out.println("Inserted user ID: " + insertedUserId);
       }
       
       // Perform user_role insertion
       psUserRole.setInt(1, insertedUserId);
       psUserRole.setInt(2, roleId);
-      rs = psUserRole.executeQuery();
+      System.out.println("Inserting user role... (user_id: " + insertedUserId + ", role_id: " + roleId + ")");
+      psUserRole.executeUpdate();
       
       rs.close();
+      // Close the transaction
+      conn.commit();
       
     } catch (SQLException e) {
       try {
         conn.rollback();
+        System.out.println("Transaction rolled back due to error.");
       } catch (Exception ignored) {
         ignored.printStackTrace();
       }
