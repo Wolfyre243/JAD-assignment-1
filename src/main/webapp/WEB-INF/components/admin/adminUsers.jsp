@@ -134,13 +134,10 @@
                                         <span style="color: #999;">Deactivate (self)</span>
                                     <% } %>
                                 <% } else { %>
-                                                     <a href="<%= request.getContextPath() %>/admin/user?action=deactivate&userId=<%= uid %>"
-                                                         onclick="return confirm('Deactivate this user?');"
-                                                         style="color: orange;">Deactivate</a>
+                                    <a href="<%= request.getContextPath() %>/admin/user?action=activate&userId=<%= uid %>"
+                                       onclick="return confirm('Activate this user?');"
+                                       style="color: green;">Activate</a>
                                 <% } %>
-                                                <a href="<%= request.getContextPath() %>/admin/user?action=activate&userId=<%= uid %>"
-                                                    onclick="return confirm('Activate this user?');"
-                                                    style="color: green;">Activate</a>
                         </tr>
                     <%
                         }

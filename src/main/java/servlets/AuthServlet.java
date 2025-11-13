@@ -35,6 +35,14 @@ class AuthController {
       session.setAttribute("userRoleId", userRoleId);
       session.setAttribute("userRoleName", userRoleName);
 
+      // Update last_login timestamp for this user
+      try {
+        User.updateLastLogin(user.getUserId());
+      } catch (Exception e) {
+        // Log and continue; failing to update last_login should not block login
+        e.printStackTrace();
+      }
+
       response.setStatus(HttpServletResponse.SC_OK);
       // TODO: Redirect to dashboard or home page
       if (userRoleId == 1) {
