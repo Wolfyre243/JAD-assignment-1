@@ -16,6 +16,6 @@ Page: /
 <h1>This is the landing page!</h1>
 <h1>User ID <%= sessUserId %></h1>
 <h1>User ID <%= sessRoleId %></h1>
-<%@ include file="/WEB-INF/components/auth/logout-button.jsp" %>
+<jsp:include page="/WEB-INF/components/auth/logout-button.jsp" />
 </body>
 </html>

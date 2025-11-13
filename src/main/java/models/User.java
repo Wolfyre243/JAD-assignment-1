@@ -92,6 +92,7 @@ public class User {
 
     rs.close();
     stmt.close();
+    conn.close();
     return user;
   }
 
@@ -138,13 +139,20 @@ public class User {
       psUserRole.setInt(2, roleId);
       rs = psUserRole.executeQuery();
       
+      rs.close();
+      
     } catch (SQLException e) {
       try {
         conn.rollback();
       } catch (Exception ignored) {
-        e.printStackTrace();
         ignored.printStackTrace();
       }
+      
+      throw e;
     }
+    
+    psUser.close();
+    psUserRole.close();
+    conn.close();
   }
 }

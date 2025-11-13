@@ -57,14 +57,18 @@ class AuthController {
 		// Get form fields
 		final String email = request.getParameter("email");
 		final String password = request.getParameter("password");
-		final int roleId = Integer.parseInt(request.getParameter("role_id"));
+		final int roleId = Integer.parseInt(request.getParameter("roleId"));
 
 		try {
 			User.createUser(email, password, roleId);
 		} catch (Exception e) {
 			e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during registration.");
+			return;
 		}
+		
+		response.setStatus(HttpServletResponse.SC_CREATED);
+		response.sendRedirect(request.getContextPath() + "/auth/login");
 	}
 
 	public static void logout(HttpServletRequest request, HttpServletResponse response)

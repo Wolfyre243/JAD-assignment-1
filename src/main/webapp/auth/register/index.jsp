@@ -71,7 +71,7 @@ body {
 					</label> <input type="password" id="password" name="password"
 						class="w-full px-4 py-2.5 border border-gray-300 rounded-lg input-focus transition"
 						required>
-					<p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
+					<!-- <p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p> -->
 				</div>
 
 				<!-- User Type Dropdown -->
