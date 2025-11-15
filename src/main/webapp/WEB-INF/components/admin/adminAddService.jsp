@@ -8,14 +8,6 @@
   Last Edited: 06/11/2025
   Description: Admin form to add new service with category dropdown using JDBC utility and AuthServlet session
 --%>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Add New Service</title>
-</head>
-<body>
-
     <h1>Add New Service</h1>
     <a href="<%= request.getContextPath() %>/admin/services">Back to Services</a>
     <hr>
@@ -90,5 +82,4 @@
             </tr>
         </table>
     </form>
-</body>
-</html>
+

@@ -8,13 +8,7 @@
   Last Edited: 06/11/2025
   Description: Admin view for order details with user info and bookings using JDBC utility and AuthServlet
 --%>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Order Details</title>
-</head>
-<body>
+
     <%
         // === INPUT VALIDATION ===
         String orderIdStr = request.getParameter("orderId");
@@ -141,5 +135,3 @@
             if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
         }
     %>
-</body>
-</html>

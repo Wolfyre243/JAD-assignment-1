@@ -24,9 +24,10 @@ public class AdminOrderDetailsServlet extends HttpServlet {
       return;
     }
 
-    // Forward to the protected component JSP. Any query params (e.g., orderId) are preserved
-    // and can be read by the included JSP via request.getParameter or request.getAttribute.
-    request.getRequestDispatcher("/WEB-INF/components/admin/adminOrderDetails.jsp").forward(request, response);
+  // Include the common header, the component, then the footer so the servlet can serve a full page
+  request.getRequestDispatcher("/WEB-INF/components/common/header.jsp").include(request, response);
+  request.getRequestDispatcher("/WEB-INF/components/admin/adminOrderDetails.jsp").include(request, response);
+  request.getRequestDispatcher("/WEB-INF/components/common/footer.jsp").include(request, response);
   }
 
   @Override
