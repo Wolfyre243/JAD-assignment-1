@@ -8,19 +8,6 @@
   Last Edited: 06/11/2025
   Description: Admin services management with list, add, edit, activate/deactivate using JDBC utility and AuthServlet
 --%>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Services Management</title>
-    <style>
-        .msg-success { color: green; font-weight: bold; }
-        .msg-error { color: red; font-weight: bold; }
-        .status-active { color: green; font-weight: bold; }
-        .status-inactive { color: red; font-weight: bold; }
-    </style>
-</head>
-<body>
     <h1>Services Management</h1>
     <a href="<%= request.getContextPath() %>/admin/dashboard">Back to Dashboard</a>
     <hr>
@@ -141,5 +128,4 @@
             if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
         }
     %>
-</body>
-</html>
+

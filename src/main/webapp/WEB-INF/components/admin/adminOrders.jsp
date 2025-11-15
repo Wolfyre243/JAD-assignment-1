@@ -8,13 +8,6 @@
   Last Edited: 06/11/2025
   Description: Admin order management with order list and booking count using JDBC utility and AuthServlet
 --%>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Order Management</title>
-</head>
-<body>
     <h1>Order Management</h1>
     <a href="adminDashboard.jsp">Back to Dashboard</a>
     <hr>
@@ -94,5 +87,4 @@
             if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
         }
     %>
-</body>
-</html>
+

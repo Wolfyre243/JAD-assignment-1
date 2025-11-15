@@ -8,13 +8,7 @@
   Last Edited: 06/11/2025
   Description: Order Confirmation Page with Order details
 --%>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Order Confirmation</title>
-</head>
-<body>
+<%@ include file="/WEB-INF/components/common/header.jsp" %>
     <%
         String orderIdStr = request.getParameter("orderId");
         Integer userId = (Integer) session.getAttribute("userId");
@@ -70,5 +64,5 @@
     <br>
     <a href="products.jsp">Continue Shopping</a>
     <a href="viewOrders.jsp">View My Orders</a>
-</body>
-</html>
+
+<%@ include file="/WEB-INF/components/common/footer.jsp" %>

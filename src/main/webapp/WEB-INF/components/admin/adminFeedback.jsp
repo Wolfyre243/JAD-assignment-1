@@ -8,13 +8,6 @@
   Last Edited: 06/11/2025
   Description: Admin feedback management with secure display and delete using JDBC utility and AuthServlet
 --%>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Feedback Management</title>
-</head>
-<body>
     <h1>Feedback Management</h1>
     <a href="adminDashboard.jsp">Back to Dashboard</a>
     <hr>
@@ -100,5 +93,4 @@
             if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
         }
     %>
-</body>
-</html>
+

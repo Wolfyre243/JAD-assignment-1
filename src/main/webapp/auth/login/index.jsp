@@ -28,7 +28,6 @@ if (sessUserId != null) {
 		<button type="submit" value="Login">Login</button>
 	</form>
 	<br>
-	<span>No Account? <a href='register.jsp'>Register</a> instead!
-	</span>
-</body>
-</html>
+	<span>No Account? <a href='register.jsp'>Register</a> instead!</span>
+
+<%@ include file="/WEB-INF/components/common/footer.jsp" %>

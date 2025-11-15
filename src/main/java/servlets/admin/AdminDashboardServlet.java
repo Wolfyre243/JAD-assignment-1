@@ -31,8 +31,10 @@ public class AdminDashboardServlet extends HttpServlet {
         req.setAttribute("totalProducts", totalProducts);
 
           // 4. Show the dashboard component (used by AJAX or direct stats view)
-          req.getRequestDispatcher("/WEB-INF/components/admin/adminDashboard.jsp")
-              .forward(req, resp);
+          // Compose a full page: header + component + footer
+          req.getRequestDispatcher("/WEB-INF/components/common/header.jsp").include(req, resp);
+          req.getRequestDispatcher("/WEB-INF/components/admin/adminDashboard.jsp").include(req, resp);
+          req.getRequestDispatcher("/WEB-INF/components/common/footer.jsp").include(req, resp);
     }
 
     private int countFromTable(String table) {
