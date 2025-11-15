@@ -11,82 +11,52 @@ import models.User;
 import java.io.IOException;
 
 class AuthController {
-	public static void login(HttpServletRequest request, HttpServletResponse response)
-	    throws ServletException, IOException {
+  public static void login(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
 
-		final HttpSession session = request.getSession();
+    final HttpSession session = request.getSession();
+    
+    final String email = request.getParameter("email");
+    final String password = request.getParameter("password");
 
-		final String email = request.getParameter("email");
-		final String password = request.getParameter("password");
+    try {
+      // Get user from database
+      final User user = User.getUserByEmail(email);
+      // Validate credentials
+      if (user == null || !user.getPassword().equals(password)) {
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid email or password.");
+        return;
+      }
 
-		try {
-			// Get user from database
-			final User user = User.getUserByEmail(email);
-			// Validate credentials
-			if (user == null || !user.getPassword().equals(password)) {
-				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid email or password.");
-				return;
-			}
+      final int userRoleId = user.getRole().getRoleId();
+      final String userRoleName = user.getRole().getRoleName();
+      // TODO: Send cookie instead
+      session.setAttribute("userId", user.getUserId());
+      session.setAttribute("userRoleId", userRoleId);
+      session.setAttribute("userRoleName", userRoleName);
 
-			final int userRoleId = user.getRole().getRoleId();
-			final String userRoleName = user.getRole().getRoleName();
-			// TODO: Send cookie instead
-			session.setAttribute("userId", user.getUserId());
-			session.setAttribute("userRoleId", userRoleId);
-			session.setAttribute("userRoleName", userRoleName);
+      // Update last_login timestamp for this user
+      try {
+        User.updateLastLogin(user.getUserId());
+      } catch (Exception e) {
+        // Log and continue; failing to update last_login should not block login
+        e.printStackTrace();
+      }
 
-			response.setStatus(HttpServletResponse.SC_OK);
-			// TODO: Redirect to dashboard or home page
-			if (userRoleId == 1) {
-				response.sendRedirect(request.getContextPath() + "/admin/dashboard/");
-				return;
-			}
-			response.sendRedirect(request.getContextPath() + "/");
-			return;
+      response.setStatus(HttpServletResponse.SC_OK);
+      // TODO: Redirect to dashboard or home page
+      if (userRoleId == 1) {
+        response.sendRedirect(request.getContextPath() + "/admin/dashboard/");
+        return;
+      }
+      response.sendRedirect(request.getContextPath() + "/");
+      return;
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during login.");
-		}
-	}
-
-	public static void register(HttpServletRequest request, HttpServletResponse response)
-	    throws ServletException, IOException {
-		final HttpSession session = request.getSession();
-
-		// Get form fields
-		final String email = request.getParameter("email");
-		final String password = request.getParameter("password");
-		final int roleId = Integer.parseInt(request.getParameter("roleId"));
-
-		try {
-			User.createUser(email, password, roleId);
-		} catch (Exception e) {
-			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during registration.");
-			return;
-		}
-		
-		response.setStatus(HttpServletResponse.SC_CREATED);
-		response.sendRedirect(request.getContextPath() + "/auth/login/");
-	}
-
-	public static void logout(HttpServletRequest request, HttpServletResponse response)
-	    throws ServletException, IOException {
-		final HttpSession session = request.getSession();
-
-		try {
-			// Render everything in the session useless
-			session.invalidate();
-
-			response.sendRedirect(request.getContextPath() + "/");
-			return;
-		} catch (Exception e) {
-			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred while logging out.");
-		}
-	}
-
+    } catch (Exception e) {
+      e.printStackTrace();
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during login.");
+    }
+  }
 }
 
 /**

@@ -8,13 +8,6 @@
   Last Edited: 06/11/2025
   Description: Admin form to edit existing service with pre-filled data using JDBC utility and AuthServlet session
 --%>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Service</title>
-</head>
-<body>
     <%
         // === INPUT VALIDATION ===
         String productIdStr = request.getParameter("productId");
@@ -136,5 +129,5 @@
             if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
         }
     %>
-</body>
-</html>
+
+<%@ include file="/WEB-INF/components/common/footer.jsp" %>

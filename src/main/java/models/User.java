@@ -65,6 +65,9 @@ public class User {
 
   public static User getUserByEmail(String _email) throws SQLException {
     final Connection conn = JDBC.connect();
+    if (conn == null) {
+      throw new SQLException("Database connection failed");
+    }
 
     String sql = new StringBuilder().append("SELECT u.*, r.role_id, r.name as role_name ").append("FROM public.user u ")
         .append("JOIN user_role ur ON u.user_id = ur.user_id ").append("JOIN role r ON r.role_id = ur.role_id ")
@@ -97,8 +100,10 @@ public class User {
   }
 
   public static void createUser(String email, String password, int roleId) throws SQLException {
-
     final Connection conn = JDBC.connect();
+    if (conn == null) {
+      throw new SQLException("Database connection failed");
+    }
     
     final String userSQL = new StringBuilder()
         .append("INSERT INTO public.user ")
@@ -160,5 +165,23 @@ public class User {
     psUser.close();
     psUserRole.close();
     conn.close();
+  }
+
+  /**
+   * Update the last_login timestamp for the given user to the current time.
+   */
+  public static void updateLastLogin(int userId) throws SQLException {
+    final Connection conn = JDBC.connect();
+    if (conn == null) throw new SQLException("Database connection failed");
+
+    final String sql = "UPDATE public.user SET last_login = CURRENT_TIMESTAMP WHERE user_id = ?;";
+    PreparedStatement ps = null;
+    try {
+      ps = conn.prepareStatement(sql);
+      ps.setInt(1, userId);
+      ps.executeUpdate();
+    } finally {
+      if (ps != null) try { ps.close(); } catch (SQLException ignored) {}
+    }
   }
 }

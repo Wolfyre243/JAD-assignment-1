@@ -12,13 +12,8 @@
   Last Edited: 06/11/2025
   Description: Secure cart display with quantity update, remove, and checkout links
 --%>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Shopping Cart</title>
-</head>
-<body>
+<%@ include file="/WEB-INF/components/common/header.jsp" %>
+
     <h1>Your Shopping Cart</h1>
     <a href="products.jsp">Continue Shopping</a>
     <br><br>
@@ -40,7 +35,8 @@
                 default:           text = "Action completed."; color = "green";
             }
     %>
-        <p style="color: <%= color %>; font-weight: bold;"><%= text %></p>
+    <% String _msgClass = "msg-success"; if ("red".equals(color)) _msgClass = "msg-error"; %>
+        <p class="<%= _msgClass %>"><%= text %></p>
     <%
         }
     %>
@@ -162,5 +158,5 @@
             if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
         }
     %>
-</body>
-</html>
+
+<%@ include file="/WEB-INF/components/common/footer.jsp" %>
