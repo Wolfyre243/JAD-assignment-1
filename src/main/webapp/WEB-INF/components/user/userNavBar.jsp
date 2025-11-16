@@ -18,19 +18,27 @@
         align-items: center;
         box-sizing: border-box;
         font-family: "Georgia", serif;
+        border-bottom: 2px solid #000000;
     }
 
+    /* Logo + Links Group */
     .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 25px; /* controls spacing between SilverCare and links */
+    }
+
+    .nav-left .brand {
         font-size: 32px;
         font-style: italic;
         font-weight: 500;
     }
 
-    .nav-center a, .nav-left a {
-        margin: 0 20px;
+    .nav-left a {
         text-decoration: none;
         color: black;
         font-size: 18px;
+        margin: 0;
     }
 
     .nav-right a {
@@ -50,17 +58,19 @@
 </style>
 
 <div class="navbar">
-    <div class="nav-left">SilverCare</div>
 
+    <!-- LEFT SIDE: SilverCare + Services + Feedback (all together now) -->
     <div class="nav-left">
+        <div class="brand">SilverCare</div>
         <a href="#">Services</a>
-        <a href="#">Feedback</a>
+        <a href="<%= request.getContextPath() %>/user/reviews">Feedback</a>
     </div>
 
     <div class="nav-right">
         <a href="#">Register</a>
         <a href="#" class="login">Login</a>
     </div>
+
 </div>
 
 </body>

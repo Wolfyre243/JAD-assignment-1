@@ -49,7 +49,7 @@ class AuthController {
         response.sendRedirect(request.getContextPath() + "/admin/dashboard/");
         return;
       }
-      response.sendRedirect(request.getContextPath() + "/");
+      response.sendRedirect(request.getContextPath() + "/user/dashboard/");
       return;
 
     } catch (Exception e) {
