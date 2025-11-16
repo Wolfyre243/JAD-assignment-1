@@ -32,4 +32,10 @@ public class SessionManagement {
 		Integer roleId = getUserRoleId(req);
 		return roleId != null && roleId == 1; // role_id 1 = admin in this project
 	}
+	
+	public static boolean isClient(HttpServletRequest req) {
+	    Integer roleId = getUserRoleId(req);
+	    return roleId != null && roleId == 2; // role_id 2 = client
+	}
+	
 }
