@@ -29,6 +29,7 @@
       <a href="<%= ctx %>/product/viewCart">Cart</a>
       <a href="<%= ctx %>/admin/adminDashboard">Admin</a>
     </span>
+    <jsp:include page="/WEB-INF/components/auth/logout-button.jsp"></jsp:include>
   </div>
 </div>
 

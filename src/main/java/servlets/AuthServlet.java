@@ -1,3 +1,11 @@
+/*
+  Author: Zhang Junkai
+  Admin No: P2429634
+  Class: DIT-2B-01
+  Last Edited: 17/11/2025
+  Description: Auth Servlet for handling all backend auth functionality, like login and register.
+*/
+
 package servlets;
 
 import jakarta.servlet.ServletException;
@@ -30,7 +38,7 @@ class AuthController {
 
       final int userRoleId = user.getRole().getRoleId();
       final String userRoleName = user.getRole().getRoleName();
-      // TODO: Send cookie instead
+      
       session.setAttribute("userId", user.getUserId());
       session.setAttribute("userRoleId", userRoleId);
       session.setAttribute("userRoleName", userRoleName);

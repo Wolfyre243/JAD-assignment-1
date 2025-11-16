@@ -1,3 +1,11 @@
+/*
+  Author: Zhang Junkai
+  Admin No: P2429634
+  Class: DIT-2B-01
+  Last Edited: 17/11/2025
+  Description: User DAO to allow DB connectivity for the User entity
+*/
+
 package models;
 
 import java.sql.Connection;
@@ -69,9 +77,13 @@ public class User {
 			throw new SQLException("Database connection failed");
 		}
 
-		String sql = new StringBuilder().append("SELECT u.*, r.role_id, r.name as role_name ").append("FROM public.user u ")
-		    .append("JOIN user_role ur ON u.user_id = ur.user_id ").append("JOIN role r ON r.role_id = ur.role_id ")
-		    .append("WHERE u.email = ?").toString();
+		String sql = new StringBuilder()
+		    .append("SELECT u.*, r.role_id, r.name as role_name ")
+		    .append("FROM public.user u ")
+		    .append("JOIN user_role ur ON u.user_id = ur.user_id ")
+		    .append("JOIN role r ON r.role_id = ur.role_id ")
+		    .append("WHERE u.email = ?")
+		    .toString();
 
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, _email);
@@ -105,11 +117,18 @@ public class User {
 			throw new SQLException("Database connection failed");
 		}
 
-		final String userSQL = new StringBuilder().append("INSERT INTO public.user ").append("(email, password) ")
-		    .append("VALUES ").append("(?, ?) ").append("RETURNING user_id;").toString();
+		final String userSQL = new StringBuilder()
+		    .append("INSERT INTO public.user ")
+		    .append("(email, password) ")
+		    .append("VALUES (?, ?) ")
+		    .append("RETURNING user_id;")
+		    .toString();
 
-		final String userRoleSQL = new StringBuilder().append("INSERT INTO user_role ").append("(user_id, role_id) ")
-		    .append("VALUES ").append("(?, ?);").toString();
+		final String userRoleSQL = new StringBuilder()
+				.append("INSERT INTO user_role ")
+				.append("(user_id, role_id) ")
+		    .append("VALUES (?, ?);")
+		    .toString();
 
 		PreparedStatement psUser = conn.prepareStatement(userSQL);
 		PreparedStatement psUserRole = conn.prepareStatement(userRoleSQL);
@@ -135,7 +154,7 @@ public class User {
 			// Perform user_role insertion
 			psUserRole.setInt(1, insertedUserId);
 			psUserRole.setInt(2, roleId);
-			System.out.println("Inserting user role... (user_id: " + insertedUserId + ", role_id: " + roleId + ")");
+			// System.out.println("Inserting user role... (user_id: " + insertedUserId + ", role_id: " + roleId + ")");
 			psUserRole.executeUpdate();
 
 			rs.close();
@@ -155,6 +174,7 @@ public class User {
 
 		psUser.close();
 		psUserRole.close();
+		conn.setAutoCommit(true);
 		conn.close();
 	}
 
