@@ -1,3 +1,11 @@
+/*
+  Author: Zhang Junkai
+  Admin No: P2429634
+  Class: DIT-2B-01
+  Last Edited: 17/11/2025
+  Description: Family Member DAO to connect with the database's Family Member entity
+*/
+
 package models;
 
 import java.sql.Connection;

@@ -71,6 +71,45 @@ public class User {
 		return role;
 	}
 
+	public static User getUserById(int userId) throws SQLException {
+		final Connection conn = JDBC.connect();
+		if (conn == null) {
+			throw new SQLException("Database connection failed");
+		}
+
+		String sql = new StringBuilder()
+		    .append("SELECT u.*, r.role_id, r.name as role_name ")
+		    .append("FROM public.user u ")
+		    .append("JOIN user_role ur ON u.user_id = ur.user_id ")
+		    .append("JOIN role r ON r.role_id = ur.role_id ")
+		    .append("WHERE u.user_id = ?")
+		    .toString();
+
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, userId);
+
+		ResultSet rs = stmt.executeQuery();
+		User user = null;
+		if (rs.next()) {
+			final String email = rs.getString("email");
+			final String password = rs.getString("password");
+			final Boolean isActive = rs.getBoolean("is_active");
+			final Date createdAt = rs.getTimestamp("created_at");
+			final Date updatedAt = rs.getTimestamp("updated_at");
+			final Date lastLogin = rs.getTimestamp("last_login");
+			final int roleId = rs.getInt("role_id");
+			final String roleName = rs.getString("role_name");
+
+			final Role role = new Role(roleId, roleName);
+			user = new User(userId, email, password, isActive, createdAt, updatedAt, lastLogin, role);
+		}
+
+		rs.close();
+		stmt.close();
+		conn.close();
+		return user;
+	}
+	
 	public static User getUserByEmail(String _email) throws SQLException {
 		final Connection conn = JDBC.connect();
 		if (conn == null) {

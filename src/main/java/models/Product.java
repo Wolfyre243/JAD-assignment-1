@@ -72,7 +72,10 @@ public class Product {
 			throw new SQLException("Database connection failed");
 		}
 
-		final String sql = new StringBuilder().append("SELECT * ").append("FROM product ").append("WHERE product_id = ?")
+		final String sql = new StringBuilder()
+		    .append("SELECT * ")
+		    .append("FROM product ")
+		    .append("WHERE product_id = ?")
 		    .toString();
 
 		final PreparedStatement stmt = conn.prepareStatement(sql);
@@ -93,20 +96,19 @@ public class Product {
 	    String name,
 	    String description, // can be null
 	    float price,
-	    boolean isActive
-	) throws SQLException {
+	    boolean isActive) throws SQLException {
 		final Connection conn = JDBC.connect();
 		if (conn == null) {
 			throw new SQLException("Database connection failed");
 		}
-		
+
 		// Write the query
 		final String sql = new StringBuilder()
-        .append("INSERT INTO product ")
-        .append("（category_id, name, description, price, is_active） ")
-        .append("VALUES （?, ?, ?, ?, ?, ?);")
-        .toString();
-		
+		    .append("INSERT INTO product ")
+		    .append("（category_id, name, description, price, is_active） ")
+		    .append("VALUES （?, ?, ?, ?, ?, ?);")
+		    .toString();
+
 		// Load the params
 		final PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, categoryId);
@@ -114,9 +116,9 @@ public class Product {
 		stmt.setString(3, description);
 		stmt.setFloat(4, price);
 		stmt.setBoolean(5, isActive);
-		
+
 		stmt.executeUpdate();
-		
+
 		conn.close();
 	}
 
