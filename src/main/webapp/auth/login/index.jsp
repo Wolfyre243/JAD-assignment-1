@@ -19,7 +19,7 @@ if (sessUserId != null) {
 </head>
 <body>
 	<h1>Login Page</h1>
-	<form action="${pageContext.request.contextPath}/user/dashboard/index.jsp"
+	<form action="${pageContext.request.contextPath}/auth/login"
 		method="post">
 		<label for="email">Email:</label> <input type="email" id="email"
 			name="email" required> <br> <label for="password">Password:</label>
