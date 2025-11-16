@@ -57,35 +57,72 @@ class AuthController {
       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during login.");
     }
   }
+  public static void register(HttpServletRequest request, HttpServletResponse response)
+	    throws ServletException, IOException {
+		final HttpSession session = request.getSession();
+
+		// Get form fields
+		final String email = request.getParameter("email");
+		final String password = request.getParameter("password");
+		final int roleId = Integer.parseInt(request.getParameter("roleId"));
+
+		try {
+			User.createUser(email, password, roleId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during registration.");
+			return;
+		}
+		
+		response.setStatus(HttpServletResponse.SC_CREATED);
+		response.sendRedirect(request.getContextPath() + "/auth/login/");
+	}
+
+	public static void logout(HttpServletRequest request, HttpServletResponse response)
+	    throws ServletException, IOException {
+		final HttpSession session = request.getSession();
+
+		try {
+			// Render everything in the session useless
+			session.invalidate();
+
+			response.sendRedirect(request.getContextPath() + "/");
+			return;
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred while logging out.");
+		}
+	}
 }
 
 /**
  * Servlet implementation class AuthServlet
  */
-@WebServlet({ "/auth/login", "/auth/register" })
+@WebServlet({ "/auth/login", "/auth/register", "/auth/logout" })
 public class AuthServlet extends HttpServlet {
-  private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-  public AuthServlet() {
-    super();
-    // TODO Auto-generated constructor stub
-  }
+	public AuthServlet() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    // TODO Auto-generated method stub
-    response.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested resource was not found.");
-  }
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		response.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested resource was not found.");
+	}
 
-  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    final String path = request.getServletPath();
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		final String path = request.getServletPath();
 
-    if (path.endsWith("/auth/login")) {
-      System.out.println("Login attempt"); 
-      AuthController.login(request, response);
-    } else if (path.endsWith("/auth/register")) {
-//      AuthController.register(request, response);
-    } else {
-      response.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested resource was not found.");
-    }
-  }
+		if (path.endsWith("/auth/login")) {
+			AuthController.login(request, response);
+		} else if (path.endsWith("/auth/register")) {
+			AuthController.register(request, response);
+		} else if (path.endsWith("/auth/logout")) {
+			AuthController.logout(request, response);
+		} else {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested resource was not found.");
+		}
+	}
 }
