@@ -57,6 +57,42 @@ class AuthController {
       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during login.");
     }
   }
+  public static void register(HttpServletRequest request, HttpServletResponse response)
+	    throws ServletException, IOException {
+		final HttpSession session = request.getSession();
+
+		// Get form fields
+		final String email = request.getParameter("email");
+		final String password = request.getParameter("password");
+		final int roleId = Integer.parseInt(request.getParameter("roleId"));
+
+		try {
+			User.createUser(email, password, roleId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during registration.");
+			return;
+		}
+		
+		response.setStatus(HttpServletResponse.SC_CREATED);
+		response.sendRedirect(request.getContextPath() + "/auth/login/");
+	}
+
+	public static void logout(HttpServletRequest request, HttpServletResponse response)
+	    throws ServletException, IOException {
+		final HttpSession session = request.getSession();
+
+		try {
+			// Render everything in the session useless
+			session.invalidate();
+
+			response.sendRedirect(request.getContextPath() + "/");
+			return;
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred while logging out.");
+		}
+	}
 }
 
 /**

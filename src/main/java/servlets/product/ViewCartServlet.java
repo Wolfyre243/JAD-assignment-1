@@ -15,7 +15,7 @@ public class ViewCartServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     if (!SessionManagement.isLoggedIn(request)) {
-      response.sendRedirect(request.getContextPath() + "/auth/login");
+      response.sendRedirect(request.getContextPath() + "/auth/login/");
       return;
     }
     request.getRequestDispatcher("/WEB-INF/components/product/viewCart.jsp").forward(request, response);
