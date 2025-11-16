@@ -1,17 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.ArrayList" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.HashMap" %>
-<%@ page import="db.JDBC" %>
-<%--
-  Author: Goh Yi Xin Karys
-  Admin No: P2424431
-  Class: DIT-2B-01
-  Last Edited: 06/11/2025
-  Description: Secure cart display with quantity update, remove, and checkout links
---%>
+<%@ page import="java.util.*" %>
+
 <%@ include file="/WEB-INF/components/common/header.jsp" %>
 
     <h1>Your Shopping Cart</h1>
@@ -19,143 +8,89 @@
     <br><br>
 
     <%
-        // === DISPLAY FEEDBACK MESSAGES ===
         String msg = request.getParameter("msg");
         if (msg != null) {
             String text = "";
-            String color = "";
+            String cls = "msg-success";
             switch (msg) {
-                case "updated":    text = "Quantity updated successfully!"; color = "green"; break;
-                case "removed":    text = "Item removed from cart."; color = "green"; break;
-                case "invalid":    text = "Invalid request."; color = "red"; break;
-                case "invalid_quantity": text = "Please enter a quantity between 1 and 99."; color = "red"; break;
-                case "not_found":  text = "Item not found in your cart."; color = "red"; break;
-                case "db_error":   text = "Database error. Please try again."; color = "red"; break;
-                case "checkout_error": text = "Checkout failed. Please try again."; color = "red"; break;
-                default:           text = "Action completed."; color = "green";
+                case "updated":    text = "Quantity updated successfully!"; break;
+                case "removed":    text = "Item removed from cart."; break;
+                case "invalid":    text = "Invalid request."; cls = "msg-error"; break;
+                case "invalid_quantity": text = "Please enter a quantity between 1 and 99."; cls = "msg-error"; break;
+                case "not_found":  text = "Item not found in your cart."; cls = "msg-error"; break;
+                case "db_error":   text = "Database error. Please try again."; cls = "msg-error"; break;
+                case "checkout_error": text = "Checkout failed. Please try again."; cls = "msg-error"; break;
+                default:           text = "Action completed."; break;
             }
     %>
-    <% String _msgClass = "msg-success"; if ("red".equals(color)) _msgClass = "msg-error"; %>
-        <p class="<%= _msgClass %>"><%= text %></p>
+        <p class="<%= cls %>"><%= text %></p>
     <%
         }
     %>
 
+    <% String error = (String) request.getAttribute("error"); %>
+    <%= (error != null) ? ("<p class='msg-error'>" + error + "</p>") : "" %>
+
     <%
-        Integer userId = (Integer) session.getAttribute("userId");
-        if (userId == null) {
-            response.sendRedirect(request.getContextPath() + "/auth/login");
-            return;
-        }
+        List<Map<String,Object>> items = (List<Map<String,Object>>) request.getAttribute("items");
+        Double total = (Double) request.getAttribute("total");
+        Integer cartId = (Integer) request.getAttribute("cartId");
 
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        List<Map<String, Object>> items = new ArrayList<>();
-        double total = 0.0;
-        int cartId = 0;
-
-        try {
-            conn = JDBC.connect();
-            if (conn == null) throw new SQLException("Connection failed");
-
-            // Fixed: Replaced Java 15+ text block with concatenated string (Java 8/11 compatible)
-            String sql = 
-                "SELECT ci.cart_item_id, ci.quantity, ci.caregiver_id, ci.client_id, ci.special_requests, " +
-                "       p.product_id, p.name, p.price, c.cart_id " +
-                "FROM cart_item ci " +
-                "JOIN cart c ON ci.cart_id = c.cart_id " +
-                "JOIN product p ON ci.product_id = p.product_id " +
-                "WHERE c.user_id = ? AND c.checked_out = false " +
-                "ORDER BY ci.created_at";
-
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, userId);
-            rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                Map<String, Object> item = new HashMap<>();
-                item.put("cartItemId", rs.getInt("cart_item_id"));
-                item.put("productId", rs.getInt("product_id"));
-                item.put("name", rs.getString("name"));
-                item.put("price", rs.getDouble("price"));
-
-                Integer qty = (Integer) rs.getObject("quantity");
-                item.put("quantity", qty != null ? qty : 1);
-
-                item.put("caregiverId", rs.getObject("caregiver_id"));
-                item.put("clientId", rs.getObject("client_id"));
-                item.put("specialRequests", rs.getString("special_requests"));
-
-                items.add(item);
-                total += rs.getDouble("price") * (qty != null ? qty : 1);
-                cartId = rs.getInt("cart_id");
-            }
-
-            if (items.isEmpty()) {
+        if (items == null || items.isEmpty()) {
     %>
-                <h2>Your cart is empty</h2>
-                <p>Add some items to get started!</p>
+            <h2>Your cart is empty</h2>
+            <p>Add some items to get started!</p>
     <%
-            } else {
+        } else {
     %>
-                <table border="1" cellpadding="8" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Subtotal</th>
-                            <th>Caregiver ID</th>
-                            <th>Client ID</th>
-                            <th>Special Requests</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <%
-                        for (Map<String, Object> item : items) {
-                            int qty = (Integer) item.get("quantity");
-                            double price = (Double) item.get("price");
-                            double subtotal = price * qty;
-                    %>
-                        <tr>
-                            <td><%= item.get("name") %></td>
-                            <td>$<%= String.format("%.2f", price) %></td>
-                            <td>
-                                <form action="updateCartQuantity.jsp" method="post" style="margin:0; display:inline;">
-                                    <input type="hidden" name="cartItemId" value="<%= item.get("cartItemId") %>">
-                                    <input type="number" name="quantity" value="<%= qty %>" min="1" max="99" style="width:60px;">
-                                    <button type="submit">Update</button>
-                                </form>
-                            </td>
-                            <td>$<%= String.format("%.2f", subtotal) %></td>
-                            <td><%= item.get("caregiverId") != null ? item.get("caregiverId") : "N/A" %></td>
-                            <td><%= item.get("clientId") != null ? item.get("clientId") : "N/A" %></td>
-                            <td><%= item.get("specialRequests") != null ? item.get("specialRequests") : "" %></td>
-                            <td>
-                                <a href="removeFromCart.jsp?cartItemId=<%= item.get("cartItemId") %>"
-                                   onclick="return confirm('Remove this item?');">Remove</a>
-                            </td>
-                        </tr>
-                    <%
-                        }
-                    %>
-                    </tbody>
-                </table>
+            <table border="1" cellpadding="8" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                        <th>Caregiver ID</th>
+                        <th>Client ID</th>
+                        <th>Special Requests</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <%
+                    for (Map<String, Object> item : items) {
+                        Integer qty = (Integer) item.get("quantity");
+                        Double price = (Double) item.get("price");
+                        double subtotal = price * (qty != null ? qty : 1);
+                %>
+                    <tr>
+                        <td><%= item.get("name") %></td>
+                        <td>$<%= String.format("%.2f", price) %></td>
+                        <td>
+                            <form action="/product/updateCartQuantity" method="post" style="margin:0; display:inline;">
+                                <input type="hidden" name="cartItemId" value="<%= item.get("cartItemId") %>">
+                                <input type="number" name="quantity" value="<%= qty %>" min="1" max="99" style="width:60px;">
+                                <button type="submit">Update</button>
+                            </form>
+                        </td>
+                        <td>$<%= String.format("%.2f", subtotal) %></td>
+                        <td><%= item.get("caregiverId") != null ? item.get("caregiverId") : "N/A" %></td>
+                        <td><%= item.get("clientId") != null ? item.get("clientId") : "N/A" %></td>
+                        <td><%= item.get("specialRequests") != null ? item.get("specialRequests") : "" %></td>
+                        <td>
+                            <a href="/product/removeFromCart?cartItemId=<%= item.get("cartItemId") %>" onclick="return confirm('Remove this item?');">Remove</a>
+                        </td>
+                    </tr>
+                <%
+                    }
+                %>
+                </tbody>
+            </table>
 
-                <p><strong>Total: $<%= String.format("%.2f", total) %></strong></p>
+            <p><strong>Total: $<%= String.format("%.2f", total != null ? total : 0.0) %></strong></p>
 
-                <a href="checkout.jsp?cartId=<%= cartId %>">Proceed to Checkout</a>
+            <a href="/product/checkout?cartId=<%= cartId %>">Proceed to Checkout</a>
     <%
-            }
-        } catch (Exception e) {
-            out.println("<p style='color:red;'>Error loading cart: " + e.getMessage() + "</p>");
-            e.printStackTrace();
-        } finally {
-            if (rs != null) try { rs.close(); } catch (SQLException ignored) {}
-            if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
-            if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
         }
     %>
 

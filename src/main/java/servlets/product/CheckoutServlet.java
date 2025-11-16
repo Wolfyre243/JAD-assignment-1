@@ -6,7 +6,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 import lib.SessionManagement;
+import handlers.CartHandler;
 
 @WebServlet({"/product/checkout", "/product/checkout.jsp"})
 public class CheckoutServlet extends HttpServlet {
@@ -18,11 +20,35 @@ public class CheckoutServlet extends HttpServlet {
       response.sendRedirect(request.getContextPath() + "/auth/login");
       return;
     }
-    request.getRequestDispatcher("/WEB-INF/components/product/checkout.jsp").forward(request, response);
+    response.sendRedirect(request.getContextPath() + "/product/viewCart");
   }
 
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    doGet(request, response);
+    if (!SessionManagement.isLoggedIn(request)) {
+      response.sendRedirect(request.getContextPath() + "/auth/login");
+      return;
+    }
+
+    String cartIdStr = request.getParameter("cartId");
+    if (cartIdStr == null || cartIdStr.trim().isEmpty()) {
+      response.sendRedirect(request.getContextPath() + "/product/viewCart?msg=invalid_cart");
+      return;
+    }
+
+    try {
+      int cartId = Integer.parseInt(cartIdStr.trim());
+      Integer userId = (Integer) request.getSession().getAttribute("userId");
+      int orderId = CartHandler.checkoutCart(userId, cartId);
+      response.sendRedirect(request.getContextPath() + "/product/orderConfirmation.jsp?orderId=" + orderId);
+    } catch (NumberFormatException e) {
+      response.sendRedirect(request.getContextPath() + "/product/viewCart?msg=invalid_cart");
+    } catch (SQLException e) {
+      e.printStackTrace();
+      response.sendRedirect(request.getContextPath() + "/product/viewCart?msg=db_error");
+    } catch (Exception e) {
+      e.printStackTrace();
+      response.sendRedirect(request.getContextPath() + "/product/viewCart?msg=checkout_error");
+    }
   }
 }

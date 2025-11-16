@@ -1,133 +1,78 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
-<%@ page import="db.JDBC" %>
-<%--
-  Author: Goh Yi Xin Karys
-  Admin No: P2424431
-  Class: DIT-2B-01
-  Last Edited: 06/11/2025
-  Description: Admin form to edit existing service with pre-filled data using JDBC utility and AuthServlet session
---%>
-    <%
-        // === INPUT VALIDATION ===
-        String productIdStr = request.getParameter("productId");
-        if (productIdStr == null || productIdStr.trim().isEmpty()) {
-            response.sendRedirect("adminServices.jsp?msg=invalid");
-            return;
-        }
 
-        int productId;
-        try {
-            productId = Integer.parseInt(productIdStr.trim());
-        } catch (NumberFormatException e) {
-            response.sendRedirect("adminServices.jsp?msg=invalid");
-            return;
-        }
-    %>
+<h1>Edit Service</h1>
+<a href="<%= request.getContextPath() %>/admin/services">Back to Services</a>
 
-    <h1>Edit Service</h1>
-    <a href="<%= request.getContextPath() %>/admin/services">Back to Services</a>
-    <hr>
-
-    <%
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        try {
-            // === JDBC: Fetch product details using utility ===
-            conn = JDBC.connect();
-            if (conn == null) throw new SQLException("Connection failed");
-
-            // Load product
-            String sql = "SELECT product_id, category_id, name, description, price, is_active FROM product WHERE product_id = ?";
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, productId);
-            rs = pstmt.executeQuery();
-
-            if (!rs.next()) {
-    %>
-                <p style="color:red;">Service not found.</p>
-                <a href="adminServices.jsp">Back to Services</a>
-    <%
-                return;
-            }
-
-            // Extract product data
-            int categoryId = rs.getInt("category_id");
-            String name = rs.getString("name");
-            String description = rs.getString("description");
-            double price = rs.getDouble("price");
-            boolean isActive = rs.getBoolean("is_active");
-
-            rs.close();
-            pstmt.close();
-    %>
-
+<%
+    java.util.Map<String,Object> service = (java.util.Map<String,Object>) request.getAttribute("service");
+    java.util.List<java.util.Map<String,Object>> categories = (java.util.List<java.util.Map<String,Object>>) request.getAttribute("categories");
+    String serviceError = (String) request.getAttribute("serviceError");
+    if (serviceError != null) {
+%>
+    <p style="color:red;"><%= serviceError %></p>
+<%
+    } else if (service == null) {
+%>
+    <p><em>No service selected.</em></p>
+<%
+    } else {
+        int productId = (Integer) service.get("productId");
+        String name = (String) service.get("name");
+        int selectedCat = (Integer) service.get("categoryId");
+        String description = (String) service.get("description");
+        double price = (Double) service.get("price");
+        boolean isActive = (Boolean) service.get("isActive");
+%>
     <form action="<%= request.getContextPath() %>/admin/service" method="post">
+        <input type="hidden" name="action" value="edit">
         <input type="hidden" name="productId" value="<%= productId %>">
-        <input type="hidden" name="action" value="edit" />
         <table>
             <tr>
-                <td><label>Service Name:</label></td>
+                <td>Name</td>
                 <td><input type="text" name="name" value="<%= name %>" required></td>
             </tr>
             <tr>
-                <td><label>Category:</label></td>
+                <td>Category</td>
                 <td>
                     <select name="categoryId" required>
-                        <%
-                            // === JDBC: Load categories ===
-                            String catSql = "SELECT category_id, name FROM category ORDER BY name";
-                            pstmt = conn.prepareStatement(catSql);
-                            rs = pstmt.executeQuery();
-
-                            while (rs.next()) {
-                                int catId = rs.getInt("category_id");
-                                String catName = rs.getString("name");
-                                boolean selected = (catId == categoryId);
+                        <% if (categories != null) {
+                            for (java.util.Map<String,Object> c : categories) {
+                                int catId = (Integer) c.get("categoryId");
+                                String catName = (String) c.get("categoryName");
+                                boolean selected = (catId == selectedCat);
                         %>
                                 <option value="<%= catId %>" <%= selected ? "selected" : "" %>><%= catName %></option>
-                        <%
-                            }
-                        %>
+                        <%   }
+                        } %>
                     </select>
                 </td>
             </tr>
             <tr>
-                <td><label>Description:</label></td>
+                <td>Description</td>
                 <td><textarea name="description" rows="5" cols="50"><%= description != null ? description : "" %></textarea></td>
             </tr>
             <tr>
-                <td><label>Price:</label></td>
+                <td>Price</td>
                 <td><input type="number" name="price" step="0.01" min="0" value="<%= String.format("%.2f", price) %>" required></td>
             </tr>
             <tr>
-                <td><label>Active:</label></td>
+                <td>Active</td>
                 <td>
                     <input type="radio" name="isActive" value="true" <%= isActive ? "checked" : "" %>> Yes
                     <input type="radio" name="isActive" value="false" <%= !isActive ? "checked" : "" %>> No
                 </td>
             </tr>
             <tr>
-                <td colspan="2">
-                    <button type="submit">Update Service</button>
+                <td></td>
+                <td>
+                    <button type="submit">Save</button>
                     <a href="<%= request.getContextPath() %>/admin/services">Cancel</a>
                 </td>
             </tr>
         </table>
     </form>
-
-    <%
-        } catch (Exception e) {
-            out.println("<p style='color:red;'>Error loading service: " + e.getMessage() + "</p>");
-            e.printStackTrace();
-        } finally {
-            // === RESOURCE CLEANUP ===
-            if (rs != null) try { rs.close(); } catch (SQLException ignored) {}
-            if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
-            if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
-        }
-    %>
+<%
+    }
+%>
 
 <%@ include file="/WEB-INF/components/common/footer.jsp" %>
