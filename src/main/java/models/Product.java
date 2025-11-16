@@ -102,7 +102,7 @@ public class Product {
 		
 		// Write the query
 		final String sql = new StringBuilder()
-        .append("INSERT INTO public.product ")
+        .append("INSERT INTO product ")
         .append("（category_id, name, description, price, is_active） ")
         .append("VALUES （?, ?, ?, ?, ?, ?);")
         .toString();
