@@ -1,6 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
-<%@ page import="db.JDBC" %>
 <%--
   Author: Goh Yi Xin Karys
   Admin No: P2424431
@@ -40,92 +38,66 @@
     <br><br>
 
     <%
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        try {
-            // === JDBC: Fetch products using utility class ===
-            conn = JDBC.connect();
-            if (conn == null) throw new SQLException("Connection failed");
-
-            String sql = 
-                "SELECT p.product_id, p.name, p.description, p.price, p.is_active, " +
-                "       c.name AS category_name " +
-                "FROM product p " +
-                "JOIN category c ON p.category_id = c.category_id " +
-                "ORDER BY p.product_id";
-
-            pstmt = conn.prepareStatement(sql);
-            rs = pstmt.executeQuery();
-
-            if (!rs.isBeforeFirst()) {
+        java.util.List<java.util.Map<String,Object>> services = (java.util.List<java.util.Map<String,Object>>) request.getAttribute("services");
+        String servicesError = (String) request.getAttribute("servicesError");
+        if (servicesError != null) {
     %>
-                <p><em>No services available.</em></p>
+        <p class="msg-error"><%= servicesError %></p>
     <%
-            } else {
+        } else if (services == null || services.isEmpty()) {
     %>
-                <table border="1" cellpadding="8" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Description</th>
-                            <th>Price</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <%
-                        while (rs.next()) {
-                            int productId = rs.getInt("product_id");
-                            String name = rs.getString("name");
-                            String description = rs.getString("description");
-                            double price = rs.getDouble("price");
-                            boolean isActive = rs.getBoolean("is_active");
-                            String categoryName = rs.getString("category_name");
-                    %>
-                        <tr>
-                            <td><%= productId %></td>
-                            <td><%= name %></td>
-                            <td><%= categoryName %></td>
-                            <td><%= description != null && !description.trim().isEmpty() ? description : "—" %></td>
-                            <td>$<%= String.format("%.2f", price) %></td>
-                            <% String statusClass = isActive ? "status-active" : "status-inactive"; %>
-                            <td class="<%= statusClass %>">
-                                <%= isActive ? "Active" : "Inactive" %>
-                            </td>
-                            <td>
-                                <% if (isActive) { %>
-                                                <a href="<%= request.getContextPath() %>/admin/service?action=deactivate&productId=<%= productId %>"
-                                                    onclick="return confirm('Deactivate this service?');"
-                                                    style="color: orange;">Deactivate</a>
-                                <% } else { %>
-                                                <a href="<%= request.getContextPath() %>/admin/service?action=activate&productId=<%= productId %>"
-                                                    onclick="return confirm('Activate this service?');"
-                                                    style="color: green;">Activate</a>
-                                <% } %>
-                                          |
-                                          <a href="<%= request.getContextPath() %>/admin/services?include=edit&productId=<%= productId %>">Edit</a>
-                            </td>
-                        </tr>
-                    <%
-                        }
-                    %>
-                    </tbody>
-                </table>
+        <p><em>No services available.</em></p>
     <%
-            }
-        } catch (Exception e) {
-            out.println("<p style='color:red;'>Error loading services: " + e.getMessage() + "</p>");
-            e.printStackTrace();
-        } finally {
-            // === RESOURCE CLEANUP ===
-            if (rs != null) try { rs.close(); } catch (SQLException ignored) {}
-            if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
-            if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
+        } else {
+    %>
+        <table border="1" cellpadding="8" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            <%
+                for (java.util.Map<String,Object> row : services) {
+                    int productId = (Integer) row.get("productId");
+                    String name = (String) row.get("name");
+                    String description = (String) row.get("description");
+                    double price = (Double) row.get("price");
+                    boolean isActive = Boolean.TRUE.equals(row.get("isActive"));
+                    String categoryName = (String) row.get("categoryName");
+            %>
+                <tr>
+                    <td><%= productId %></td>
+                    <td><%= name %></td>
+                    <td><%= categoryName %></td>
+                    <td><%= description != null && !description.trim().isEmpty() ? description : "—" %></td>
+                    <td>$<%= String.format("%.2f", price) %></td>
+                    <% String statusClass = isActive ? "status-active" : "status-inactive"; %>
+                    <td class="<%= statusClass %>">
+                        <%= isActive ? "Active" : "Inactive" %>
+                    </td>
+                    <td>
+                        <% if (isActive) { %>
+                            <a href="<%= request.getContextPath() %>/admin/service?action=deactivate&productId=<%= productId %>" onclick="return confirm('Deactivate this service?');" style="color: orange;">Deactivate</a>
+                        <% } else { %>
+                            <a href="<%= request.getContextPath() %>/admin/service?action=activate&productId=<%= productId %>" onclick="return confirm('Activate this service?');" style="color: green;">Activate</a>
+                        <% } %>
+                        |
+                        <a href="<%= request.getContextPath() %>/admin/services?include=edit&productId=<%= productId %>">Edit</a>
+                    </td>
+                </tr>
+            <%
+                }
+            %>
+            </tbody>
+        </table>
+    <%
         }
     %>
 

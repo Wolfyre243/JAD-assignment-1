@@ -23,7 +23,7 @@
 
 <div class="site-header">
   <div class="site-container">
-    <span class="site-title"><a href="<%= ctx %>/" style="color:inherit; text-decoration:none;">Care Services</a></span>
+    <span class="site-title"><a href="<%= ctx %>/" style="color:inherit; text-decoration:none;">Silvercare</a></span>
     <span class="nav-links">
       <a href="<%= ctx %>/">Home</a>
       <a href="<%= ctx %>/product/viewCart">Cart</a>
