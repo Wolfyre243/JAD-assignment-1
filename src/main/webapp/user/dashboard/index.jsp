@@ -68,7 +68,6 @@
         margin: 0;
         padding: 40px 20px;
         text-align: center;
-        border: 4px solid #0090ff;
         border-left: none;
         border-right: none;
     }

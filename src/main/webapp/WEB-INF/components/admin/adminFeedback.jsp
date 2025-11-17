@@ -1,96 +1,60 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
-<%@ page import="db.JDBC" %>
-<%--
-  Author: Goh Yi Xin Karys
-  Admin No: P2424431
-  Class: DIT-2B-01
-  Last Edited: 06/11/2025
-  Description: Admin feedback management with secure display and delete using JDBC utility and AuthServlet
---%>
-    <h1>Feedback Management</h1>
-    <a href="adminDashboard.jsp">Back to Dashboard</a>
-    <hr>
 
-    <h2>All Feedback</h2>
+<h1>Feedback Management</h1>
+<a href="<%= request.getContextPath() %>/admin/dashboard">Back to Dashboard</a>
+<hr>
 
-    <%
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
+<h2>All Feedback</h2>
 
-        try {
-            // === JDBC: Fetch feedback using utility class ===
-            conn = JDBC.connect();
-            if (conn == null) throw new SQLException("Connection failed");
-
-            String sql = 
-                "SELECT f.feedback_id, f.overall_rating, f.caregiver_rating, f.comments, " +
-                "       f.created_at, u.email " +
-                "FROM feedback f " +
-                "JOIN \"user\" u ON f.user_id = u.user_id " +
-                "ORDER BY f.created_at DESC";
-
-            pstmt = conn.prepareStatement(sql);
-            rs = pstmt.executeQuery();
-
-            if (!rs.isBeforeFirst()) {
-    %>
-                <p><em>No feedback available.</em></p>
-    <%
-            } else {
-    %>
-                <table border="1" cellpadding="8" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>User Email</th>
-                            <th>Overall Rating</th>
-                            <th>Caregiver Rating</th>
-                            <th>Comments</th>
-                            <th>Created At</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <%
-                        while (rs.next()) {
-                            int feedbackId = rs.getInt("feedback_id");
-                            int overallRating = rs.getInt("overall_rating");
-                            Integer caregiverRating = (Integer) rs.getObject("caregiver_rating");
-                            String comments = rs.getString("comments");
-                            Timestamp createdAt = rs.getTimestamp("created_at");
-                            String email = rs.getString("email");
-                            String formattedDate = createdAt.toString().substring(0, 19).replace("T", " ");
-                    %>
-                        <tr>
-                            <td><%= feedbackId %></td>
-                            <td><%= email %></td>
-                            <td><%= overallRating %> / 5</td>
-                            <td><%= caregiverRating != null ? caregiverRating + " / 5" : "N/A" %></td>
-                            <td><%= comments != null && !comments.trim().isEmpty() ? comments : "No comments" %></td>
-                            <td><%= formattedDate %></td>
-                            <td>
-                                <a href="adminDeleteFeedback.jsp?feedbackId=<%= feedbackId %>"
-                                   onclick="return confirm('Delete this feedback?');"
-                                   style="color:red;">Delete</a>
-                            </td>
-                        </tr>
-                    <%
-                        }
-                    %>
-                    </tbody>
-                </table>
-    <%
+<%
+    java.util.List<java.util.Map<String,Object>> feedbacks = (java.util.List<java.util.Map<String,Object>>) request.getAttribute("feedbacks");
+    if (feedbacks == null || feedbacks.isEmpty()) {
+%>
+    <p><em>No feedback available.</em></p>
+<%
+    } else {
+%>
+    <table border="1" cellpadding="8" cellspacing="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>User Email</th>
+                <th>Overall Rating</th>
+                <th>Caregiver Rating</th>
+                <th>Comments</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        <%
+            for (java.util.Map<String,Object> f : feedbacks) {
+                int feedbackId = (Integer) f.get("feedbackId");
+                int overallRating = (Integer) f.get("overallRating");
+                Integer caregiverRating = (Integer) f.get("caregiverRating");
+                String comments = (String) f.get("comments");
+                java.sql.Timestamp createdAt = (java.sql.Timestamp) f.get("createdAt");
+                String email = (String) f.get("email");
+                String formattedDate = createdAt != null ? createdAt.toString().substring(0,19).replace("T"," ") : "";
+        %>
+            <tr>
+                <td><%= feedbackId %></td>
+                <td><%= email %></td>
+                <td><%= overallRating %> / 5</td>
+                <td><%= caregiverRating != null ? caregiverRating + " / 5" : "N/A" %></td>
+                <td><%= comments != null && !comments.trim().isEmpty() ? comments : "No comments" %></td>
+                <td><%= formattedDate %></td>
+                <td>
+                    <a href="<%= request.getContextPath() %>/admin/feedback?include=delete&feedbackId=<%= feedbackId %>"
+                       style="color:red;">Delete</a>
+                </td>
+            </tr>
+        <%
             }
-        } catch (Exception e) {
-            out.println("<p style='color:red;'>Error loading feedback: " + e.getMessage() + "</p>");
-            e.printStackTrace();
-        } finally {
-            // === RESOURCE CLEANUP ===
-            if (rs != null) try { rs.close(); } catch (SQLException ignored) {}
-            if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
-            if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
-        }
-    %>
+        %>
+        </tbody>
+    </table>
+<%
+    }
+%>
 
