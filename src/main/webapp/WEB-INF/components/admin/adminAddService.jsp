@@ -1,6 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
-<%@ page import="db.JDBC" %>
 <%--
   Author: Goh Yi Xin Karys
   Admin No: P2424431
@@ -26,34 +24,19 @@
                     <select name="categoryId" required>
                         <option value="">Select Category</option>
                         <%
-                            // === 2. JDBC: Fetch categories using utility class ===
-                            Connection conn = null;
-                            PreparedStatement pstmt = null;
-                            ResultSet rs = null;
-
-                            try {
-                                conn = JDBC.connect();
-                                if (conn == null) throw new SQLException("Connection failed");
-
-                                String sql = "SELECT category_id, name FROM category ORDER BY name";
-                                pstmt = conn.prepareStatement(sql);
-                                rs = pstmt.executeQuery();
-
-                                while (rs.next()) {
-                                    int categoryId = rs.getInt("category_id");
-                                    String categoryName = rs.getString("name");
+                            java.util.List<java.util.Map<String,Object>> categories = (java.util.List<java.util.Map<String,Object>>) request.getAttribute("categories");
+                            if (categories != null) {
+                                for (java.util.Map<String,Object> c : categories) {
+                                    int categoryId = (Integer) c.get("categoryId");
+                                    String categoryName = (String) c.get("name");
                         %>
                                     <option value="<%= categoryId %>"><%= categoryName %></option>
                         <%
                                 }
-                            } catch (Exception e) {
-                                out.println("<option>Error loading categories</option>");
-                                e.printStackTrace();
-                            } finally {
-                                // === 3. RESOURCE CLEANUP ===
-                                if (rs != null) try { rs.close(); } catch (SQLException ignored) {}
-                                if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
-                                if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
+                            } else {
+                        %>
+                                <option>Error loading categories</option>
+                        <%
                             }
                         %>
                     </select>

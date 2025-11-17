@@ -1,3 +1,15 @@
+<%--
+  Author: Zhang Junkai
+  Admin No: P2429634
+  Class: DIT-2B-01
+  Last Edited: 17/11/2025
+  Description: Login Page
+--%>
+
+<!--
+Page: /auth/login
+ -->
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -5,6 +17,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Login | SilverCare</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
 <style>
     body {

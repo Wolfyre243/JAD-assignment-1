@@ -1,14 +1,17 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<!-- 
+Page: /
+ -->
+ <%@ page language="java" contentType="text/html; charset=UTF-8"
+		pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/components/auth/user-session.jsp"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Landing Page</title>
-</head>
-<body>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
- <style>
+<style>
     body {
         margin: 0;
         font-family: "Georgia", serif;
@@ -98,44 +101,18 @@
     }
 </style>
 </head>
-
 <body>
+	
+	<%@ include file="/WEB-INF/components/common/header.jsp"%>
 
 <!-- INCLUDE NAVBAR -->
 <%@ include file="/WEB-INF/components/user/userNavBar.jsp" %>
-
-<!-- HERO SECTION -->
-<div class="hero"></div>
-
-<div class="hero-overlay">
-    <h2>Where compassion<br>meets care.</h2>
-    <hr>
-    <a class="btn" href="#">Explore our services</a>
+<div>
+    <h1>This is the landing page!</h1>
+    <p class="muted">User ID <%= sessUserId %> &middot; Role <%= sessRoleId %></p>
 </div>
-
-<!-- ABOUT US SECTION -->
-<div class="about-section">
-    <h2>About Us</h2>
-    <hr>
-    <p>
-        We are a local care provider dedicated to enriching the lives of the elderly through personalized, reliable, and heartfelt support.
-    </p>
-    
-    <h2>Our Misson</h2>
-    <hr>
-    <p>
-        To bring comfort, independence, and peace of mind to every senior and family we serve
-    </p>
-    
-    <h2>Why choose us?</h2>
-    <hr>
-		<ul>
-		  <li>Trusted local caregivers with professional training and a personal touch</li>
-		  <li>Flexible care options that adapt to changing needs</li>
-		  <li>Transparent communication between caregivers, clients, and families</li>
-		</ul>
-</div>
-
-
+<%@ include file="/WEB-INF/components/common/footer.jsp" %>
 </body>
-</html>
+
+
+

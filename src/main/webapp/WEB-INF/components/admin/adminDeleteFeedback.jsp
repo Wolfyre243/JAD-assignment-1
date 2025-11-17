@@ -1,65 +1,20 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
-<%@ page import="db.JDBC" %>
-<%--
-  Author: Goh Yi Xin Karys
-  Admin No: P2424431
-  Class: DIT-2B-01
-  Last Edited: 06/11/2025
-  Description: Secure handler to delete feedback using JDBC utility and AuthServlet session
---%>
 <%
-    Integer adminId = (Integer) session.getAttribute("userId");
-    String userRole = (String) session.getAttribute("userRole");
-
-    if (adminId == null || !"admin".equals(userRole)) {
-        response.sendRedirect(request.getContextPath() + "/auth/login");
-        return;
-    }
-
-    // === INPUT VALIDATION ===
-    String feedbackIdStr = request.getParameter("feedbackId");
-    if (feedbackIdStr == null || feedbackIdStr.trim().isEmpty()) {
-        response.sendRedirect("adminFeedback.jsp?msg=invalid");
-        return;
-    }
-
-    int feedbackId;
-    try {
-        feedbackId = Integer.parseInt(feedbackIdStr.trim());
-    } catch (NumberFormatException e) {
-        response.sendRedirect("adminFeedback.jsp?msg=invalid");
-        return;
-    }
-
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-
-    try {
-        // === JDBC: Delete feedback using utility class ===
-        conn = JDBC.connect();
-        if (conn == null) throw new SQLException("Connection failed");
-
-        String sql = "DELETE FROM feedback WHERE feedback_id = ?";
-        pstmt = conn.prepareStatement(sql);
-        pstmt.setInt(1, feedbackId);
-
-        int rows = pstmt.executeUpdate();
-        if (rows == 0) {
-            response.sendRedirect("adminFeedback.jsp?msg=not_found");
-        } else {
-            response.sendRedirect("adminFeedback.jsp?msg=deleted");
-        }
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-        response.sendRedirect("adminFeedback.jsp?msg=db_error");
-    } catch (Exception e) {
-        e.printStackTrace();
-        response.sendRedirect("adminFeedback.jsp?msg=error");
-    } finally {
-        // === RESOURCE CLEANUP ===
-        if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
-        if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
+    String feedbackId = request.getParameter("feedbackId");
+    if (feedbackId == null || feedbackId.trim().isEmpty()) {
+%>
+    <p style="color:red;">No feedback selected for deletion.</p>
+    <a href="<%= request.getContextPath() %>/admin/feedback">Back to Feedback</a>
+<%
+    } else {
+%>
+    <h1>Delete Feedback</h1>
+    <p>Are you sure you want to delete feedback ID <strong><%= feedbackId %></strong>?</p>
+    <form method="post" action="<%= request.getContextPath() %>/admin/feedback/delete">
+        <input type="hidden" name="feedbackId" value="<%= feedbackId %>">
+        <button type="submit" onclick="return confirm('Delete this feedback?');">Delete</button>
+        <a href="<%= request.getContextPath() %>/admin/feedback">Cancel</a>
+    </form>
+<%
     }
 %>
