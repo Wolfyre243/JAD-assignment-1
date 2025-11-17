@@ -10,7 +10,21 @@
 Note: Use jsp:include to include this component where needed, 
 else you'll get compile error
 -->
-
+<style>
+.logout-btn {
+  padding: 8px 20px;
+  margin-left: 10px;
+  text-decoration: none;
+  color: black;
+  background: #ffbfd0; /* same as login */
+  border-radius: 20px;
+  font-size: 17px;
+  font-weight: 600;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+}
+</style>
 <div>
 	<%@ include file="/WEB-INF/components/auth/user-session.jsp"%>
 	<%
@@ -19,7 +33,7 @@ else you'll get compile error
 	<form action="${pageContext.request.contextPath}/auth/logout"
 		method="post">
 		<button type="submit" name="logout" value="logout"
-			class="bg-red-300 rounded-md px-2 py-1 cursor-pointer">Logout</button>
+			class="logout-btn">Logout</button>
 	</form>
 	<%
 	}

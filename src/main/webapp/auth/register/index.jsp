@@ -17,7 +17,6 @@ Page: /auth/register
 <head>
 <meta charset="UTF-8">
 <title>Register | SilverCare</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <style>
     body {
         margin: 0;

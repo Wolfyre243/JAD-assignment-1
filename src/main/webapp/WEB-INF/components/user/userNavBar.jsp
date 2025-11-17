@@ -56,20 +56,6 @@
     .nav-right a.login {
         background: #ffbfd0;
     }
-    
-    .logout-btn {
-	    padding: 8px 20px;
-	    margin-left: 10px;
-	    text-decoration: none;
-	    color: black;
-	    background: #ffbfd0;   /* same as login */
-	    border-radius: 20px;
-	    font-size: 17px;
-	    font-weight: 600;
-	    display: inline-block;
-	    border: none;
-	    cursor: pointer;
-	}
 </style>
 
 <div class="navbar">
