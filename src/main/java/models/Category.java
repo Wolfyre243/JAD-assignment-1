@@ -1,6 +1,15 @@
+/*
+  Author: Zhang Junkai
+  Admin No: P2429634
+  Class: DIT-2B-01
+  Last Edited: 17/11/2025
+  Description: Category DAO to allow DB connectivity for the Category entity
+*/
+
 package models;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,6 +31,31 @@ public class Category {
 		this.description = description;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
+	}
+	
+	public static ArrayList<Category> getAllCategories() throws SQLException {
+		final Connection conn = JDBC.connect();
+		if (conn == null) {
+			throw new SQLException("Database connection failed");
+		}
+
+		String sql = new StringBuilder()
+		    .append("SELECT * ")
+		    .append("FROM category ")
+		    .append("ORDER BY updated_at, created_at DESC;")
+		    .toString();
+
+		final PreparedStatement stmt = conn.prepareStatement(sql);
+		final ResultSet rs = stmt.executeQuery();
+		
+		ArrayList<Category> categoryArr = new ArrayList<Category>();
+		while (rs.next()) {
+			Category category = resultMapper(rs);
+		categoryArr.add(category);
+		}
+		
+		conn.close();
+		return categoryArr;
 	}
 
 	public static Category getCategoryById(int _categoryId) throws SQLException {

@@ -1,3 +1,11 @@
+<%--
+  Author: Zhang Junkai
+  Admin No: P2429634
+  Class: DIT-2B-01
+  Last Edited: 17/11/2025
+  Description: Register Page
+--%>
+
 <!-- 
 Page: /auth/register
  -->
@@ -11,7 +19,14 @@ if (sessUserId != null) {
 	response.sendRedirect(request.getContextPath() + "/");
 }
 %>
-
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Register Page</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body>
 <%@ include file="/WEB-INF/components/common/header.jsp" %>
 
 	<h1>Create your account</h1>
@@ -37,3 +52,4 @@ if (sessUserId != null) {
 	<p>Already have an account? <a href="${pageContext.request.contextPath}/auth/login/">Log in</a></p>
 
 <%@ include file="/WEB-INF/components/common/footer.jsp" %>
+</body>
