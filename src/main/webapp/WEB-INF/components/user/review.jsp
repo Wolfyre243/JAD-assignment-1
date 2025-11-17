@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ include file="/WEB-INF/components/auth/user-session.jsp"%>
+<!-- NAVBAR (unchanged) -->
+<%@ include file="/WEB-INF/components/user/userNavBar.jsp" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="db.JDBC" %>
@@ -83,9 +84,6 @@
 
 </head>
 <body>
-
-<!-- NAVBAR (unchanged) -->
-<%@ include file="/WEB-INF/components/user/userNavBar.jsp" %>
 
 <!-- GAP BELOW NAVBAR -->
 <div style="height: 40px;"></div>
