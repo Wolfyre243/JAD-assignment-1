@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/components/auth/user-session.jsp"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -55,22 +56,45 @@
     .nav-right a.login {
         background: #ffbfd0;
     }
+    
+    .logout-btn {
+	    padding: 8px 20px;
+	    margin-left: 10px;
+	    text-decoration: none;
+	    color: black;
+	    background: #ffbfd0;   /* same as login */
+	    border-radius: 20px;
+	    font-size: 17px;
+	    font-weight: 600;
+	    display: inline-block;
+	    border: none;
+	    cursor: pointer;
+	}
 </style>
 
 <div class="navbar">
 
     <!-- LEFT SIDE: SilverCare + Services + Feedback (all together now) -->
     <div class="nav-left">
-        <div class="brand">SilverCare</div>
+        <a href="<%= request.getContextPath() %>/" class="brand">SilverCare</a>
         <a href="#">Services</a>
         <a href="<%= request.getContextPath() %>/user/reviews">Feedback</a>
     </div>
 
     <div class="nav-right">
-        <a href="#">Register</a>
-        <a href="#" class="login">Login</a>
-    </div>
+        <% if (sessUserId == null) { %>
 
+            <!-- NOT LOGGED IN -->
+            <a href="<%= request.getContextPath() %>/auth/register/" class="register">Register</a>
+            <a href="<%= request.getContextPath() %>/auth/login/" class="login">Login</a>
+
+        <% } else { %>
+
+            <!-- LOGGED IN -->
+            <jsp:include page="/WEB-INF/components/auth/logout-button.jsp" />
+
+        <% } %>
+    </div>
 </div>
 
 </body>

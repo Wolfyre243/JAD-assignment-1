@@ -1,57 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="/WEB-INF/components/auth/user-session.jsp"%>
 <%@ page import="java.sql.*" %>
 <%@ page import="db.JDBC" %>
-
-<%
-    String feedbackIdStr = request.getParameter("feedbackId");
-    String msg = request.getParameter("msg");
-
-    if (feedbackIdStr == null) {
-        out.println("<p style='color:red;'>Invalid review request.</p>");
-        return;
-    }
-
-    int feedbackId = Integer.parseInt(feedbackIdStr);
-
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
-
-    int overallRating = 0;
-    int caregiverRating = 0;
-    String comments = "";
-    int dbUserId = -1;
-
-    try {
-        conn = JDBC.connect();
-        String sql = "SELECT * FROM feedback WHERE feedback_id = ?";
-        pstmt = conn.prepareStatement(sql);
-        pstmt.setInt(1, feedbackId);
-        rs = pstmt.executeQuery();
-
-        if (!rs.next()) {
-            out.println("<p style='color:red;'>Review not found.</p>");
-            return;
-        }
-
-        dbUserId = rs.getInt("user_id");
-        if (sessUserId == null || dbUserId != sessUserId.intValue()) {
-            out.println("<p style='color:red;'>You cannot edit another user's review.</p>");
-            return;
-        }
-
-        overallRating = rs.getInt("overall_rating");
-        caregiverRating = rs.getInt("caregiver_rating");
-        comments = rs.getString("comments");
-
-    } finally {
-        try { if (rs != null) rs.close(); } catch (Exception ignored) {}
-        try { if (pstmt != null) pstmt.close(); } catch (Exception ignored) {}
-        try { if (conn != null) conn.close(); } catch (Exception ignored) {}
-    }
-%>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -159,6 +108,55 @@
 
 <!-- NAVBAR -->
 <%@ include file="/WEB-INF/components/user/userNavBar.jsp" %>
+
+<%
+    String feedbackIdStr = request.getParameter("feedbackId");
+    String msg = request.getParameter("msg");
+
+    if (feedbackIdStr == null) {
+        out.println("<p style='color:red;'>Invalid review request.</p>");
+        return;
+    }
+
+    int feedbackId = Integer.parseInt(feedbackIdStr);
+
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+
+    int overallRating = 0;
+    int caregiverRating = 0;
+    String comments = "";
+    int dbUserId = -1;
+
+    try {
+        conn = JDBC.connect();
+        String sql = "SELECT * FROM feedback WHERE feedback_id = ?";
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, feedbackId);
+        rs = pstmt.executeQuery();
+
+        if (!rs.next()) {
+            out.println("<p style='color:red;'>Review not found.</p>");
+            return;
+        }
+
+        dbUserId = rs.getInt("user_id");
+        if (sessUserId == null || dbUserId != sessUserId.intValue()) {
+            out.println("<p style='color:red;'>You cannot edit another user's review.</p>");
+            return;
+        }
+
+        overallRating = rs.getInt("overall_rating");
+        caregiverRating = rs.getInt("caregiver_rating");
+        comments = rs.getString("comments");
+
+    } finally {
+        try { if (rs != null) rs.close(); } catch (Exception ignored) {}
+        try { if (pstmt != null) pstmt.close(); } catch (Exception ignored) {}
+        try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+    }
+%>
 
 <div class="page-container">
     <div class="form-box">
