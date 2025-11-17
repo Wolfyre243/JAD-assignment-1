@@ -8,102 +8,148 @@
 
 package models;
 
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+
+import db.JDBC;
 
 public class Client {
-	private int clientId;
-	private User user;
-	private String firstName;
-	private String lastName;
-	private Date dob;
-	private String gender;
-	private String nric;
-	private String phone;
-	private String email;
-	private Timestamp createdAt;
-	private Timestamp updatedAt;
-	
-	public Client(int clientId, User user, String firstName, String lastName, Date dob, String gender, String nric,
-	    String phone, String email, Timestamp createdAt, Timestamp updatedAt) {
-		super();
-		this.clientId = clientId;
-		this.user = user;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.dob = dob;
-		this.gender = gender;
-		this.nric = nric;
-		this.phone = phone;
-		this.email = email;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
-	}
-	
-	private static Client resultMapper(ResultSet rs) throws SQLException {
+  private int clientId;
+  private User user;
+  private ArrayList<EmergencyContact> emergencyContacts;
+  private MedicalProfile medicalProfile;
+  private String firstName;
+  private String lastName;
+  private Date dob;
+  private String gender;
+  private String nric;
+  private String phone;
+  private String email;
+  private Timestamp createdAt;
+  private Timestamp updatedAt;
 
-		int clientId = rs.getInt("client_id");
-		int userId = rs.getInt("user_id");
-		final String firstName = rs.getString("firstName");
-		final String lastName = rs.getString("lastName");
-		final Date dob = rs.getDate("dob");
-		final String gender = rs.getString("gender");
-		final String nric = rs.getString("nric");
-		final String phone = rs.getString("phone");
-		final String email = rs.getString("email");
-		final Timestamp createdAt = rs.getTimestamp("created_at");
-		final Timestamp updatedAt = rs.getTimestamp("updated_at");
+  public Client(int clientId, User user, ArrayList<EmergencyContact> emergencyContacts, MedicalProfile medicalProfile,
+      String firstName, String lastName, Date dob, String gender, String nric, String phone, String email,
+      Timestamp createdAt, Timestamp updatedAt) {
+    super();
+    this.clientId = clientId;
+    this.user = user;
+    this.emergencyContacts = emergencyContacts;
+    this.medicalProfile = medicalProfile;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.dob = dob;
+    this.gender = gender;
+    this.nric = nric;
+    this.phone = phone;
+    this.email = email;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
 
-		final User user = User.getUserById(userId);
+  public static Client getClientById(int clientId) throws SQLException {
+    final Connection conn = JDBC.connect();
+    if (conn == null) {
+      throw new SQLException("Database connection failed");
+    }
 
-		return new Client(clientId, user, firstName, lastName, dob, gender, nric, phone, email, createdAt, updatedAt);
-	}
+    final String sql = new StringBuilder()
+        .append("SELECT * ")
+        .append("FROM client ")
+        .append("WHERE client_id = ?;")
+        .toString();
 
-	public int getClientId() {
-		return clientId;
-	}
+    final PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.setInt(1, clientId);
 
-	public User getUser() {
-		return user;
-	}
+    final ResultSet rs = stmt.executeQuery();
 
-	public String getFirstName() {
-		return firstName;
-	}
+    Client client = null;
+    if (rs.next()) {
+      client = resultMapper(rs);
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    rs.close();
+    conn.close();
+    return client;
+  }
 
-	public Date getDob() {
-		return dob;
-	}
+  private static Client resultMapper(ResultSet rs) throws SQLException {
 
-	public String getGender() {
-		return gender;
-	}
+    int clientId = rs.getInt("client_id");
+    int userId = rs.getInt("user_id");
+    final String firstName = rs.getString("firstName");
+    final String lastName = rs.getString("lastName");
+    final Date dob = rs.getDate("dob");
+    final String gender = rs.getString("gender");
+    final String nric = rs.getString("nric");
+    final String phone = rs.getString("phone");
+    final String email = rs.getString("email");
+    final Timestamp createdAt = rs.getTimestamp("created_at");
+    final Timestamp updatedAt = rs.getTimestamp("updated_at");
 
-	public String getNric() {
-		return nric;
-	}
+    final User user = User.getUserById(userId);
+    final ArrayList<EmergencyContact> emContacts = EmergencyContact.getEmergencyContactsByClientId(clientId);
+    final MedicalProfile medicalProfile = MedicalProfile.getMedicalProfileByClientId(clientId);
+    
+    return new Client(clientId, user, emContacts, medicalProfile, firstName, lastName, dob, gender, nric, phone, email, createdAt, updatedAt);
+  }
 
-	public String getPhone() {
-		return phone;
-	}
+  public int getClientId() {
+    return clientId;
+  }
 
-	public String getEmail() {
-		return email;
-	}
+  public User getUser() {
+    return user;
+  }
 
-	public Timestamp getCreatedAt() {
-		return createdAt;
-	}
+  public ArrayList<EmergencyContact> getEmergencyContacts() {
+    return emergencyContacts;
+  }
+  
+  public MedicalProfile getMedicalProfile() {
+    return medicalProfile;
+  }
 
-	public Timestamp getUpdatedAt() {
-		return updatedAt;
-	}
-	
-	
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public String getLastName() {
+    return lastName;
+  }
+
+  public Date getDob() {
+    return dob;
+  }
+
+  public String getGender() {
+    return gender;
+  }
+
+  public String getNric() {
+    return nric;
+  }
+
+  public String getPhone() {
+    return phone;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public Timestamp getCreatedAt() {
+    return createdAt;
+  }
+
+  public Timestamp getUpdatedAt() {
+    return updatedAt;
+  }
+
 }
