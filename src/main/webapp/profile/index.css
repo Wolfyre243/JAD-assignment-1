@@ -1,0 +1,95 @@
+@charset "UTF-8";
+
+body {
+    margin: 0;
+    font-family: "Georgia", serif;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+}
+
+.profile-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #ffffff;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.profile-header {
+    background: linear-gradient(135deg, #ffdce4, #ffbfd0);
+    padding: 40px 20px;
+    text-align: center;
+    color: #333;
+}
+
+.profile-header h1 {
+    margin: 0;
+    font-size: 36px;
+    letter-spacing: 1px;
+}
+
+.profile-header p {
+    margin: 10px 0 0;
+    font-size: 20px;
+    opacity: 0.9;
+}
+
+.profile-body {
+    padding: 40px;
+}
+
+.profile-section {
+    background: #fff5f8;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.profile-section h2 {
+    margin-top: 0;
+    font-size: 26px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 8px;
+    display: inline-block;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 15px;
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+.info-grid dt {
+    font-weight: bold;
+    color: #555;
+}
+
+.info-grid dd {
+    margin: 0;
+    color: #333;
+}
+
+.btn-edit {
+    display: inline-block;
+    padding: 12px 30px;
+    background: #ffbfd0;
+    color: #000;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 17px;
+    transition: all 0.3s;
+}
+
+.btn-edit:hover {
+    background: #ffa8c0;
+    transform: translateY(-2px);
+}
+
+.hidden {
+	display: none;
+}
