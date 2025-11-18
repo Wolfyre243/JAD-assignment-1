@@ -107,6 +107,42 @@ public class Client {
 		return client;
 	}
 
+	public static void createClient(
+	    int userId,
+	    String firstName,
+	    String lastName,
+	    Date dob,
+	    String gender,
+	    String nric,
+	    String phone,
+	    String email) throws SQLException {
+		final Connection conn = JDBC.connect();
+		if (conn == null) {
+			throw new SQLException("Database connection failed");
+		}
+
+		// Write the query
+		final String sql = new StringBuilder()
+		    .append("INSERT INTO client ")
+		    .append("（user_id, first_name, last_name, dob, gender, nric, phone, email） ")
+		    .append("VALUES （?, ?, ?, ?, ?, ?, ?, ?);")
+		    .toString();
+
+		// Load the params
+		final PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, userId);
+		stmt.setString(2, firstName);
+		stmt.setString(3, lastName);
+		stmt.setDate(4, dob);
+		stmt.setString(5, gender);
+		stmt.setString(6, nric);
+		stmt.setString(7, phone);
+		stmt.setString(8, email);
+		stmt.executeUpdate();
+
+		conn.close();
+	}
+
 	private static Client resultMapper(ResultSet rs) throws SQLException {
 
 		int clientId = rs.getInt("client_id");

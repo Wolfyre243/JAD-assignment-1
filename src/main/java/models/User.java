@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import db.JDBC;
@@ -55,12 +56,14 @@ public class User {
 		return isActive;
 	}
 
-	public Date getCreatedAt() {
-		return createdAt;
+	public String getCreatedAt() {
+		final SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+		return sdf.format(createdAt);
 	}
 
-	public Date getUpdatedAt() {
-		return updatedAt;
+	public String getUpdatedAt() {
+		final SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+		return sdf.format(updatedAt);
 	}
 
 	public Date getLastLogin() {

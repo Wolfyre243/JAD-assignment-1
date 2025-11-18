@@ -1,3 +1,4 @@
+<%@page import="models.User"%>
 <%@page import="models.MedicalProfile"%>
 <%@page import="org.apache.openejb.client.ClientDataSource"%>
 <%@page import="models.EmergencyContact"%>
@@ -19,17 +20,7 @@
 	<div class="profile-container">
 		<!-- Header -->
 		<div class="profile-header">
-			<h1>
-				Welcome back,
-				<%
-			if (sessRoleId == 2) {
-				Client client = Client.getClientByUserId(sessUserId);
-				out.print(client.getFullName());
-			}
-			%>
-				!
-			</h1>
-			<p>Your complete care profile</p>
+			<h1>Your Profile</h1>
 		</div>
 
 		<!-- Body -->
@@ -61,6 +52,14 @@
 					<dd><%=client.getGender()%></dd>
 					<dt>Member Since</dt>
 					<dd><%=client.getCreatedAt()%></dd>
+					<%
+					} else {
+					final User userData = User.getUserById(sessUserId);
+					%>
+					<dt>Email</dt>
+					<dd><%=userData.getEmail()%></dd>
+					<dt>Account Created</dt>
+					<dd><%=userData.getCreatedAt()%></dd>
 					<%
 					}
 					%>

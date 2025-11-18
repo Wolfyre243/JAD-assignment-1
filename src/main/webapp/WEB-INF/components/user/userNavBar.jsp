@@ -72,6 +72,13 @@
 			<a href="<%=request.getContextPath()%>/" class="brand">SilverCare</a>
 			<a href="#">Services</a> <a
 				href="<%=request.getContextPath()%>/user/reviews">Feedback</a>
+			<%
+			if (sessRoleId != null && sessRoleId == 3) {
+			%>
+			<a href="<%=request.getContextPath()%>/family/">Family</a>
+			<%
+			}
+			%>
 		</div>
 
 		<div class="nav-right">

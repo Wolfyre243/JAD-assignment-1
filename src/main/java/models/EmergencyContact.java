@@ -51,6 +51,30 @@ public class EmergencyContact {
     return emContactArr;
   }
 
+  public static void createEmergencyContact(int clientId, String name, String phone, String relationship) throws SQLException {
+  	final Connection conn = JDBC.connect();
+		if (conn == null) {
+			throw new SQLException("Database connection failed");
+		}
+
+		// Write the query
+		final String sql = new StringBuilder()
+		    .append("INSERT INTO client_medical_profile ")
+		    .append("（client_id, name, phone, relationship） ")
+		    .append("VALUES （?, ?, ?, ?);")
+		    .toString();
+
+		// Load the params
+		final PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, clientId);
+		stmt.setString(2, name);
+		stmt.setString(3, phone);
+		stmt.setString(4, relationship);
+		stmt.executeUpdate();
+
+		conn.close();
+  }
+  
   private static EmergencyContact resultMapper(ResultSet rs) throws SQLException {
 
     final int contactId = rs.getInt("contact_id");
