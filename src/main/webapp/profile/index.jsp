@@ -1,5 +1,9 @@
+<%@page import="models.MedicalProfile"%>
+<%@page import="org.apache.openejb.client.ClientDataSource"%>
+<%@page import="models.EmergencyContact"%>
+<%@page import="java.util.ArrayList"%>
 <%@page import="models.Client"%>
-<%@page import="models.User"%>
+<%@page import="java.text.SimpleDateFormat"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/components/auth/require-login.jsp"%>
@@ -15,8 +19,17 @@
 	<div class="profile-container">
 		<!-- Header -->
 		<div class="profile-header">
-			<h1>Welcome back, ${sessionScope.client.name}!</h1>
-			<p>Your personal profile</p>
+			<h1>
+				Welcome back,
+				<%
+			if (sessRoleId == 2) {
+				Client client = Client.getClientByUserId(sessUserId);
+				out.print(client.getFullName());
+			}
+			%>
+				!
+			</h1>
+			<p>Your complete care profile</p>
 		</div>
 
 		<!-- Body -->
@@ -26,59 +39,28 @@
 			<div class="profile-section">
 				<h2>Personal Information</h2>
 				<dl class="info-grid">
-					<%-- CLIENT Only for clients --%>
 					<%
 					if (sessRoleId == 2) {
-						final Client clientData = Client.getClientByUserId(sessUserId);
+						Client client = Client.getClientByUserId(sessUserId);
 					%>
 					<dt>Full Name</dt>
-					<dd>
-						<%=clientData.getFullName()%>
-					</dd>
-
+					<dd><%=client.getFullName()%></dd>
 					<dt>Email</dt>
-					<dd>
-						<%=clientData.getEmail()%>
-					</dd>
-
+					<dd><%=client.getEmail()%></dd>
 					<dt>Phone</dt>
-					<dd>
-						<%=clientData.getPhone()%>
-					</dd>
-
+					<dd><%=client.getPhone()%></dd>
+					<%--
 					<dt>Address</dt>
-					<dd>${sessionScope.client.address}
-						<%-- PLACEHOLDER: Replace with actual address --%>
-					</dd>
-
+					<dd><%=client.getAddress() != null ? client.getAddress() : "Not set"%></dd>
+					 --%>
 					<dt>NRIC</dt>
-					<dd>
-						<%=clientData.getNric()%>
-					</dd>
-
+					<dd><%=client.getNric()%></dd>
 					<dt>Date of Birth</dt>
-					<dd>
-						<%-- TODO: Format --%>
-						<%=clientData.getDob()%>
-					</dd>
-
+					<dd><%=client.getDob()%></dd>
 					<dt>Gender</dt>
-					<dd>
-						<%=clientData.getGender()%>
-					</dd>
-
+					<dd><%=client.getGender()%></dd>
 					<dt>Member Since</dt>
-					<dd>
-						<%=clientData.getCreatedAt()%>
-					</dd>
-					<%
-					} else {
-					final User userData = User.getUserById(sessUserId);
-					%>
-					<dt>Email</dt>
-					<dd>
-						<%=userData.getEmail()%>
-					</dd>
+					<dd><%=client.getCreatedAt()%></dd>
 					<%
 					}
 					%>
@@ -89,9 +71,160 @@
 				</div>
 			</div>
 
-			<!-- Optional: Future sections (e.g., Upcoming Bookings, Past Feedback) -->
-			<!-- You can add more .profile-section blocks here later -->
+			<%
+			if (sessRoleId == 2) {
+				Client client = Client.getClientByUserId(sessUserId);
+			%>
+			<div class="profile-grid">
+				<!-- Emergency Contacts -->
+				<div class="profile-section emergency-contact">
+					<h3>Emergency Contacts</h3>
+
+					<%
+					final ArrayList<EmergencyContact> contacts = client.getEmergencyContacts();
+					if (contacts != null && !contacts.isEmpty()) {
+						for (EmergencyContact contact : contacts) {
+					%>
+					<div class="contact-item">
+						<strong><%=contact.getName()%></strong>
+						<%
+						if (contact.getRelationship() != null && !contact.getRelationship().isEmpty()) {
+						%>
+						(<%=contact.getRelationship()%>)
+						<%
+						}
+						%>
+						<br>
+						<%=contact.getPhone()%>
+
+					</div>
+					<%
+					}
+					%>
+					<%
+					} else {
+					%>
+					<p class="no-contacts">No emergency contacts added yet.</p>
+					<%
+					}
+					%>
+
+					<!-- Add Contact Button -->
+					<button type="button" id="toggleAddContact" class="btn-add-contact">
+						<strong>+ Add Emergency Contact</strong>
+					</button>
+
+					<!-- Add Form -->
+					<div id="addContactForm" class="add-contact-form">
+						<h4>Add New Emergency Contact</h4>
+						<form
+							action="${pageContext.request.contextPath}/AddEmergencyContactServlet"
+							method="post">
+							<table>
+								<tr>
+									<td><label for="name">Name</label></td>
+									<td><input type="text" name="name" id="name" required /></td>
+								</tr>
+								<tr>
+									<td><label for="relationship">Relationship</label></td>
+									<td><input type="text" name="relationship"
+										id="relationship" required /></td>
+								</tr>
+								<tr>
+									<td><label for="phone">Phone</label></td>
+									<td><input type="tel" name="phone" id="phone" required
+										placeholder="91234567" /></td>
+								</tr>
+							</table>
+
+							<div class="form-buttons">
+								<button type="submit" class="btn-save">Save Contact</button>
+								<button type="button" id="cancelAdd" class="btn-cancel">Cancel</button>
+							</div>
+						</form>
+					</div>
+
+					<script>
+					  const toggleBtn = document.getElementById('toggleAddContact');
+		        const form = document.getElementById('addContactForm');
+		        const cancelBtn = document.getElementById('cancelAdd');
+		
+		        toggleBtn.onclick = () => {
+		            const isVisible = form.classList.toggle('show');
+		            toggleBtn.innerHTML = isVisible 
+		                ? '<strong>− Cancel Adding</strong>' 
+		                : '<strong>+ Add Emergency Contact</strong>';
+		        };
+		
+		        cancelBtn.onclick = () => {
+		            form.classList.remove('show');
+		            toggleBtn.innerHTML = '<strong>+ Add Emergency Contact</strong>';
+		            form.querySelector('form').reset();
+		        };
+		      </script>
+				</div>
+
+				<!-- Medical Profile -->
+				<div class="profile-section medical-profile">
+					<h3>Medical Profile</h3>
+					<%
+					final MedicalProfile medicalProfile = client.getMedicalProfile();
+					if (medicalProfile != null) {
+					%>
+					<!-- If user has a medical profile already -->
+					<div class="medical-item">
+						<strong>Blood Type:</strong>
+						<%=medicalProfile.getBloodType()%>
+					</div>
+					<div class="medical-item">
+						<strong>Allergies:</strong>
+						<%=medicalProfile.getAllergies()%>
+					</div>
+					<div class="medical-item">
+						<strong>Chronic Conditions:</strong>
+						<%=medicalProfile.getChronicConditions()%>
+					</div>
+					<div class="medical-item">
+						<strong>Medications:</strong>
+						<%=medicalProfile.getMedications()%>
+					</div>
+					<div class="medical-item">
+						<strong>Mobility Level:</strong>
+						<%=medicalProfile.getMobilityLevel()%>
+					</div>
+					<div class="medical-item">
+						<strong>Cognitive Status:</strong>
+						<%=medicalProfile.getCognitiveStatus()%>
+					</div>
+					<div class="medical-item">
+						<strong>Doctor:</strong>
+						<%=medicalProfile.getDoctorName()%>
+					</div>
+					<div class="medical-item">
+						<strong>Doctor Contact:</strong>
+						<%=medicalProfile.getDoctorContact()%>
+					</div>
+					<div class="medical-item">
+						<strong>Preferred Hospital:</strong>
+						<%=medicalProfile.getPreferredHospital()%>
+					</div>
+					<div class="medical-item">
+						<strong>Additional Notes:</strong>
+						<%=medicalProfile.getNotes()%>
+					</div>
+					<a href="${pageContext.request.contextPath}/profile/"
+						class="btn-edit"> <strong>Edit Medical Profile</strong>
+					</a>
+					<%
+					}
+					%>
+				</div>
+			</div>
+			<%
+			}
+			%>
 		</div>
 	</div>
+
 </body>
 </html>

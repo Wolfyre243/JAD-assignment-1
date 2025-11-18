@@ -81,4 +81,8 @@ public class EmergencyContact {
   public String getRelationship() {
     return relationship;
   }
+  
+  public String toString() {
+  	return name + " (" + relationship + ") - " + phone;
+  }
 }
