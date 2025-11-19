@@ -126,10 +126,15 @@
             conn = JDBC.connect();
             if (conn == null) throw new SQLException("Connection failed");
 
-            String sql = 
-                "SELECT feedback_id, user_id, overall_rating, caregiver_rating, comments, created_at " +
-                "FROM feedback " +
-                "ORDER BY feedback_id DESC";
+            String sql =
+                    "SELECT f.feedback_id, f.user_id, f.overall_rating, f.caregiver_rating, " +
+                    "       f.comments, f.created_at, " +
+                    "       CONCAT(c.first_name, ' ', c.last_name) AS caregiver_name, " +
+                    "       p.name AS product_name " +
+                    "FROM feedback f " +
+                    "LEFT JOIN caregiver c ON f.caregiver_id = c.caregiver_id " +
+                    "LEFT JOIN product p ON f.product_id = p.product_id " +
+                    "ORDER BY f.feedback_id DESC";
 
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
@@ -139,6 +144,8 @@
         <thead>
             <tr>
                 <th>ID</th>
+                <th>Caregiver</th>
+                <th>Service</th>
                 <th>Overall Rating</th>
                 <th>Caregiver Rating</th>
                 <th>Comments</th>
@@ -171,6 +178,8 @@
 
              <tr>
                  <td><%= feedbackId %></td>
+                 <td><%= rs.getString("caregiver_name") %></td>
+                 <td><%= rs.getString("product_name") %></td>
                  <td><%= rs.getInt("overall_rating") %>/5</td>
                  <td><%= rs.getInt("caregiver_rating") %>/5</td>
                  <td><%= rs.getString("comments") %></td>
