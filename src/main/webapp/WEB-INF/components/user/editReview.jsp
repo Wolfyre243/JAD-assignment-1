@@ -142,6 +142,7 @@
         }
 
         dbUserId = rs.getInt("user_id");
+        Integer sessUserId = (Integer) request.getAttribute("sessUserId");
         if (sessUserId == null || dbUserId != sessUserId.intValue()) {
             out.println("<p style='color:red;'>You cannot edit another user's review.</p>");
             return;

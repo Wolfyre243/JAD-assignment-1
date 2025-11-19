@@ -111,7 +111,7 @@ input {
 
 	<%
 	// Redirect logged-in users
-	if (sessUserId != null) {
+	if (request.getAttribute("sessUserId") != null) {
 	  response.sendRedirect(request.getContextPath() + "/");
 	  return;
 	}

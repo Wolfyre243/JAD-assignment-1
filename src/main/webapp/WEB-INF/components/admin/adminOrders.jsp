@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
     <h1>Order Management</h1>
-    <a href="<%= request.getContextPath() %>/admin/dashboard">Back to Dashboard</a>
+    <p><a href="<%= request.getContextPath() %>/admin/dashboard">← Back to Dashboard</a></p>
     <hr>
 
     <h2>All Orders</h2>
@@ -13,7 +13,7 @@
     <%
         } else {
     %>
-        <table border="1" cellpadding="8" cellspacing="0">
+        <table>
             <thead>
                 <tr>
                     <th>Order ID</th>

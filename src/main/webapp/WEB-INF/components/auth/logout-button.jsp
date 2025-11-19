@@ -28,7 +28,8 @@ else you'll get compile error
 <div>
 	<%@ include file="/WEB-INF/components/auth/user-session.jsp"%>
 	<%
-	if (sessUserId != null) {
+	// Use session variable from request attribute (set by user-session.jsp or protected.jsp)
+	if (request.getAttribute("sessUserId") != null) {
 	%>
 	<form action="${pageContext.request.contextPath}/auth/logout"
 		method="post">

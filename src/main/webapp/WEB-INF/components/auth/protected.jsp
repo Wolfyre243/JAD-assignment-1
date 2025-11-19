@@ -5,6 +5,13 @@ HttpSession sess = request.getSession(false);
 Integer sessUserId = (sess != null) ? (Integer) sess.getAttribute("userId") : null;
 Integer sessRoleId = (sess != null) ? (Integer) sess.getAttribute("userRoleId") : null;
 
+// Also set as request attributes for JSPs that use user-session.jsp
+request.setAttribute("sessUserId", sessUserId);
+request.setAttribute("sessRoleId", sessRoleId);
+
+// Set a page attribute to indicate these variables are already declared
+pageContext.setAttribute("_authVarsSet", true);
+
 // Check if user is logged in
 if (sessUserId == null) {
   // Store the current URL they were trying to access

@@ -8,7 +8,7 @@
   Description: Admin user management with role aggregation, status toggle, and last login using JDBC utility and AuthServlet
 --%>
     <h1>User Management</h1>
-    <a href="<%= request.getContextPath() %>/admin/dashboard">Back to Dashboard</a>
+    <p><a href="<%= request.getContextPath() %>/admin/dashboard">← Back to Dashboard</a></p>
     <hr>
 
     <%
@@ -45,7 +45,7 @@
     <%
         } else {
     %>
-        <table border="1" cellpadding="8" cellspacing="0">
+        <table>
             <thead>
                 <tr>
                     <th>User ID</th>

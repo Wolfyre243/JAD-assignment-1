@@ -68,7 +68,7 @@
     </div>
 
     <div class="nav-right">
-        <% if (sessUserId == null) { %>
+        <% if (request.getAttribute("sessUserId") == null) { %>
 
             <!-- NOT LOGGED IN -->
             <a href="<%= request.getContextPath() %>/auth/register/" class="register">Register</a>
