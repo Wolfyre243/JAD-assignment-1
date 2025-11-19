@@ -72,7 +72,8 @@
 			<a href="<%= request.getContextPath() %>/services/">Services</a> 
       <a href="<%= request.getContextPath() %>/user/reviews">Feedback</a>
 			<%
-			if (sessRoleId != null && sessRoleId == 3) {
+			// Access request attribute directly to avoid duplicate variable declaration
+			if (request.getAttribute("sessRoleId") != null && (Integer)request.getAttribute("sessRoleId") == 3) {
 			%>
 			<a href="<%=request.getContextPath()%>/family/">Family</a>
 			<%
@@ -82,7 +83,8 @@
 
 		<div class="nav-right">
 			<%
-			if (sessUserId == null) {
+			// Access request attribute directly to avoid duplicate variable declaration
+			if (request.getAttribute("sessUserId") == null) {
 			%>
 
 			<!-- NOT LOGGED IN -->
