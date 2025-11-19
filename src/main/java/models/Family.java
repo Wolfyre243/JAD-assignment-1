@@ -76,10 +76,37 @@ public class Family {
 		conn.close();
 		return family;
 	}
+	
+	public static boolean checkMemberInFamily(int userId, int clientId) throws SQLException {
+		final Connection conn = JDBC.connect();
+		if (conn == null) {
+			throw new SQLException("Database connection failed");
+		}
+
+		final String sql = new StringBuilder()
+		    .append("SELECT * ")
+		    .append("FROM family f ")
+		    .append("JOIN family_member fm ON f.family_id = fm.family_id ")
+		    .append("WHERE f.owner_id = ? AND fm.client_id = ?;")
+		    .toString();
+
+		final PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, userId);
+		stmt.setInt(2, clientId);
+
+		final ResultSet rs = stmt.executeQuery();
+		if (rs.next()) {
+			conn.close();
+			return true;
+		} else {
+			conn.close();
+			return false;
+		}
+	}
 
 	private static Family resultMapper(ResultSet rs) throws SQLException {
 		int familyId = rs.getInt("family_id");
-		int ownerId = rs.getInt("client_id");
+		int ownerId = rs.getInt("owner_id");
 		// Fetch all members in the family
 		ArrayList<FamilyMember> members = FamilyMember.getFamilyMembersByFamilyId(familyId);
 
@@ -97,6 +124,10 @@ public class Family {
 		return ownerId;
 	}
 
+	public ArrayList<FamilyMember> getMembers() {
+		return members;
+	}
+	
 	public Timestamp getCreatedAt() {
 		return createdAt;
 	}

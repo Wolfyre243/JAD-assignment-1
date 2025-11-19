@@ -1,3 +1,11 @@
+<%--
+  Author: Zhang Junkai
+  Admin No: P2429634
+  Class: DIT-2B-01
+  Last Edited: 18/11/2025
+  Description: A protection guard to redirect the user if they are not an admin
+--%>
+
 <%-- /WEB-INF/components/auth/protected.jsp --%>
 <%@ page import="jakarta.servlet.http.HttpSession"%>
 <%
@@ -14,31 +22,31 @@ pageContext.setAttribute("_authVarsSet", true);
 
 // Check if user is logged in
 if (sessUserId == null) {
-  // Store the current URL they were trying to access
-  String requestedURL = request.getRequestURI();
-  String queryString = request.getQueryString();
+	// Store the current URL they were trying to access
+	String requestedURL = request.getRequestURI();
+	String queryString = request.getQueryString();
 
-  if (queryString != null) {
-    requestedURL += "?" + queryString;
-  }
+	if (queryString != null) {
+		requestedURL += "?" + queryString;
+	}
 
-  // Remove context path to get relative URL
-  String contextPath = request.getContextPath();
-  if (requestedURL.startsWith(contextPath)) {
-    requestedURL = requestedURL.substring(contextPath.length());
-  }
+	// Remove context path to get relative URL
+	String contextPath = request.getContextPath();
+	if (requestedURL.startsWith(contextPath)) {
+		requestedURL = requestedURL.substring(contextPath.length());
+	}
 
-  // Redirect to login with return URL
-  out.println(sessRoleId);
-  response.sendRedirect(
-  request.getContextPath() + "/auth/login/?returnUrl=" + java.net.URLEncoder.encode(requestedURL, "UTF-8"));
-  return;
+	// Redirect to login with return URL
+	out.println(sessRoleId);
+	response.sendRedirect(
+	    request.getContextPath() + "/auth/login/?returnUrl=" + java.net.URLEncoder.encode(requestedURL, "UTF-8"));
+	return;
 }
 
 // Check if user is admin (roleId = 1)
 if (sessRoleId == null || sessRoleId != 1) {
-  // Not an admin - redirect to home page
-  response.sendRedirect(request.getContextPath() + "/");
-  return;
+	// Not an admin - redirect to home page
+	response.sendRedirect(request.getContextPath() + "/");
+	return;
 }
 %>

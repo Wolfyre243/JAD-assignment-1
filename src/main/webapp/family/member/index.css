@@ -1,0 +1,238 @@
+@charset "UTF-8";
+
+/* =============== BASE LAYOUT =============== */
+body {
+    margin: 0;
+    font-family: "Georgia", serif;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+}
+
+.profile-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #ffffff;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.profile-header {
+    background: linear-gradient(135deg, #ffdce4, #ffbfd0);
+    padding: 40px 20px;
+    text-align: center;
+    color: #333;
+}
+
+.profile-header h1 { margin: 0; font-size: 36px; letter-spacing: 1px; }
+.profile-header p { margin: 10px 0 0; font-size: 20px; opacity: 0.9; }
+
+.profile-body { padding: 40px; }
+
+/* =============== SECTIONS =============== */
+.profile-section {
+    background: #fff5f8;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.profile-section h2 {
+    margin-top: 0;
+    font-size: 26px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 8px;
+    display: inline-block;
+}
+
+/* Personal Info Grid */
+.info-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 15px;
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+.info-grid dt { font-weight: bold; color: #555; }
+.info-grid dd { margin: 0; color: #333; }
+
+/* Two-column layout */
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+@media (max-width: 868px) {
+    .profile-grid { grid-template-columns: 1fr; }
+}
+
+/* Emergency & Medical Boxes */
+.emergency-contact,
+.medical-profile {
+    background: #fff0f5;
+    border-left: 5px solid #ffbfd0;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.emergency-contact h3,
+.medical-profile h3 {
+    margin: 0 0 15px 0;
+    color: #d81b60;
+    font-size: 22px;
+}
+
+/* =============== EMERGENCY CONTACTS =============== */
+.contact-item {
+    background: white;
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    font-size: 16px;
+}
+
+.contact-item strong { color: #d81b60; }
+
+.no-contacts {
+    color: #999;
+    font-style: italic;
+    text-align: center;
+    margin: 15px 0;
+}
+
+.btn-add-contact {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: #ffbfd0;
+    color: black;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+}
+
+.btn-add-contact:hover {
+    background: #ffa8c0;
+    transform: translateY(-2px);
+}
+
+.add-contact-form {
+    display: none;
+    margin-top: 20px;
+    padding: 25px;
+    background: #fff8fb;
+    border: 2px dashed #ffbfd0;
+    border-radius: 12px;
+}
+
+.add-contact-form.show { display: block; }
+
+.add-contact-form h4 {
+    margin: 0 0 20px 0;
+    color: #d81b60;
+    font-size: 19px;
+}
+
+.add-contact-form table { width: 100%; font-size: 16px; }
+.add-contact-form td { padding: 8px 0; }
+.add-contact-form label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.add-contact-form input,
+.add-contact-form select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ffbfd0;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.add-contact-form input:focus,
+.add-contact-form select:focus {
+    outline: none;
+    border-color: #d81b60;
+    box-shadow: 0 0 0 3px rgba(216, 27, 96, 0.15);
+}
+
+.form-buttons {
+    text-align: right;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px dashed #ffb6c1;
+}
+
+.btn-save, .btn-cancel {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-save {
+    background: #d81b60;
+    color: white;
+}
+
+.btn-cancel {
+    background: #ccc;
+    margin-left: 12px;
+}
+
+.btn-save:hover { background: #c2185b; }
+.btn-cancel:hover { background: #bbb; }
+
+/* =============== MEDICAL PROFILE =============== */
+.medical-item {
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #ffb6c1;
+    font-size: 16px;
+}
+
+.medical-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.medical-item strong {
+    color: #d81b60;
+}
+
+/* =============== BUTTONS =============== */
+.btn-edit {
+    display: inline-block;
+    padding: 12px 30px;
+    background: #ffbfd0;
+    color: #000;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 17px;
+    transition: all 0.3s;
+}
+
+.btn-edit:hover {
+    background: #ffa8c0;
+    transform: translateY(-2px);
+}
+
+.text-center { text-align: center; }
+.mt-25 { margin-top: 25px; }

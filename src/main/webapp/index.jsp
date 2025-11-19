@@ -5,10 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Landing Page</title>
-</head>
-<body>
-
-	<style>
+<style>
 body {
 	margin: 0;
 	font-family: "Georgia", serif;
@@ -99,7 +96,6 @@ body {
 }
 </style>
 </head>
-
 <body>
 
 	<!-- INCLUDE NAVBAR -->
@@ -113,7 +109,7 @@ body {
 			Where compassion<br>meets care.
 		</h2>
 		<hr>
-		<a class="btn" href="#">Explore our services</a>
+		<a class="btn" href="<%= request.getContextPath() %>/services/">Explore our services</a>
 	</div>
 
 	<!-- ABOUT US SECTION -->
@@ -139,7 +135,5 @@ body {
 				families</li>
 		</ul>
 	</div>
-
-
 </body>
 </html>

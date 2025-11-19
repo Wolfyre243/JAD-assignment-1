@@ -8,7 +8,6 @@
 
 package models;
 
-import java.awt.List;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -89,6 +88,33 @@ public class Product {
 
 		conn.close();
 		return product;
+	}
+	
+	public static ArrayList<Product> getAllProductsByCategory(int _categoryId) throws SQLException {
+		final Connection conn = JDBC.connect();
+		if (conn == null) {
+			throw new SQLException("Database connection failed");
+		}
+
+		final String sql = new StringBuilder()
+		    .append("SELECT * ")
+		    .append("FROM product ")
+		    .append("WHERE category_id = ? ")
+		    .append("ORDER BY updated_at, created_at DESC;")
+		    .toString();
+
+		final PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, _categoryId);
+		final ResultSet rs = stmt.executeQuery();
+
+		ArrayList<Product> productArr = new ArrayList<Product>();
+		while (rs.next()) {
+			Product product = resultMapper(rs);
+			productArr.add(product);
+		}
+
+		conn.close();
+		return productArr;
 	}
 
 	public static void createProduct(
