@@ -3,17 +3,25 @@
     String feedbackId = request.getParameter("feedbackId");
     if (feedbackId == null || feedbackId.trim().isEmpty()) {
 %>
-    <p style="color:red;">No feedback selected for deletion.</p>
-    <a href="<%= request.getContextPath() %>/admin/feedback">Back to Feedback</a>
+    <p class="msg-error">No feedback selected for deletion.</p>
+    <p><a href="<%= request.getContextPath() %>/admin/feedback">← Back to Feedback</a></p>
 <%
     } else {
 %>
     <h1>Delete Feedback</h1>
-    <p>Are you sure you want to delete feedback ID <strong><%= feedbackId %></strong>?</p>
+    <p><a href="<%= request.getContextPath() %>/admin/feedback">← Back to Feedback</a></p>
+    <hr>
+    
+    <p style="font-size: 18px; margin: 30px 0;">
+        Are you sure you want to delete feedback ID <strong><%= feedbackId %></strong>?
+        <br><br>
+        <em style="color: #666;">This action cannot be undone.</em>
+    </p>
+    
     <form method="post" action="<%= request.getContextPath() %>/admin/feedback/delete">
         <input type="hidden" name="feedbackId" value="<%= feedbackId %>">
-        <button type="submit" onclick="return confirm('Delete this feedback?');">Delete</button>
-        <a href="<%= request.getContextPath() %>/admin/feedback">Cancel</a>
+        <button type="submit" class="btn" style="background: #dc3545;" onclick="return confirm('Delete this feedback?');">Confirm Delete</button>
+        <a href="<%= request.getContextPath() %>/admin/feedback" class="btn btn-secondary">Cancel</a>
     </form>
 <%
     }

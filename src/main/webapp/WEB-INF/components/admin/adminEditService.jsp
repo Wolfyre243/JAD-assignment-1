@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <h1>Edit Service</h1>
-<a href="<%= request.getContextPath() %>/admin/services">Back to Services</a>
+<p><a href="<%= request.getContextPath() %>/admin/services">← Back to Services</a></p>
+<hr>
 
 <%
     java.util.Map<String,Object> service = (java.util.Map<String,Object>) request.getAttribute("service");
@@ -9,7 +10,7 @@
     String serviceError = (String) request.getAttribute("serviceError");
     if (serviceError != null) {
 %>
-    <p style="color:red;"><%= serviceError %></p>
+    <p class="msg-error"><%= serviceError %></p>
 <%
     } else if (service == null) {
 %>
@@ -26,53 +27,40 @@
     <form action="<%= request.getContextPath() %>/admin/service" method="post">
         <input type="hidden" name="action" value="edit">
         <input type="hidden" name="productId" value="<%= productId %>">
-        <table>
-            <tr>
-                <td>Name</td>
-                <td><input type="text" name="name" value="<%= name %>" required></td>
-            </tr>
-            <tr>
-                <td>Category</td>
-                <td>
-                    <select name="categoryId" required>
-                        <% if (categories != null) {
-                            for (java.util.Map<String,Object> c : categories) {
-                                int catId = (Integer) c.get("categoryId");
-                                String catName = (String) c.get("categoryName");
-                                boolean selected = (catId == selectedCat);
-                        %>
-                                <option value="<%= catId %>" <%= selected ? "selected" : "" %>><%= catName %></option>
-                        <%   }
-                        } %>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>Description</td>
-                <td><textarea name="description" rows="5" cols="50"><%= description != null ? description : "" %></textarea></td>
-            </tr>
-            <tr>
-                <td>Price</td>
-                <td><input type="number" name="price" step="0.01" min="0" value="<%= String.format("%.2f", price) %>" required></td>
-            </tr>
-            <tr>
-                <td>Active</td>
-                <td>
-                    <input type="radio" name="isActive" value="true" <%= isActive ? "checked" : "" %>> Yes
-                    <input type="radio" name="isActive" value="false" <%= !isActive ? "checked" : "" %>> No
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
-                    <button type="submit">Save</button>
-                    <a href="<%= request.getContextPath() %>/admin/services">Cancel</a>
-                </td>
-            </tr>
-        </table>
+        
+        <label>Name:</label>
+        <input type="text" name="name" value="<%= name %>" required>
+        
+        <label>Category:</label>
+        <select name="categoryId" required>
+            <% if (categories != null) {
+                for (java.util.Map<String,Object> c : categories) {
+                    int catId = (Integer) c.get("categoryId");
+                    String catName = (String) c.get("categoryName");
+                    boolean selected = (catId == selectedCat);
+            %>
+                    <option value="<%= catId %>" <%= selected ? "selected" : "" %>><%= catName %></option>
+            <%   }
+            } %>
+        </select>
+        
+        <label>Description:</label>
+        <textarea name="description" rows="5"><%= description != null ? description : "" %></textarea>
+        
+        <label>Price:</label>
+        <input type="number" name="price" step="0.01" min="0" value="<%= String.format("%.2f", price) %>" required>
+        
+        <label>Active:</label>
+        <div style="margin-bottom: 15px;">
+            <input type="radio" name="isActive" value="true" id="edit-active-yes" <%= isActive ? "checked" : "" %>>
+            <label for="edit-active-yes" style="display: inline; margin-right: 15px;">Yes</label>
+            <input type="radio" name="isActive" value="false" id="edit-active-no" <%= !isActive ? "checked" : "" %>>
+            <label for="edit-active-no" style="display: inline;">No</label>
+        </div>
+        
+        <button type="submit" class="btn">Save Changes</button>
+        <a href="<%= request.getContextPath() %>/admin/services" class="btn btn-secondary">Cancel</a>
     </form>
 <%
     }
 %>
-
-<%@ include file="/WEB-INF/components/common/footer.jsp" %>

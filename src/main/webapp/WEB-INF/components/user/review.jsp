@@ -174,7 +174,9 @@
                  <td><%= rs.getString("comments") %></td>
                  <td><%= formattedDate %></td>
                  <td>
-                     <% if (sessUserId != null && sessUserId == ownerId) { %>
+                     <% 
+                     Integer sessUserId = (Integer) request.getAttribute("sessUserId");
+                     if (sessUserId != null && sessUserId == ownerId) { %>
                          <a href="<%= request.getContextPath() %>/user/reviews?action=edit&feedbackId=<%= feedbackId %>">Edit</a>
                      <% } else { %>
                          <span style="color:#aaa;">—</span>

@@ -7,7 +7,7 @@
   Description: Admin services management with list, add, edit, activate/deactivate using JDBC utility and AuthServlet
 --%>
     <h1>Services Management</h1>
-    <a href="<%= request.getContextPath() %>/admin/dashboard">Back to Dashboard</a>
+    <p><a href="<%= request.getContextPath() %>/admin/dashboard">← Back to Dashboard</a></p>
     <hr>
 
     <%
@@ -34,8 +34,7 @@
     %>
 
     <h2>All Services/Products</h2>
-    <a href="<%= request.getContextPath() %>/admin/services?include=add">Add New Service</a>
-    <br><br>
+    <p><a href="<%= request.getContextPath() %>/admin/services?include=add" class="btn">+ Add New Service</a></p>
 
     <%
         java.util.List<java.util.Map<String,Object>> services = (java.util.List<java.util.Map<String,Object>>) request.getAttribute("services");
@@ -50,7 +49,7 @@
     <%
         } else {
     %>
-        <table border="1" cellpadding="8" cellspacing="0">
+        <table>
             <thead>
                 <tr>
                     <th>ID</th>
