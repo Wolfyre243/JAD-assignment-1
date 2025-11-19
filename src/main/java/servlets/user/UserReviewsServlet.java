@@ -84,11 +84,14 @@ public class UserReviewsServlet extends HttpServlet {
     	// 1. Read form fields
         String overallStr = request.getParameter("overall_rating");
         String caregiverStr = request.getParameter("caregiver_rating");
+        String caregiverIdStr = request.getParameter("caregiver_id");
+        String productIdStr = request.getParameter("product_id");
         String comments = request.getParameter("comments");
 
         // 2. Validate empty fields 
-        if (overallStr == null || overallStr.trim().isEmpty() ||
-            caregiverStr == null || caregiverStr.trim().isEmpty()) {
+        if (overallStr == null || caregiverStr == null ||
+                caregiverIdStr == null || productIdStr == null ||
+                overallStr.isEmpty() || caregiverStr.isEmpty()) {
 
             response.sendRedirect(request.getContextPath() + "/user/reviews?msg=invalid");
             return;
@@ -96,10 +99,14 @@ public class UserReviewsServlet extends HttpServlet {
 
         int overallRating;
         int caregiverRating;
+        int caregiverId;
+        int productId;
 
         try {
             overallRating = Integer.parseInt(overallStr);
             caregiverRating = Integer.parseInt(caregiverStr);
+            caregiverId = Integer.parseInt(caregiverIdStr);
+            productId = Integer.parseInt(productIdStr);
 
             if (overallRating < 1 || overallRating > 5 ||
                 caregiverRating < 1 || caregiverRating > 5) {
@@ -120,14 +127,18 @@ public class UserReviewsServlet extends HttpServlet {
             conn = JDBC.connect();
             if (conn == null) throw new SQLException("Connection failed");
 
-            String sql = "INSERT INTO feedback (user_id, overall_rating, caregiver_rating, comments, created_at) "
-            			+ "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)";
+            String sql =
+            	    "INSERT INTO feedback (user_id, overall_rating, caregiver_rating, comments, caregiver_id, product_id, created_at) " +
+            	    "VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+
 
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, userId);
             pstmt.setInt(2, overallRating);
             pstmt.setInt(3, caregiverRating);
             pstmt.setString(4, comments != null ? comments.trim() : null);
+            pstmt.setInt(5, caregiverId);
+            pstmt.setInt(6, productId);
 
             int rows = pstmt.executeUpdate();
             if (rows == 0) throw new SQLException("Insert failed");
@@ -148,21 +159,29 @@ public class UserReviewsServlet extends HttpServlet {
             throws IOException {
 
         String idStr = request.getParameter("feedbackId");
+        String caregiverStr = request.getParameter("caregiver_id");
+        String productStr = request.getParameter("product_id");
         String overallStr = request.getParameter("overall_rating");
-        String caregiverStr = request.getParameter("caregiver_rating");
+        String caregiverRatingStr = request.getParameter("caregiver_rating");
         String comments = request.getParameter("comments");
 
-        if (idStr == null || overallStr == null || caregiverStr == null) {
-            response.sendRedirect(request.getContextPath() + "/user/reviews?action=edit&feedbackId=" + idStr + "&msg=invalid");
+        if (idStr == null || caregiverStr == null || productStr == null ||
+            overallStr == null || caregiverRatingStr == null) {
+
+            response.sendRedirect(request.getContextPath()
+                    + "/user/reviews?action=edit&feedbackId=" + idStr + "&msg=invalid");
             return;
         }
 
-        int feedbackId, overallRating, caregiverRating;
+        int feedbackId, overallRating, caregiverRating, caregiverId, productId;
 
         try {
             feedbackId = Integer.parseInt(idStr);
             overallRating = Integer.parseInt(overallStr);
-            caregiverRating = Integer.parseInt(caregiverStr);
+            caregiverRating = Integer.parseInt(caregiverRatingStr);
+            caregiverId = Integer.parseInt(caregiverStr);
+            productId = Integer.parseInt(productStr);
+            
         } catch (Exception e) {
             response.sendRedirect(request.getContextPath() + "/user/reviews?action=edit&feedbackId=" + idStr + "&msg=invalid");
             return;
@@ -178,14 +197,18 @@ public class UserReviewsServlet extends HttpServlet {
 
         try (Connection conn = JDBC.connect()) {
 
-            String sql = "UPDATE feedback SET overall_rating = ?, caregiver_rating = ?, comments = ?, created_at = CURRENT_TIMESTAMP WHERE feedback_id = ? AND user_id = ?";
+            String sql =
+                    "UPDATE feedback SET overall_rating = ?, caregiver_rating = ?, comments = ?, caregiver_id = ?, product_id = ?, created_at = CURRENT_TIMESTAMP " +
+                    "WHERE feedback_id = ? AND user_id = ?";
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, overallRating);
             pstmt.setInt(2, caregiverRating);
             pstmt.setString(3, comments != null ? comments.trim() : null);
-            pstmt.setInt(4, feedbackId);
-            pstmt.setInt(5, userId);
+            pstmt.setInt(4, caregiverId);
+            pstmt.setInt(5, productId);
+            pstmt.setInt(6, feedbackId);
+            pstmt.setInt(7, userId);
 
             int rows = pstmt.executeUpdate();
 

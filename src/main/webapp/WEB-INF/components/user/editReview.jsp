@@ -127,6 +127,8 @@
     int overallRating = 0;
     int caregiverRating = 0;
     String comments = "";
+    int caregiverId = 0;
+    int productId = 0;
     int dbUserId = -1;
 
     try {
@@ -142,16 +144,17 @@
         }
 
         dbUserId = rs.getInt("user_id");
-        // sessUserId is already declared in userNavBar.jsp, just use the request attribute directly
-        Integer currentUserId = (Integer) request.getAttribute("sessUserId");
-        if (currentUserId == null || dbUserId != currentUserId.intValue()) {
-            out.println("<p style='color:red;'>You cannot edit another user's review.</p>");
-            return;
-        }
-
+        caregiverId = rs.getInt("caregiver_id");
+        productId = rs.getInt("product_id");
         overallRating = rs.getInt("overall_rating");
         caregiverRating = rs.getInt("caregiver_rating");
         comments = rs.getString("comments");
+
+        Integer currentUserId = (Integer) request.getAttribute("sessUserId");
+        if (currentUserId == null || dbUserId != currentUserId) {
+            out.println("<p style='color:red;'>You cannot edit another user's review.</p>");
+            return;
+        }
 
     } finally {
         try { if (rs != null) rs.close(); } catch (Exception ignored) {}
@@ -191,6 +194,66 @@
             <input type="hidden" name="action" value="edit">
             <input type="hidden" name="feedbackId" value="<%= feedbackId %>">
 
+			<!-- CAREGIVER LIST -->
+			<label>Caregiver Name:</label>
+			<select name="caregiver_id" required>
+				   	<option value="">Please choose...</option>
+				
+					<%
+	                try {
+	                    Connection c2 = JDBC.connect();
+	                    PreparedStatement p2 = c2.prepareStatement(
+	                        "SELECT caregiver_id, first_name, last_name FROM caregiver ORDER BY first_name"
+	                    );
+	                    ResultSet r2 = p2.executeQuery();
+	
+	                    while (r2.next()) {
+	                        int cgId = r2.getInt("caregiver_id");
+	                        String cgName = r2.getString("first_name") + " " + r2.getString("last_name");
+	                %>
+	                        <option value="<%= cgId %>" <%= (cgId == caregiverId ? "selected" : "") %>>
+	                            <%= cgName %>
+	                        </option>
+	                <%
+	                    }
+	                    r2.close(); p2.close(); c2.close();
+	                } catch (Exception e) {
+	                    out.println("<option disabled>Error loading caregivers</option>");
+	                }
+	                %>
+	            </select>
+				
+				
+				<!-- SERVICE LIST -->
+				<label>Service Name:</label>
+				<select name="product_id" required>
+				    <option value="">Please choose...</option>
+				
+				<%
+                try {
+                    Connection c3 = JDBC.connect();
+                    PreparedStatement p3 = c3.prepareStatement(
+                        "SELECT product_id, name FROM product ORDER BY name"
+                    );
+                    ResultSet r3 = p3.executeQuery();
+
+                    while (r3.next()) {
+                        int pid = r3.getInt("product_id");
+                        String pname = r3.getString("name");
+                %>
+                        <option value="<%= pid %>" <%= (pid == productId ? "selected" : "") %>>
+                            <%= pname %>
+                        </option>
+                <%
+                    }
+                    r3.close(); p3.close(); c3.close();
+                } catch (Exception e) {
+                    out.println("<option disabled>Error loading services</option>");
+                }
+                %>
+            </select>
+
+				
             <label>Overall Rating (1–5):</label>
             <select name="overall_rating" required>
                 <option value="1" <%= overallRating==1?"selected":"" %>>1 - Poor</option>
