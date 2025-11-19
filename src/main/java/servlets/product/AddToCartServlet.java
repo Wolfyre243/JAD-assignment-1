@@ -22,7 +22,7 @@ public class AddToCartServlet extends HttpServlet {
       response.sendRedirect(request.getContextPath() + "/auth/login");
       return;
     }
-    response.sendRedirect(request.getContextPath() + "/products.jsp");
+    response.sendRedirect(request.getContextPath() + "/product/viewCart");
   }
 
   @Override
@@ -49,11 +49,11 @@ public class AddToCartServlet extends HttpServlet {
         
         try (Connection conn = JDBC.connect();
              PreparedStatement pstmt = conn.prepareStatement(
-                 "SELECT service_name, price FROM product WHERE product_id = ? AND is_active = true")) {
+                 "SELECT name, price FROM product WHERE product_id = ? AND is_active = true")) {
           pstmt.setInt(1, productId);
           try (ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) {
-              serviceName = rs.getString("service_name");
+              serviceName = rs.getString("name");
               price = rs.getDouble("price");
               
               // Add to SESSION cart (not database!)
@@ -75,7 +75,7 @@ public class AddToCartServlet extends HttpServlet {
       redirectMsg = "invalid_input";
     }
 
-    response.sendRedirect(request.getContextPath() + "/products.jsp?msg=" + redirectMsg);
+    response.sendRedirect(request.getContextPath() + "/product/viewCart?msg=" + redirectMsg);
   }
   
   /**
