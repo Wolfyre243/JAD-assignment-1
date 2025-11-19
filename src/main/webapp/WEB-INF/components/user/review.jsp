@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!-- NAVBAR (unchanged) -->
-<%@ include file="/WEB-INF/components/user/userNavBar.jsp" %>
+<jsp:include page="/WEB-INF/components/user/userNavBar.jsp"></jsp:include>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="db.JDBC" %>

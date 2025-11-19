@@ -205,7 +205,7 @@
 	<div class="bg-photo"></div>
 
 	<!-- Use the same navbar as login/register -->
-	<%@ include file="/WEB-INF/components/user/userNavBar.jsp"%>
+	<jsp:include page="/WEB-INF/components/user/userNavBar.jsp"></jsp:include>
 
 	<div class="admin-card">
 	<%
