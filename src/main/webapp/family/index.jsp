@@ -22,14 +22,13 @@
 		<!-- Family Members List -->
 		<%
 		final Family userFamily = Family.getUserFamily(sessUserId);
-		final ArrayList<FamilyMember> familyList = userFamily.getMembers();
-
-		if (familyList.isEmpty()) {
+		if (userFamily == null) {
 		%>
 		<p class="no-family">No family members added yet. Add your loved
-			ones above.</p>
+			ones below.</p>
 		<%
 		} else {
+		  final ArrayList<FamilyMember> familyList = userFamily.getMembers();
 		%>
 		<table>
 			<thead>

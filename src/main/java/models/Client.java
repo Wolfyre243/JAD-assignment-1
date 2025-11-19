@@ -125,8 +125,8 @@ public class Client {
 		// Write the query
 		final String sql = new StringBuilder()
 		    .append("INSERT INTO client ")
-		    .append("（user_id, first_name, last_name, dob, gender, nric, phone, email） ")
-		    .append("VALUES （?, ?, ?, ?, ?, ?, ?, ?);")
+		    .append("(user_id, first_name, last_name, dob, gender, nric, phone, email) ")
+		    .append("VALUES (?, ?, ?, ?, ?, ?, ?, ?);")
 		    .toString();
 
 		// Load the params

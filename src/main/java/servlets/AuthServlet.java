@@ -75,7 +75,15 @@ class AuthController {
 		final int roleId = Integer.parseInt(request.getParameter("roleId"));
 
 		try {
-			User.createUser(email, password, roleId);
+			int userId = User.createUser(email, password, roleId);
+			final User user = User.getUserById(userId);
+			
+			final int userRoleId = user.getRole().getRoleId();
+      final String userRoleName = user.getRole().getRoleName();
+      
+      session.setAttribute("userId", user.getUserId());
+      session.setAttribute("userRoleId", userRoleId);
+      session.setAttribute("userRoleName", userRoleName);
 		} catch (Exception e) {
 			e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during registration.");
@@ -83,7 +91,15 @@ class AuthController {
 		}
 		
 		response.setStatus(HttpServletResponse.SC_CREATED);
-		response.sendRedirect(request.getContextPath() + "/auth/login/");
+		if (roleId == 2) {
+		  // Client role
+		  response.sendRedirect(request.getContextPath() + "/profile/create/");
+      return;
+    } else {
+      // Guardian & Admin role
+      response.sendRedirect(request.getContextPath() + "/");
+      return;
+    }
 	}
 
 	public static void logout(HttpServletRequest request, HttpServletResponse response)

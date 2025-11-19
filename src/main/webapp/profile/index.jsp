@@ -33,6 +33,10 @@
 					<%
 					if (sessRoleId == 2) {
 						Client client = Client.getClientByUserId(sessUserId);
+						if (client == null) {
+							response.sendRedirect(request.getContextPath() + "/profile/create/");
+							return;
+						}
 					%>
 					<dt>Full Name</dt>
 					<dd><%=client.getFullName()%></dd>
