@@ -86,7 +86,8 @@ final Integer sessRoleId = (Integer) session.getAttribute("sessRoleId");
 
 		<div class="nav-right">
 			<%
-			if (sessUserId == null) {
+			// Access request attribute directly to avoid duplicate variable declaration
+			if (request.getAttribute("sessUserId") == null) {
 			%>
 
 			<!-- NOT LOGGED IN -->

@@ -142,8 +142,9 @@
         }
 
         dbUserId = rs.getInt("user_id");
-        Integer sessUserId = (Integer) request.getAttribute("sessUserId");
-        if (sessUserId == null || dbUserId != sessUserId.intValue()) {
+        // sessUserId is already declared in userNavBar.jsp, just use the request attribute directly
+        Integer currentUserId = (Integer) request.getAttribute("sessUserId");
+        if (currentUserId == null || dbUserId != currentUserId.intValue()) {
             out.println("<p style='color:red;'>You cannot edit another user's review.</p>");
             return;
         }
