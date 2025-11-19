@@ -63,7 +63,7 @@
     <!-- LEFT SIDE: SilverCare + Services + Feedback (all together now) -->
     <div class="nav-left">
         <a href="<%= request.getContextPath() %>/" class="brand">SilverCare</a>
-        <a href="#">Services</a>
+        <a href="<%= request.getContextPath() %>/services/">Services</a>
         <a href="<%= request.getContextPath() %>/user/reviews">Feedback</a>
     </div>
 

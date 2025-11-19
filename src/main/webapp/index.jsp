@@ -113,7 +113,7 @@ body {
 			Where compassion<br>meets care.
 		</h2>
 		<hr>
-		<a class="btn" href="#">Explore our services</a>
+		<a class="btn" href="<%= request.getContextPath() %>/services/">Explore our services</a>
 	</div>
 
 	<!-- ABOUT US SECTION -->
