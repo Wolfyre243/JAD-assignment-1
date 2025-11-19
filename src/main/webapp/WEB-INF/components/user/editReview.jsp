@@ -107,7 +107,7 @@
 <body>
 
 <!-- NAVBAR -->
-<%@ include file="/WEB-INF/components/user/userNavBar.jsp" %>
+<jsp:include page="/WEB-INF/components/user/userNavBar.jsp"></jsp:include>
 
 <%
     String feedbackIdStr = request.getParameter("feedbackId");
