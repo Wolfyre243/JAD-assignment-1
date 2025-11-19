@@ -111,6 +111,25 @@
     .add-btn:hover {
         transform: translateY(-2px);
     }
+    
+    .view-cart-btn {
+        background: white;
+        padding: 12px 28px;
+        border-radius: 25px;
+        text-decoration: none;
+        color: black;
+        font-weight: bold;
+        border: 2px solid black;
+        font-size: 16px;
+        display: inline-block;
+        margin-left: 15px;
+        transition: 0.2s ease;
+    }
+    
+    .view-cart-btn:hover {
+        background: #f0f0f0;
+        transform: translateY(-2px);
+    }
 </style>
 
 </head>
@@ -173,24 +192,51 @@
         <div class="section-title">Description</div>
         <div class="description"><%= product.getDescription() %></div>
 
-
-
-            <!-- USER LOGGED IN → SHOW "ADD TO CART" -->
-            
-			<% if (sessUserId != null && sessRoleId != null && sessRoleId == 2) { %>
-			
-			    <form action="<%=request.getContextPath() %>/services/" method="post">
-			        <input type="hidden" name="productId" value="<%= product.getProductId() %>">
-			        <button type="submit" class="add-btn">Add To Cart</button>
-			    </form>
-			
-			<% } else { %>
-			
-			    <div class="login-warning">
-			        Login to add this service to your cart.
-			    </div>
-			
-			<% } %>
+        <%
+        // Check if user is logged in (access request attribute directly)
+        Integer currentUserId = (Integer) request.getAttribute("sessUserId");
+        Integer currentRoleId = (Integer) request.getAttribute("sessRoleId");
+        
+        if (currentUserId != null && currentRoleId != null && currentRoleId == 2) { 
+        %>
+            <!-- USER LOGGED IN & IS CLIENT → SHOW "ADD TO CART" -->
+            <form action="<%=request.getContextPath()%>/product/addToCart" method="post">
+                <input type="hidden" name="productId" value="<%= product.getProductId() %>">
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 16px; margin-bottom: 5px;">Caregiver ID (Optional):</label>
+                    <input type="number" name="caregiverId" placeholder="Enter caregiver ID" 
+                           style="padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 10px; width: 200px;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 16px; margin-bottom: 5px;">Client ID (Optional):</label>
+                    <input type="number" name="clientId" placeholder="Enter client ID" 
+                           style="padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 10px; width: 200px;">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 16px; margin-bottom: 5px;">Special Requests (Optional):</label>
+                    <textarea name="specialRequests" placeholder="Any special requirements..." 
+                              style="padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 10px; width: 100%; max-width: 500px; min-height: 80px; font-family: 'Georgia', serif;"></textarea>
+                </div>
+                
+                <button type="submit" class="add-btn">Add To Cart</button>
+                <a href="<%=request.getContextPath()%>/product/viewCart" class="view-cart-btn">View Cart</a>
+            </form>
+        
+        <% } else { %>
+        
+            <!-- NOT LOGGED IN OR WRONG ROLE -->
+            <div class="login-warning">
+                <% if (currentUserId == null) { %>
+                    Login as a client to add this service to your cart.
+                <% } else if (currentRoleId != 2) { %>
+                    Only clients can add services to cart.
+                <% } %>
+            </div>
+        
+        <% } %>
 
 
     </div>
