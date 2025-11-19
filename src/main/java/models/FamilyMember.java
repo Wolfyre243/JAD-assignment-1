@@ -64,8 +64,8 @@ public class FamilyMember {
 		// Write the query
 		final String sql = new StringBuilder()
 		    .append("INSERT INTO family_member ")
-		    .append("（family_id, client_id, relationship） ")
-		    .append("VALUES （?, ?, ?);")
+		    .append("(family_id, client_id, relationship) ")
+		    .append("VALUES (?, ?, ?);")
 		    .toString();
 
 		// Load the params

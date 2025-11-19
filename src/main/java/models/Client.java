@@ -108,7 +108,7 @@ public class Client {
 		return client;
 	}
 
-	public static void createClient(
+	public static int createClient(
 	    int userId,
 	    String firstName,
 	    String lastName,
@@ -126,7 +126,8 @@ public class Client {
 		final String sql = new StringBuilder()
 		    .append("INSERT INTO client ")
 		    .append("(user_id, first_name, last_name, dob, gender, nric, phone, email) ")
-		    .append("VALUES (?, ?, ?, ?, ?, ?, ?, ?);")
+		    .append("VALUES (?, ?, ?, ?, ?, ?, ?, ?) ")
+		    .append("RETURNING client_id;")
 		    .toString();
 
 		// Load the params
@@ -139,9 +140,16 @@ public class Client {
 		stmt.setString(6, nric);
 		stmt.setString(7, phone);
 		stmt.setString(8, email);
-		stmt.executeUpdate();
+		
+		int insertedClientId = -1;
+		final ResultSet rs = stmt.executeQuery();
+
+    if (rs.next()) {
+      insertedClientId = rs.getInt("client_id");
+    }
 
 		conn.close();
+		return insertedClientId;
 	}
 
 	private static Client resultMapper(ResultSet rs) throws SQLException {

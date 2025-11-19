@@ -73,7 +73,7 @@
 		<h2>Add Family Member</h2>
 		<hr>
 
-		<form action="AddFamilyMemberServlet" method="post">
+		<form action="<%=request.getContextPath()%>/family/add" method="post">
 			<div class="form-grid">
 				<div class="form-group">
 					<label>First Name</label> <input type="text" name="firstName"

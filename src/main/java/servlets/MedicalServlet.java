@@ -15,15 +15,23 @@ class MedicalController {
   public static void createMedicalProfile(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     final HttpSession session = request.getSession();
+
+    int clientId = -1;
+    if (request.getParameter("cid") != null) {
+      clientId = Integer.parseInt(request.getParameter("cid"));
+    }
+
     final Integer sessUserId = (Integer) session.getAttribute("userId");
     if (sessUserId == null) {
       response.sendRedirect(request.getContextPath() + "/auth/login/");
       return;
     }
 
+    // TODO: Ensure client id belongs to sessUserId's family
+
     try {
       MedicalProfile.createMedicalProfile(
-          Client.getClientByUserId(sessUserId).getClientId(),
+          clientId != -1 ? clientId : Client.getClientByUserId(sessUserId).getClientId(),
           request.getParameter("bloodType"),
           request.getParameter("allergies"),
           request.getParameter("chronicConditions"),
@@ -42,7 +50,8 @@ class MedicalController {
 //      session.setAttribute("medicalError", "Failed to create medical profile. Please try again.");
 //      response.sendRedirect("client/medical/createMedicalProfile.jsp");
       e.printStackTrace();
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred while creating medical profile.");
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+          "An error occurred while creating medical profile.");
     }
   }
 }

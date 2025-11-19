@@ -18,7 +18,7 @@
 		</div>
 
 		<div class="form-body">
-			<form action="${pageContext.request.contextPath}/medical/create"
+			<form action="${pageContext.request.contextPath}/medical/create?cid=<%=request.getParameter("cid")%>"
 				method="post">
 				<div class="form-grid">
 					<div class="form-group">
