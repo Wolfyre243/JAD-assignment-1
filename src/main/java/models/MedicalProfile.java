@@ -86,7 +86,7 @@ public class MedicalProfile {
 		}
 
 		final String sql = new StringBuilder()
-		    .append("INSERT INTO medical_profile ")
+		    .append("INSERT INTO client_medical_profile ")
 		    .append("(client_id, blood_type, allergies, chronic_conditions, ")
 		    .append("medications, mobility_level, cognitive_status, ")
 		    .append("preferred_hospital, doctor_name, doctor_contact, notes) ")

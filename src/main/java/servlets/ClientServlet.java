@@ -56,7 +56,41 @@ class ClientController {
   }
 }
 
-@WebServlet("/profile/create")
+class EmergencyContactController {
+  public static void createEmergencyContact(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+
+    int sessClientId = 0;
+    System.out.println("CID: " + request.getParameter("cid"));
+    if (request.getParameter("cid") == null) {
+      System.out.println("Client profile not found. Redirecting to profile creation page.");
+      response.sendRedirect(request.getContextPath() + "/profile/create");
+      return;
+    } else {
+      sessClientId = Integer.parseInt(request.getParameter("cid"));
+    }
+
+    try {
+      String name = request.getParameter("name");
+      String phone = request.getParameter("phone");
+      String relationship = request.getParameter("relationship");
+
+      models.EmergencyContact.createEmergencyContact(
+          sessClientId,
+          name, phone, relationship);
+
+      response.sendRedirect(request.getContextPath() + "/profile/");
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+          "Failed to create emergency contact. Please try again.");
+      return;
+    }
+  }
+}
+
+@WebServlet({ "/profile/create", "/emergency-contact/add" })
 public class ClientServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
@@ -80,6 +114,9 @@ public class ClientServlet extends HttpServlet {
     if (path.endsWith("/profile/create")) {
       System.out.println("ClientServlet: Handling profile creation POST request.");
       ClientController.createClient(request, response);
+    } else if (path.endsWith("/emergency-contact/add")) {
+      System.out.println("ClientServlet: Handling emergency contact creation POST request.");
+      EmergencyContactController.createEmergencyContact(request, response);
     } else {
       response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
