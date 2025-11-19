@@ -219,6 +219,14 @@
 						class="btn-edit"> <strong>Edit Medical Profile</strong>
 					</a>
 					<%
+					} else {
+					%>
+					<p class="no-medical-profile">No medical profile found.</p>
+					<a href="${pageContext.request.contextPath}/medical/create/"
+						class="btn-add-medical-profile"> <strong>Create
+							Medical Profile</strong>
+					</a>
+					<%
 					}
 					%>
 				</div>
