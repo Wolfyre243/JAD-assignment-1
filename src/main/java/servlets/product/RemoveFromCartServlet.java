@@ -6,9 +6,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.SQLException;
 import lib.SessionManagement;
-import handlers.CartHandler;
+import lib.CartSessionManager;
+import models.Cart;
 
 @WebServlet({"/product/removeFromCart", "/product/removeFromCart.jsp"})
 public class RemoveFromCartServlet extends HttpServlet {
@@ -30,23 +30,33 @@ public class RemoveFromCartServlet extends HttpServlet {
       return;
     }
 
-    String cartItemIdStr = request.getParameter("cartItemId");
+    // Changed from cartItemId to itemIndex
+    String itemIndexStr = request.getParameter("itemIndex");
     String redirectMsg = "removed";
-    if (cartItemIdStr == null || cartItemIdStr.trim().isEmpty()) {
+    
+    if (itemIndexStr == null || itemIndexStr.trim().isEmpty()) {
       response.sendRedirect(request.getContextPath() + "/product/viewCart?msg=invalid");
       return;
     }
 
     try {
-      int cartItemId = Integer.parseInt(cartItemIdStr.trim());
-      Integer userId = (Integer) request.getSession().getAttribute("userId");
-      boolean ok = CartHandler.removeCartItem(userId, cartItemId);
-      if (!ok) redirectMsg = "not_found";
+      int itemIndex = Integer.parseInt(itemIndexStr.trim());
+      
+      // Get cart from session
+      Cart cart = CartSessionManager.getCart(request);
+      
+      // Remove item by index
+      if (cart.removeItemByIndex(itemIndex)) {
+        CartSessionManager.saveCart(request, cart);
+        redirectMsg = "removed";
+      } else {
+        redirectMsg = "not_found";
+      }
     } catch (NumberFormatException e) {
       redirectMsg = "invalid";
-    } catch (SQLException e) {
+    } catch (Exception e) {
       e.printStackTrace();
-      redirectMsg = "db_error";
+      redirectMsg = "error";
     }
 
     response.sendRedirect(request.getContextPath() + "/product/viewCart?msg=" + redirectMsg);

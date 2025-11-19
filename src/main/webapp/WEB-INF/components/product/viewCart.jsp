@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.*" %>
+<%@ page import="java.util.List" %>
+<%@ page import="models.Cart" %>
 
 <%@ include file="/WEB-INF/components/common/header.jsp" %>
 
@@ -32,9 +33,9 @@
     <%= (error != null) ? ("<p class='msg-error'>" + error + "</p>") : "" %>
 
     <%
-        List<Map<String,Object>> items = (List<Map<String,Object>>) request.getAttribute("items");
+        // Get cart items from session (via ViewCartServlet)
+        List<Cart.CartItem> items = (List<Cart.CartItem>) request.getAttribute("items");
         Double total = (Double) request.getAttribute("total");
-        Integer cartId = (Integer) request.getAttribute("cartId");
 
         if (items == null || items.isEmpty()) {
     %>
@@ -58,30 +59,32 @@
                 </thead>
                 <tbody>
                 <%
-                    for (Map<String, Object> item : items) {
-                        Integer qty = (Integer) item.get("quantity");
-                        Double price = (Double) item.get("price");
-                        double subtotal = price * (qty != null ? qty : 1);
+                    int index = 0; // Use index instead of cartItemId
+                    for (Cart.CartItem item : items) {
                 %>
                     <tr>
-                        <td><%= item.get("name") %></td>
-                        <td>$<%= String.format("%.2f", price) %></td>
+                        <td><%= item.getServiceName() %></td>
+                        <td>$<%= String.format("%.2f", item.getPrice()) %></td>
                         <td>
-                            <form action="/product/updateCartQuantity" method="post" style="margin:0; display:inline;">
-                                <input type="hidden" name="cartItemId" value="<%= item.get("cartItemId") %>">
-                                <input type="number" name="quantity" value="<%= qty %>" min="1" max="99" style="width:60px;">
+                            <form action="<%= request.getContextPath() %>/product/updateCartQuantity" method="post" style="margin:0; display:inline;">
+                                <input type="hidden" name="itemIndex" value="<%= index %>">
+                                <input type="number" name="quantity" value="<%= item.getQuantity() %>" min="1" max="99" style="width:60px;">
                                 <button type="submit">Update</button>
                             </form>
                         </td>
-                        <td>$<%= String.format("%.2f", subtotal) %></td>
-                        <td><%= item.get("caregiverId") != null ? item.get("caregiverId") : "N/A" %></td>
-                        <td><%= item.get("clientId") != null ? item.get("clientId") : "N/A" %></td>
-                        <td><%= item.get("specialRequests") != null ? item.get("specialRequests") : "" %></td>
+                        <td>$<%= String.format("%.2f", item.getSubtotal()) %></td>
+                        <td><%= item.getCaregiverId() != null ? item.getCaregiverId() : "N/A" %></td>
+                        <td><%= item.getClientId() != null ? item.getClientId() : "N/A" %></td>
+                        <td><%= item.getSpecialRequests() != null ? item.getSpecialRequests() : "" %></td>
                         <td>
-                            <a href="/product/removeFromCart?cartItemId=<%= item.get("cartItemId") %>" onclick="return confirm('Remove this item?');">Remove</a>
+                            <form action="<%= request.getContextPath() %>/product/removeFromCart" method="post" style="margin:0; display:inline;">
+                                <input type="hidden" name="itemIndex" value="<%= index %>">
+                                <button type="submit" onclick="return confirm('Remove this item?');">Remove</button>
+                            </form>
                         </td>
                     </tr>
                 <%
+                        index++; // Increment index for next item
                     }
                 %>
                 </tbody>
@@ -89,7 +92,11 @@
 
             <p><strong>Total: $<%= String.format("%.2f", total != null ? total : 0.0) %></strong></p>
 
-            <a href="/product/checkout?cartId=<%= cartId %>">Proceed to Checkout</a>
+            <form action="<%= request.getContextPath() %>/product/checkout" method="post" style="display:inline;">
+                <button type="submit" style="padding: 10px 20px; font-size: 16px; background: #4CAF50; color: white; border: none; cursor: pointer;">
+                    Proceed to Checkout
+                </button>
+            </form>
     <%
         }
     %>
