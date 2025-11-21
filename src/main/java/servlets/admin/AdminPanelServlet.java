@@ -82,8 +82,43 @@ public class AdminPanelServlet extends HttpServlet {
             }
 
             if ("/admin/feedback".equals(path)) {
-                java.util.List<java.util.Map<String,Object>> feedbacks = handlers.AdminFeedbackHandler.listFeedback();
+                // Get filter parameters
+                String productIdParam = request.getParameter("productId");
+                String caregiverIdParam = request.getParameter("caregiverId");
+                Integer productIdFilter = null;
+                Integer caregiverIdFilter = null;
+                
+                if (productIdParam != null && !productIdParam.trim().isEmpty() && !"all".equals(productIdParam)) {
+                    try {
+                        productIdFilter = Integer.parseInt(productIdParam);
+                    } catch (NumberFormatException e) {
+                        // Ignore invalid productId
+                    }
+                }
+                
+                if (caregiverIdParam != null && !caregiverIdParam.trim().isEmpty() && !"all".equals(caregiverIdParam)) {
+                    try {
+                        caregiverIdFilter = Integer.parseInt(caregiverIdParam);
+                    } catch (NumberFormatException e) {
+                        // Ignore invalid caregiverId
+                    }
+                }
+                
+                // Get filtered feedback
+                java.util.List<java.util.Map<String,Object>> feedbacks = handlers.AdminFeedbackHandler.listFeedback(productIdFilter, caregiverIdFilter);
                 request.setAttribute("feedbacks", feedbacks);
+                
+                // Get all products for filter dropdown
+                java.util.List<java.util.Map<String,Object>> products = handlers.AdminFeedbackHandler.listAllProducts();
+                request.setAttribute("products", products);
+                
+                // Get all caregivers for filter dropdown
+                java.util.List<java.util.Map<String,Object>> caregivers = handlers.AdminFeedbackHandler.listAllCaregivers();
+                request.setAttribute("caregivers", caregivers);
+                
+                // Pass the current filter selections
+                request.setAttribute("selectedProductId", productIdParam != null ? productIdParam : "all");
+                request.setAttribute("selectedCaregiverId", caregiverIdParam != null ? caregiverIdParam : "all");
             }
 
             if ("/admin/orders".equals(path)) {

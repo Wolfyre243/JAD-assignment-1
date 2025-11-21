@@ -188,6 +188,57 @@
             <form action="<%= request.getContextPath() %>/user/reviews" method="post">
     			<input type="hidden" name="action" value="add">
 
+				<!-- CAREGIVER LIST -->
+				<label>Caregiver Name:</label>
+				<select name="caregiver_id" required>
+				    <option value="">Please choose...</option>
+				
+				    <%
+				    try {
+				        Connection conn = JDBC.connect();
+				        PreparedStatement ps = conn.prepareStatement(
+				            "SELECT caregiver_id, first_name, last_name FROM caregiver ORDER BY first_name"
+				        );
+				        ResultSet r = ps.executeQuery();
+				        while (r.next()) {
+				    %>
+				        <option value="<%= r.getInt("caregiver_id") %>">
+				            <%= r.getString("first_name") %> <%= r.getString("last_name") %>
+				        </option>
+				    <% } 
+				        r.close(); ps.close(); conn.close();
+				        } catch (Exception e) {
+				            out.println("<option disabled>Error loading caregivers</option>");
+				        }
+				    %>
+				</select>
+				
+				
+				<!-- SERVICE LIST -->
+				<label>Service Name:</label>
+				<select name="product_id" required>
+			    <option value="">Please choose...</option>
+			
+			    <%
+			    try {
+			        Connection conn2 = JDBC.connect();
+			        PreparedStatement ps2 = conn2.prepareStatement(
+			            "SELECT product_id, name FROM product ORDER BY name"
+			        );
+			        ResultSet r2 = ps2.executeQuery();
+			        while (r2.next()) {
+			    %>
+			        <option value="<%= r2.getInt("product_id") %>">
+			            <%= r2.getString("name") %>
+			        </option>
+			    <% } 
+			        r2.close(); ps2.close(); conn2.close(); 
+				        } catch (Exception e) {
+				            out.println("<option disabled>Error loading services</option>");
+				        }
+				    %>
+				</select>
+
 
                 <label>Overall Rating (1–5):</label>
                 <select name="overall_rating" required>
@@ -198,7 +249,7 @@
                     <option value="4">4 - Very Good</option>
                     <option value="5">5 - Excellent</option>
                 </select>
-
+                
                 <label>Caregiver Rating (1–5):</label>
                 <select name="caregiver_rating" required>
                     <option value="">Choose rating</option>

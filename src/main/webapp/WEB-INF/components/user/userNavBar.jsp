@@ -1,6 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/components/auth/user-session.jsp"%>
+<%
+final Integer sessUserId = (Integer) session.getAttribute("sessUserId");
+final Integer sessRoleId = (Integer) session.getAttribute("sessRoleId");
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -72,7 +76,7 @@
 			<a href="<%= request.getContextPath() %>/services/">Services</a> 
       <a href="<%= request.getContextPath() %>/user/reviews">Feedback</a>
 			<%
-			if (sessRoleId != null && sessRoleId == 3) {
+			if (sessUserId != null && sessRoleId == 3) {
 			%>
 			<a href="<%=request.getContextPath()%>/family/">Family</a>
 			<%
@@ -82,7 +86,8 @@
 
 		<div class="nav-right">
 			<%
-			if (sessUserId == null) {
+			// Access request attribute directly to avoid duplicate variable declaration
+			if (request.getAttribute("sessUserId") == null) {
 			%>
 
 			<!-- NOT LOGGED IN -->

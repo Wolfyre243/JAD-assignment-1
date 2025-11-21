@@ -7,7 +7,7 @@
   Description: Admin dashboard with real-time statistics using JDBC utility and AuthServlet session
 --%>
     <h1>Admin Dashboard</h1>
-    <p>Welcome, Admin!</p>
+    <p style="font-size: 20px; color: #555;">Welcome, Admin!</p>
     <hr>
 
     <%
@@ -42,12 +42,16 @@
     %>
 
     <h2>Statistics</h2>
-    <table border="1" cellpadding="8" cellspacing="0">
-        <tr><th>Metric</th><th>Count</th></tr>
-        <tr><td><strong>Total Users</strong></td><td><%= totalUsers != null ? totalUsers : 0 %></td></tr>
-        <tr><td><strong>Total Orders</strong></td><td><%= totalOrders != null ? totalOrders : 0 %></td></tr>
-        <tr><td><strong>Total Feedback</strong></td><td><%= totalFeedback != null ? totalFeedback : 0 %></td></tr>
-        <tr><td><strong>Total Products</strong></td><td><%= totalProducts != null ? totalProducts : 0 %></td></tr>
+    <table>
+        <thead>
+            <tr><th>Metric</th><th>Count</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>Total Users</strong></td><td><%= totalUsers != null ? totalUsers : 0 %></td></tr>
+            <tr><td><strong>Total Orders</strong></td><td><%= totalOrders != null ? totalOrders : 0 %></td></tr>
+            <tr><td><strong>Total Feedback</strong></td><td><%= totalFeedback != null ? totalFeedback : 0 %></td></tr>
+            <tr><td><strong>Total Products</strong></td><td><%= totalProducts != null ? totalProducts : 0 %></td></tr>
+        </tbody>
     </table>
 
     <%
@@ -56,13 +60,11 @@
 
     <hr>
     <h2>Management Sections</h2>
-    <ul>
-        <li><a href="<%= request.getContextPath() %>/admin/users">User Management</a></li>
-        <li><a href="<%= request.getContextPath() %>/admin/feedback">Feedback Management</a></li>
-        <li><a href="<%= request.getContextPath() %>/admin/orders">Order Management</a></li>
-        <li><a href="<%= request.getContextPath() %>/admin/services">Services Management</a></li>
+    <ul style="list-style-type: none; padding-left: 0;">
+        <li>📊 <a href="<%= request.getContextPath() %>/admin/users">User Management</a></li>
+        <li>💬 <a href="<%= request.getContextPath() %>/admin/feedback">Feedback Management</a></li>
+        <li>📦 <a href="<%= request.getContextPath() %>/admin/orders">Order Management</a></li>
+        <li>🛠️ <a href="<%= request.getContextPath() %>/admin/services">Services Management</a></li>
     </ul>
 
-    <hr>
-    <a href="${pageContext.request.contextPath}/auth/logout">Logout</a>
 

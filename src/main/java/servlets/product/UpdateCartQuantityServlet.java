@@ -6,9 +6,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.SQLException;
 import lib.SessionManagement;
-import handlers.CartHandler;
+import lib.CartSessionManager;
+import models.Cart;
 
 @WebServlet({"/product/updateCartQuantity", "/product/updateCartQuantity.jsp"})
 public class UpdateCartQuantityServlet extends HttpServlet {
@@ -30,30 +30,40 @@ public class UpdateCartQuantityServlet extends HttpServlet {
       return;
     }
 
-    String cartItemIdStr = request.getParameter("cartItemId");
+    // Changed from cartItemId to itemIndex (position in cart array)
+    String itemIndexStr = request.getParameter("itemIndex");
     String quantityStr = request.getParameter("quantity");
     String redirectMsg = "updated";
 
-    if (cartItemIdStr == null || quantityStr == null) {
+    if (itemIndexStr == null || quantityStr == null) {
       response.sendRedirect(request.getContextPath() + "/product/viewCart?msg=invalid");
       return;
     }
 
     try {
-      int cartItemId = Integer.parseInt(cartItemIdStr);
+      int itemIndex = Integer.parseInt(itemIndexStr);
       int quantity = Integer.parseInt(quantityStr);
-      if (quantity < 1 || quantity > 99 || cartItemId <= 0) {
+      
+      if (quantity < 1 || quantity > 99 || itemIndex < 0) {
         redirectMsg = "invalid_quantity";
       } else {
-        Integer userId = (Integer) request.getSession().getAttribute("userId");
-        boolean ok = CartHandler.updateCartItemQuantity(userId, cartItemId, quantity);
-        if (!ok) redirectMsg = "not_found";
+        // Get cart from session
+        Cart cart = CartSessionManager.getCart(request);
+        
+        // Update quantity in memory
+        if (itemIndex < cart.getItems().size()) {
+          cart.getItems().get(itemIndex).setQuantity(quantity);
+          CartSessionManager.saveCart(request, cart);
+          redirectMsg = "updated";
+        } else {
+          redirectMsg = "not_found";
+        }
       }
     } catch (NumberFormatException e) {
       redirectMsg = "invalid";
-    } catch (SQLException e) {
+    } catch (Exception e) {
       e.printStackTrace();
-      redirectMsg = "db_error";
+      redirectMsg = "error";
     }
 
     response.sendRedirect(request.getContextPath() + "/product/viewCart?msg=" + redirectMsg);

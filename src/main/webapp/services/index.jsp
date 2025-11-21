@@ -159,7 +159,7 @@
         </select>
     </form>
 
-    <a href="<%= request.getContextPath() %>/cart" class="cart-btn">🛒</a>
+    <a href="<%= request.getContextPath() %>/product/viewCart" class="cart-btn">🛒</a>
 </div>
 
 <%
@@ -189,7 +189,7 @@
         <div class="card-subtitle"><%= p.getCategory().getName() %></div>
 
         <a class="details-btn"
-           href="<%= request.getContextPath() %>/services/details.jsp?id=<%= p.getProductId() %>">
+           href="<%= request.getContextPath() %>/services/details/viewDetails.jsp?id=<%= p.getProductId() %>">
             View Details
         </a>
     </div>

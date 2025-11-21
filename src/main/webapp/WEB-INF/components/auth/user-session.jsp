@@ -1,8 +1,11 @@
 <!-- 
-Note: If your file uses protected, just use the sessUserId in protected.
-Both files include the same code to get the userId and roleId from the session.
+Note: If your file uses protected.jsp, the variables are already declared there.
+This file only uses request attributes to avoid duplicate variable declarations.
 -->
 <%
-Integer sessUserId = (Integer) session.getAttribute("userId");
-Integer sessRoleId = (Integer) session.getAttribute("userRoleId");
+// Only set request attributes if not already set by protected.jsp
+if (pageContext.getAttribute("_authVarsSet") == null) {
+    request.setAttribute("sessUserId", session.getAttribute("userId"));
+    request.setAttribute("sessRoleId", session.getAttribute("userRoleId"));
+}
 %>

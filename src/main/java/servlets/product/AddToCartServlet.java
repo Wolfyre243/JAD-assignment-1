@@ -6,9 +6,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.SQLException;
+import java.sql.*;
 import lib.SessionManagement;
-import handlers.CartHandler;
+import lib.CartSessionManager;
+import models.Cart;
+import db.JDBC;
 
 @WebServlet({"/product/addToCart", "/product/addToCart.jsp"})
 public class AddToCartServlet extends HttpServlet {
@@ -20,7 +22,7 @@ public class AddToCartServlet extends HttpServlet {
       response.sendRedirect(request.getContextPath() + "/auth/login");
       return;
     }
-    response.sendRedirect(request.getContextPath() + "/products.jsp");
+    response.sendRedirect(request.getContextPath() + "/product/viewCart");
   }
 
   @Override
@@ -32,27 +34,59 @@ public class AddToCartServlet extends HttpServlet {
 
     String redirectMsg = "added";
     try {
-      Integer userId = (Integer) request.getSession().getAttribute("userId");
+      // Parse request parameters
       int productId = Integer.parseInt(request.getParameter("productId"));
-      Integer caregiverId = null;
-      Integer clientId = null;
-      try { String c = request.getParameter("caregiverId"); if (c != null && !c.trim().isEmpty()) caregiverId = Integer.parseInt(c); } catch (NumberFormatException ignored) {}
-      try { String c = request.getParameter("clientId"); if (c != null && !c.trim().isEmpty()) clientId = Integer.parseInt(c); } catch (NumberFormatException ignored) {}
+      Integer caregiverId = parseIntOrNull(request.getParameter("caregiverId"));
+      Integer clientId = parseIntOrNull(request.getParameter("clientId"));
       String specialRequests = request.getParameter("specialRequests");
 
       if (productId <= 0) {
         redirectMsg = "invalid_product";
       } else {
-        boolean ok = CartHandler.addToCart(userId, productId, caregiverId, clientId, specialRequests);
-        if (!ok) redirectMsg = "db_error";
+        // Fetch product details from database 
+        String serviceName = "";
+        double price = 0.0;
+        
+        try (Connection conn = JDBC.connect();
+             PreparedStatement pstmt = conn.prepareStatement(
+                 "SELECT name, price FROM product WHERE product_id = ? AND is_active = true")) {
+          pstmt.setInt(1, productId);
+          try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+              serviceName = rs.getString("name");
+              price = rs.getDouble("price");
+              
+              // Add to SESSION cart (not database!)
+              Cart cart = CartSessionManager.getCart(request);
+              cart.addItem(productId, serviceName, price, 1, caregiverId, clientId, specialRequests);
+              CartSessionManager.saveCart(request, cart);
+              
+              redirectMsg = "added";
+            } else {
+              redirectMsg = "product_not_found";
+            }
+          }
+        } catch (SQLException e) {
+          e.printStackTrace();
+          redirectMsg = "db_error";
+        }
       }
     } catch (NumberFormatException e) {
       redirectMsg = "invalid_input";
-    } catch (SQLException e) {
-      e.printStackTrace();
-      redirectMsg = "db_error";
     }
 
-    response.sendRedirect(request.getContextPath() + "/products.jsp?msg=" + redirectMsg);
+    response.sendRedirect(request.getContextPath() + "/product/viewCart?msg=" + redirectMsg);
+  }
+  
+  /**
+   * Helper method to parse Integer or return null
+   */
+  private Integer parseIntOrNull(String value) {
+    if (value == null || value.trim().isEmpty()) return null;
+    try {
+      return Integer.parseInt(value.trim());
+    } catch (NumberFormatException e) {
+      return null;
+    }
   }
 }

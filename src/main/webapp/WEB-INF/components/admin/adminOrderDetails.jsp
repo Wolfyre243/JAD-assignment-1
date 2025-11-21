@@ -5,13 +5,13 @@
         String orderError = (String) request.getAttribute("orderError");
         if (orderError != null) {
     %>
-        <p style="color:red;"><%= orderError %></p>
-        <a href="<%= request.getContextPath() %>/admin/orders">Back to Orders</a>
+        <p class="msg-error"><%= orderError %></p>
+        <p><a href="<%= request.getContextPath() %>/admin/orders">← Back to Orders</a></p>
     <%
         } else if (order == null) {
     %>
-        <p style="color:red;">Order data not available.</p>
-        <a href="<%= request.getContextPath() %>/admin/orders">Back to Orders</a>
+        <p class="msg-error">Order data not available.</p>
+        <p><a href="<%= request.getContextPath() %>/admin/orders">← Back to Orders</a></p>
     <%
         } else {
             int orderId = (Integer) order.get("orderId");
@@ -20,7 +20,7 @@
             String formattedOrderDate = createdAt != null ? createdAt.toString().substring(0,19).replace("T"," ") : "";
     %>
     <h1>Order Details</h1>
-    <a href="<%= request.getContextPath() %>/admin/orders">Back to Orders</a>
+    <p><a href="<%= request.getContextPath() %>/admin/orders">← Back to Orders</a></p>
     <hr>
 
     <h2>Order #<%= orderId %></h2>
@@ -37,7 +37,7 @@
     <%
             } else {
     %>
-        <table border="1" cellpadding="8" cellspacing="0">
+        <table>
             <thead>
                 <tr>
                     <th>Booking ID</th>
