@@ -153,7 +153,7 @@ public class User {
 		return user;
 	}
 
-	public static void createUser(String email, String password, int roleId) throws SQLException {
+	public static int createUser(String email, String password, int roleId) throws SQLException {
 		final Connection conn = JDBC.connect();
 		if (conn == null) {
 			throw new SQLException("Database connection failed");
@@ -174,12 +174,12 @@ public class User {
 
 		PreparedStatement psUser = conn.prepareStatement(userSQL);
 		PreparedStatement psUserRole = conn.prepareStatement(userRoleSQL);
-
+		
+		int insertedUserId = -1;
+		
 		try {
 			// Start transaction
 			conn.setAutoCommit(false);
-
-			int insertedUserId = -1;
 
 			// Perform user insertion
 			psUser.setString(1, email);
@@ -218,6 +218,8 @@ public class User {
 		psUserRole.close();
 		conn.setAutoCommit(true);
 		conn.close();
+		
+		return insertedUserId;
 	}
 
 	/**

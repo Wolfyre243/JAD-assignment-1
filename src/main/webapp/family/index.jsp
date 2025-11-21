@@ -22,14 +22,13 @@
 		<!-- Family Members List -->
 		<%
 		final Family userFamily = Family.getUserFamily(sessUserId);
-		final ArrayList<FamilyMember> familyList = userFamily.getMembers();
-
-		if (familyList.isEmpty()) {
+		if (userFamily == null) {
 		%>
 		<p class="no-family">No family members added yet. Add your loved
-			ones above.</p>
+			ones below.</p>
 		<%
 		} else {
+		  final ArrayList<FamilyMember> familyList = userFamily.getMembers();
 		%>
 		<table>
 			<thead>
@@ -74,7 +73,7 @@
 		<h2>Add Family Member</h2>
 		<hr>
 
-		<form action="AddFamilyMemberServlet" method="post">
+		<form action="<%=request.getContextPath()%>/family/add" method="post">
 			<div class="form-grid">
 				<div class="form-group">
 					<label>First Name</label> <input type="text" name="firstName"

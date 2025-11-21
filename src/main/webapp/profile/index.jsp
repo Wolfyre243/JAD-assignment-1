@@ -33,6 +33,10 @@
 					<%
 					if (sessRoleId == 2) {
 						Client client = Client.getClientByUserId(sessUserId);
+						if (client == null) {
+							response.sendRedirect(request.getContextPath() + "/profile/create/");
+							return;
+						}
 					%>
 					<dt>Full Name</dt>
 					<dd><%=client.getFullName()%></dd>
@@ -117,7 +121,7 @@
 					<div id="addContactForm" class="add-contact-form">
 						<h4>Add New Emergency Contact</h4>
 						<form
-							action="${pageContext.request.contextPath}/AddEmergencyContactServlet"
+							action="${pageContext.request.contextPath}/emergency-contact/add?cid=<%= client.getClientId() %>"
 							method="post">
 							<table>
 								<tr>
@@ -213,6 +217,14 @@
 					</div>
 					<a href="${pageContext.request.contextPath}/profile/"
 						class="btn-edit"> <strong>Edit Medical Profile</strong>
+					</a>
+					<%
+					} else {
+					%>
+					<p class="no-medical-profile">No medical profile found.</p>
+					<a href="${pageContext.request.contextPath}/medical/create/"
+						class="btn-add-medical-profile"> <strong>Create
+							Medical Profile</strong>
 					</a>
 					<%
 					}

@@ -59,9 +59,9 @@ public class EmergencyContact {
 
 		// Write the query
 		final String sql = new StringBuilder()
-		    .append("INSERT INTO client_medical_profile ")
-		    .append("（client_id, name, phone, relationship） ")
-		    .append("VALUES （?, ?, ?, ?);")
+		    .append("INSERT INTO emergency_contact ")
+		    .append("(client_id, name, phone, relationship) ")
+		    .append("VALUES (?, ?, ?, ?);")
 		    .toString();
 
 		// Load the params

@@ -216,6 +216,17 @@ body {
     color: #d81b60;
 }
 
+.no-medical-profile {
+    background: #fff0f5;
+    border: 2px dashed #ffbfd0;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    font-size: 17px;
+    color: #d81b60;
+    margin: 20px 0;
+    font-style: italic;
+}
 /* =============== BUTTONS =============== */
 .btn-edit {
     display: inline-block;
@@ -232,6 +243,33 @@ body {
 .btn-edit:hover {
     background: #ffa8c0;
     transform: translateY(-2px);
+}
+
+.btn-add-medical-profile {
+    display: inline-block;
+    background: #ffbfd0;
+    color: #000;
+    font-weight: bold;
+    font-size: 17px;
+    padding: 12px 32px;
+    border-radius: 30px;
+    text-decoration: none;
+    margin: 20px auto 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 191, 208, 0.4);
+}
+
+.btn-add-medical-profile:hover {
+    background: #ffa8c0;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 191, 208, 0.6);
+    text-decoration: none;
+    color: #000;
+}
+
+.medical-profile .no-profile-wrapper {
+    text-align: center;
+    padding: 30px 20px;
 }
 
 .text-center { text-align: center; }

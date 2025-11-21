@@ -20,23 +20,24 @@
 	<jsp:include page="/WEB-INF/components/user/userNavBar.jsp"></jsp:include>
 	<%
 	String clientIdStr = request.getParameter("cid");
-  if (clientIdStr == null) {
-    response.sendRedirect(request.getContextPath() + "/");
-    return;
-  }
+	if (clientIdStr == null) {
+		response.sendRedirect(request.getContextPath() + "/");
+		return;
+	}
 	final int clientId = Integer.parseInt(clientIdStr);
 	final boolean isInFamily = Family.checkMemberInFamily(sessUserId, clientId);
 	if (!isInFamily) {
 		response.sendRedirect(request.getContextPath() + "/");
 		return;
 	}
-	
+
 	final Client client = Client.getClientById(clientId);
 	%>
 	<div class="profile-container">
 		<!-- Header -->
 		<div class="profile-header">
-			<h1><%=client.getFirstName()%>'s Care Profile</h1>
+			<h1><%=client.getFirstName()%>'s Care Profile
+			</h1>
 		</div>
 
 		<!-- Body -->
@@ -68,13 +69,15 @@
 					<dd><%=client.getCreatedAt()%></dd>
 					<%
 					} else {
-						response.sendRedirect(request.getContextPath() + "/");
+					response.sendRedirect(request.getContextPath() + "/");
 					}
 					%>
 				</dl>
-				
+
 				<div style="text-align: center; margin-top: 25px;">
-					<a href="./edit/" class="btn-edit">Edit <%=client.getFullName()%>'s Profile</a>
+					<a href="./edit/" class="btn-edit">Edit <%=client.getFullName()%>'s
+						Profile
+					</a>
 				</div>
 			</div>
 
@@ -123,7 +126,7 @@
 					<div id="addContactForm" class="add-contact-form">
 						<h4>Add New Emergency Contact</h4>
 						<form
-							action="${pageContext.request.contextPath}/AddEmergencyContactServlet"
+							action="${pageContext.request.contextPath}/emergency-contact/add?cid=<%= request.getParameter("cid") %>"
 							method="post">
 							<table>
 								<tr>
@@ -221,13 +224,15 @@
 						class="btn-edit"> <strong>Edit Medical Profile</strong>
 					</a>
 					<%
-          } else {
-          %>
-          <p class="no-contacts">No medical profile set up yet.</p>
-          <a class="btn-edit" href="/profile/medical-profile?action=edit">Create Medical Profile</a>
-          <%
-          }
-          %>
+					} else {
+					%>
+					<p class="no-contacts">No medical profile set up yet.</p>
+					<a class="btn-edit"
+						href="<%=request.getContextPath()%>/medical/create/?cid=<%=client.getClientId()%>">Create
+						Medical Profile</a>
+					<%
+					}
+					%>
 				</div>
 			</div>
 			<%
