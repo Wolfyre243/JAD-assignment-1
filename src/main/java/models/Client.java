@@ -21,219 +21,264 @@ import java.util.ArrayList;
 import db.JDBC;
 
 public class Client {
-	private int clientId;
-	private User user;
-	private ArrayList<EmergencyContact> emergencyContacts;
-	private MedicalProfile medicalProfile;
-	private String firstName;
-	private String lastName;
-	private Date dob;
-	private String gender;
-	private String nric;
-	private String phone;
-	private String email;
-	private Timestamp createdAt;
-	private Timestamp updatedAt;
+  private int clientId;
+  private User user;
+  private ArrayList<EmergencyContact> emergencyContacts;
+  private MedicalProfile medicalProfile;
+  private String firstName;
+  private String lastName;
+  private Date dob;
+  private String gender;
+  private String nric;
+  private String phone;
+  private String email;
+  private Timestamp createdAt;
+  private Timestamp updatedAt;
 
-	public Client(int clientId, User user, ArrayList<EmergencyContact> emergencyContacts, MedicalProfile medicalProfile,
-	    String firstName, String lastName, Date dob, String gender, String nric, String phone, String email,
-	    Timestamp createdAt, Timestamp updatedAt) {
-		super();
-		this.clientId = clientId;
-		this.user = user;
-		this.emergencyContacts = emergencyContacts;
-		this.medicalProfile = medicalProfile;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.dob = dob;
-		this.gender = gender;
-		this.nric = nric;
-		this.phone = phone;
-		this.email = email;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
-	}
+  public Client(int clientId, User user, ArrayList<EmergencyContact> emergencyContacts, MedicalProfile medicalProfile,
+      String firstName, String lastName, Date dob, String gender, String nric, String phone, String email,
+      Timestamp createdAt, Timestamp updatedAt) {
+    super();
+    this.clientId = clientId;
+    this.user = user;
+    this.emergencyContacts = emergencyContacts;
+    this.medicalProfile = medicalProfile;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.dob = dob;
+    this.gender = gender;
+    this.nric = nric;
+    this.phone = phone;
+    this.email = email;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
 
-	public static Client getClientById(int clientId) throws SQLException {
-		final Connection conn = JDBC.connect();
-		if (conn == null) {
-			throw new SQLException("Database connection failed");
-		}
+  public static Client getClientById(int clientId) throws SQLException {
+    final Connection conn = JDBC.connect();
+    if (conn == null) {
+      throw new SQLException("Database connection failed");
+    }
 
-		final String sql = new StringBuilder()
-		    .append("SELECT * ")
-		    .append("FROM client ")
-		    .append("WHERE client_id = ?;")
-		    .toString();
+    final String sql = new StringBuilder()
+        .append("SELECT * ")
+        .append("FROM client ")
+        .append("WHERE client_id = ?;")
+        .toString();
 
-		final PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, clientId);
+    final PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.setInt(1, clientId);
 
-		final ResultSet rs = stmt.executeQuery();
+    final ResultSet rs = stmt.executeQuery();
 
-		Client client = null;
-		if (rs.next()) {
-			client = resultMapper(rs);
-		}
+    Client client = null;
+    if (rs.next()) {
+      client = resultMapper(rs);
+    }
 
-		rs.close();
-		conn.close();
-		return client;
-	}
+    rs.close();
+    conn.close();
+    return client;
+  }
 
-	public static Client getClientByUserId(int userId) throws SQLException {
-		final Connection conn = JDBC.connect();
-		if (conn == null) {
-			throw new SQLException("Database connection failed");
-		}
+  public static Client getClientByUserId(int userId) throws SQLException {
+    final Connection conn = JDBC.connect();
+    if (conn == null) {
+      throw new SQLException("Database connection failed");
+    }
 
-		final String sql = new StringBuilder()
-		    .append("SELECT * ")
-		    .append("FROM client ")
-		    .append("WHERE user_id = ?;")
-		    .toString();
+    final String sql = new StringBuilder()
+        .append("SELECT * ")
+        .append("FROM client ")
+        .append("WHERE user_id = ?;")
+        .toString();
 
-		final PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, userId);
+    final PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.setInt(1, userId);
 
-		final ResultSet rs = stmt.executeQuery();
+    final ResultSet rs = stmt.executeQuery();
 
-		Client client = null;
-		if (rs.next()) {
-			client = resultMapper(rs);
-		}
+    Client client = null;
+    if (rs.next()) {
+      client = resultMapper(rs);
+    }
 
-		rs.close();
-		conn.close();
-		return client;
-	}
+    rs.close();
+    conn.close();
+    return client;
+  }
 
-	public static int createClient(
-	    int userId,
-	    String firstName,
-	    String lastName,
-	    Date dob,
-	    String gender,
-	    String nric,
-	    String phone,
-	    String email) throws SQLException {
-		final Connection conn = JDBC.connect();
-		if (conn == null) {
-			throw new SQLException("Database connection failed");
-		}
+  public static int createClient(
+      int userId,
+      String firstName,
+      String lastName,
+      Date dob,
+      String gender,
+      String nric,
+      String phone,
+      String email) throws SQLException {
+    final Connection conn = JDBC.connect();
+    if (conn == null) {
+      throw new SQLException("Database connection failed");
+    }
 
-		// Write the query
-		final String sql = new StringBuilder()
-		    .append("INSERT INTO client ")
-		    .append("(user_id, first_name, last_name, dob, gender, nric, phone, email) ")
-		    .append("VALUES (?, ?, ?, ?, ?, ?, ?, ?) ")
-		    .append("RETURNING client_id;")
-		    .toString();
+    // Write the query
+    final String sql = new StringBuilder()
+        .append("INSERT INTO client ")
+        .append("(user_id, first_name, last_name, dob, gender, nric, phone, email) ")
+        .append("VALUES (?, ?, ?, ?, ?, ?, ?, ?) ")
+        .append("RETURNING client_id;")
+        .toString();
 
-		// Load the params
-		final PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, userId);
-		stmt.setString(2, firstName);
-		stmt.setString(3, lastName);
-		stmt.setDate(4, dob);
-		stmt.setString(5, gender);
-		stmt.setString(6, nric);
-		stmt.setString(7, phone);
-		stmt.setString(8, email);
-		
-		int insertedClientId = -1;
-		final ResultSet rs = stmt.executeQuery();
+    // Load the params
+    final PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.setInt(1, userId);
+    stmt.setString(2, firstName);
+    stmt.setString(3, lastName);
+    stmt.setDate(4, dob);
+    stmt.setString(5, gender);
+    stmt.setString(6, nric);
+    stmt.setString(7, phone);
+    stmt.setString(8, email);
+
+    int insertedClientId = -1;
+    final ResultSet rs = stmt.executeQuery();
 
     if (rs.next()) {
       insertedClientId = rs.getInt("client_id");
     }
 
-		conn.close();
-		return insertedClientId;
-	}
+    conn.close();
+    return insertedClientId;
+  }
 
-	private static Client resultMapper(ResultSet rs) throws SQLException {
+  public static void updateClient(
+      int clientId,
+      int userId,
+      String firstName,
+      String lastName,
+      Date dob,
+      String gender,
+      String nric,
+      String phone,
+      String email) throws SQLException {
 
-		int clientId = rs.getInt("client_id");
-		int userId = rs.getInt("user_id");
-		final String firstName = rs.getString("first_name");
-		final String lastName = rs.getString("last_name");
-		final Date dob = rs.getDate("dob");
-		final String gender = rs.getString("gender");
-		final String nric = rs.getString("nric");
-		final String phone = rs.getString("phone");
-		final String email = rs.getString("email");
-		final Timestamp createdAt = rs.getTimestamp("created_at");
-		final Timestamp updatedAt = rs.getTimestamp("updated_at");
+    final Connection conn = JDBC.connect();
+    if (conn == null) {
+      throw new SQLException("Database connection failed");
+    }
 
-		final User user = User.getUserById(userId);
-		final ArrayList<EmergencyContact> emContacts = EmergencyContact.getEmergencyContactsByClientId(clientId);
-		final MedicalProfile medicalProfile = MedicalProfile.getMedicalProfileByClientId(clientId);
+    final String sql = new StringBuilder()
+        .append("UPDATE client ")
+        .append("SET user_id = ?, ")
+        .append("    first_name = ?, ")
+        .append("    last_name = ?, ")
+        .append("    dob = ?, ")
+        .append("    gender = ?, ")
+        .append("    nric = ?, ")
+        .append("    phone = ?, ")
+        .append("    email = ? ")
+        .append("WHERE client_id = ?;")
+        .toString();
 
-		return new Client(clientId, user, emContacts, medicalProfile, firstName, lastName, dob, gender, nric, phone, email,
-		    createdAt, updatedAt);
-	}
+    final PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.setInt(1, userId);
+    stmt.setString(2, firstName);
+    stmt.setString(3, lastName);
+    stmt.setDate(4, dob);
+    stmt.setString(5, gender);
+    stmt.setString(6, nric);
+    stmt.setString(7, phone);
+    stmt.setString(8, email);
+    stmt.setInt(9, clientId);
 
-	public int getClientId() {
-		return clientId;
-	}
+    stmt.executeUpdate();
+    conn.close();
+    return;
+  }
 
-	public User getUser() {
-		return user;
-	}
+  private static Client resultMapper(ResultSet rs) throws SQLException {
 
-	public ArrayList<EmergencyContact> getEmergencyContacts() {
-		return emergencyContacts;
-	}
+    int clientId = rs.getInt("client_id");
+    int userId = rs.getInt("user_id");
+    final String firstName = rs.getString("first_name");
+    final String lastName = rs.getString("last_name");
+    final Date dob = rs.getDate("dob");
+    final String gender = rs.getString("gender");
+    final String nric = rs.getString("nric");
+    final String phone = rs.getString("phone");
+    final String email = rs.getString("email");
+    final Timestamp createdAt = rs.getTimestamp("created_at");
+    final Timestamp updatedAt = rs.getTimestamp("updated_at");
 
-	public MedicalProfile getMedicalProfile() {
-		return medicalProfile;
-	}
+    final User user = User.getUserById(userId);
+    final ArrayList<EmergencyContact> emContacts = EmergencyContact.getEmergencyContactsByClientId(clientId);
+    final MedicalProfile medicalProfile = MedicalProfile.getMedicalProfileByClientId(clientId);
 
-	public String getFirstName() {
-		return firstName;
-	}
+    return new Client(clientId, user, emContacts, medicalProfile, firstName, lastName, dob, gender, nric, phone, email,
+        createdAt, updatedAt);
+  }
 
-	public String getLastName() {
-		return lastName;
-	}
+  public int getClientId() {
+    return clientId;
+  }
 
-	public String getFullName() {
-		return firstName + " " + lastName;
-	}
+  public User getUser() {
+    return user;
+  }
 
-	public Date getDob() {
-		return dob;
-	}
+  public ArrayList<EmergencyContact> getEmergencyContacts() {
+    return emergencyContacts;
+  }
 
-	public String getGender() {
-		return gender;
-	}
+  public MedicalProfile getMedicalProfile() {
+    return medicalProfile;
+  }
 
-	public String getNric() {
-		return nric;
-	}
+  public String getFirstName() {
+    return firstName;
+  }
 
-	public String getPhone() {
-		return phone;
-	}
+  public String getLastName() {
+    return lastName;
+  }
 
-	public String getEmail() {
-		return email;
-	}
+  public String getFullName() {
+    return firstName + " " + lastName;
+  }
 
-	public int getAge() {
-		return LocalDate.now().getYear() - dob.toLocalDate().getYear();
-	}
+  public Date getDob() {
+    return dob;
+  }
 
-	public String getCreatedAt() {
-		final SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
-		return sdf.format(createdAt);
-	}
+  public String getGender() {
+    return gender;
+  }
 
-	public String getUpdatedAt() {
-		final SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
-		return sdf.format(updatedAt);
-	}
+  public String getNric() {
+    return nric;
+  }
+
+  public String getPhone() {
+    return phone;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public int getAge() {
+    return LocalDate.now().getYear() - dob.toLocalDate().getYear();
+  }
+
+  public String getCreatedAt() {
+    final SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+    return sdf.format(createdAt);
+  }
+
+  public String getUpdatedAt() {
+    final SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+    return sdf.format(updatedAt);
+  }
 
 }
