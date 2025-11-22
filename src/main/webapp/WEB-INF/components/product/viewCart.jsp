@@ -1,4 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%--
+  Name: Goh Yi Xin Karys
+  Admin No: P2424431
+  Class: DIT/FT/2B/01
+  Description: Shopping cart page displaying session-based cart items with update/remove functionality
+--%>
 <%@ page import="java.util.List" %>
 <%@ page import="models.Cart" %>
 

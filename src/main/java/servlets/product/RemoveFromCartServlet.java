@@ -1,3 +1,9 @@
+/*
+ * Name: Goh Yi Xin Karys
+ * Admin No: P2424431
+ * Class: DIT/FT/2B/01
+ * Description: Remove from cart servlet handling item removal from session-based cart
+ */
 package servlets.product;
 
 import jakarta.servlet.ServletException;

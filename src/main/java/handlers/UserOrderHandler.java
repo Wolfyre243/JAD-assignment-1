@@ -1,3 +1,9 @@
+/*
+ * Name: Goh Yi Xin Karys
+ * Admin No: P2424431
+ * Class: DIT/FT/2B/01
+ * Description: Handler for user order management including retrieving order history and order details
+ */
 package handlers;
 
 import java.sql.*;

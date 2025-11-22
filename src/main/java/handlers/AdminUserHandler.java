@@ -1,3 +1,9 @@
+/*
+ * Name: Goh Yi Xin Karys
+ * Admin No: P2424431
+ * Class: DIT/FT/2B/01
+ * Description: Handler for admin user management operations including listing users and toggling user status
+ */
 package handlers;
 
 import java.sql.*;

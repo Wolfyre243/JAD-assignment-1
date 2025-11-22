@@ -1,3 +1,9 @@
+/*
+ * Name: Goh Yi Xin Karys
+ * Admin No: P2424431
+ * Class: DIT/FT/2B/01
+ * Description: Cart session management utility for getting, saving, and clearing session-based shopping cart
+ */
 package lib;
 
 import jakarta.servlet.http.HttpServletRequest;

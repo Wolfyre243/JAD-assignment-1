@@ -1,4 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%--
+  Name: Goh Yi Xin Karys
+  Admin No: P2424431
+  Class: DIT/FT/2B/01
+  Description: Admin order management page displaying all orders with booking counts
+--%>
     <h1>Order Management</h1>
     <p><a href="<%= request.getContextPath() %>/admin/dashboard">← Back to Dashboard</a></p>
     <hr>

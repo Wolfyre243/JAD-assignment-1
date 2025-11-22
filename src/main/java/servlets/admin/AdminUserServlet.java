@@ -1,3 +1,9 @@
+/*
+ * Name: Goh Yi Xin Karys
+ * Admin No: P2424431
+ * Class: DIT/FT/2B/01
+ * Description: Admin user management servlet handling user status toggle operations
+ */
 package servlets.admin;
 
 import jakarta.servlet.ServletException;
