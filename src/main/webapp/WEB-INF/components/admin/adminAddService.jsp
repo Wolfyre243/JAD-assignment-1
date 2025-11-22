@@ -25,7 +25,7 @@
                 if (categories != null) {
                     for (java.util.Map<String,Object> c : categories) {
                         int categoryId = (Integer) c.get("categoryId");
-                        String categoryName = (String) c.get("name");
+                        String categoryName = (String) c.get("categoryName");
             %>
                         <option value="<%= categoryId %>"><%= categoryName %></option>
             <%
