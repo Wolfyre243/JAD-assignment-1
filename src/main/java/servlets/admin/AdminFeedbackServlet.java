@@ -1,3 +1,9 @@
+/*
+ * Name: Goh Yi Xin Karys
+ * Admin No: P2424431
+ * Class: DIT/FT/2B/01
+ * Description: Admin feedback management servlet handling feedback deletion operations
+ */
 package servlets.admin;
 
 import jakarta.servlet.ServletException;

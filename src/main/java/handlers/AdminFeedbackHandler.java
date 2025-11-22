@@ -1,3 +1,9 @@
+/*
+ * Name: Goh Yi Xin Karys
+ * Admin No: P2424431
+ * Class: DIT/FT/2B/01
+ * Description: Handler for admin feedback management with filtering by service and caregiver
+ */
 package handlers;
 
 import java.sql.*;

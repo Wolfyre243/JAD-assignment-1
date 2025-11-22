@@ -1,3 +1,9 @@
+/*
+ * Name: Goh Yi Xin Karys
+ * Admin No: P2424431
+ * Class: DIT/FT/2B/01
+ * Description: Redirect servlet for legacy admin order details JSP URLs to new servlet-based URLs
+ */
 package servlets.admin;
 
 import jakarta.servlet.ServletException;

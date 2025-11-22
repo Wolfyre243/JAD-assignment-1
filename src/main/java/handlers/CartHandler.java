@@ -1,3 +1,9 @@
+/*
+ * Name: Goh Yi Xin Karys
+ * Admin No: P2424431
+ * Class: DIT/FT/2B/01
+ * Description: Handler for cart-related database operations including product retrieval for cart display
+ */
 package handlers;
 
 import java.sql.*;

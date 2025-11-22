@@ -1,3 +1,9 @@
+/*
+ * Name: Goh Yi Xin Karys
+ * Admin No: P2424431
+ * Class: DIT/FT/2B/01
+ * Description: Main admin panel servlet handling routing for dashboard, users, services, orders, and feedback management
+ */
 package servlets.admin;
 
 import jakarta.servlet.ServletException;

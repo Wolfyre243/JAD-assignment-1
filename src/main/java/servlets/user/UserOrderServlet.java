@@ -1,3 +1,9 @@
+/*
+ * Name: Goh Yi Xin Karys
+ * Admin No: P2424431
+ * Class: DIT/FT/2B/01
+ * Description: User order servlet handling display of order history and individual order details
+ */
 package servlets.user;
 
 import jakarta.servlet.ServletException;

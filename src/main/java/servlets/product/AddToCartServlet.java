@@ -1,3 +1,9 @@
+/*
+ * Name: Goh Yi Xin Karys
+ * Admin No: P2424431
+ * Class: DIT/FT/2B/01
+ * Description: Add to cart servlet handling adding products to session-based shopping cart
+ */
 package servlets.product;
 
 import jakarta.servlet.ServletException;

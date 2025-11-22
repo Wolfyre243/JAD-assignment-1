@@ -1,3 +1,9 @@
+/*
+ * Name: Goh Yi Xin Karys
+ * Admin No: P2424431
+ * Class: DIT/FT/2B/01
+ * Description: Session-based shopping cart model with item management, quantity updates, and total calculations
+ */
 package models;
 
 import java.io.Serializable;

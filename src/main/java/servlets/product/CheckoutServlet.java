@@ -1,3 +1,9 @@
+/*
+ * Name: Goh Yi Xin Karys
+ * Admin No: P2424431
+ * Class: DIT/FT/2B/01
+ * Description: Checkout servlet converting session cart to database order and bookings
+ */
 package servlets.product;
 
 import jakarta.servlet.ServletException;

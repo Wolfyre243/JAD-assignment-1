@@ -1,3 +1,9 @@
+<%--
+ - Name: Goh Yi Xin Karys
+ - Admin No: P2424431
+ - Class: DIT/FT/2B/01
+ - Description: User order details page showing bookings, service details, and order information
+ --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
