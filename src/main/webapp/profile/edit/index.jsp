@@ -3,7 +3,6 @@
 	pageEncoding="UTF-8"%>
 <%@ page import="models.User"%>
 <%@ include file="/WEB-INF/components/auth/require-login.jsp"%>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,7 +20,6 @@
 	<jsp:include page="/WEB-INF/components/user/userNavBar.jsp"></jsp:include>
 
 	<%
-	// Fetch the logged-in user's client profile (must exist since login is required)
 	Client client = Client.getClientByUserId(sessUserId);
 	if (client == null) {
 	  response.sendRedirect(request.getContextPath() + "/profile/create");
@@ -34,7 +32,7 @@
 			<h2>Edit Your Profile</h2>
 			<p class="subtitle">Update your personal details below.</p>
 
-			<form action="<%=request.getContextPath()%>/profile/update"
+			<form action="<%=request.getContextPath()%>/profile/edit"
 				method="post" class="profile-form">
 
 				<input type="hidden" name="clientId"

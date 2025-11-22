@@ -71,7 +71,7 @@ class ClientController {
     try {
       Client client = Client.getClientByUserId(sessUserId);
       if (client == null) {
-        response.sendRedirect(request.getContextPath() + "/profile/create");
+        response.sendRedirect(request.getContextPath() + "/profile/");
         return;
       }
 
@@ -87,6 +87,7 @@ class ClientController {
           sessUserId,
           firstName, lastName, dob,
           gender, nric, phone, email);
+      
       response.sendRedirect(request.getContextPath() + "/profile/");
     } catch (Exception e) {
       e.printStackTrace();
@@ -155,7 +156,7 @@ public class ClientServlet extends HttpServlet {
       System.out.println("ClientServlet: Handling profile creation POST request.");
       ClientController.createClient(request, response);
     } else if (path.endsWith("/profile/edit")) {
-      System.out.println("ClientServlet: Handling emergency contact creation POST request.");
+      System.out.println("ClientServlet: Handling edit profile POST request.");
       ClientController.editClient(request, response);
     } else if (path.endsWith("/emergency-contact/add")) {
       System.out.println("ClientServlet: Handling emergency contact creation POST request.");

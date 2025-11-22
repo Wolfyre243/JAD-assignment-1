@@ -2,8 +2,8 @@
 	pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/components/auth/user-session.jsp"%>
 <%
-final Integer sessUserId = (Integer) session.getAttribute("sessUserId");
-final Integer sessRoleId = (Integer) session.getAttribute("sessRoleId");
+final Integer sessUserId = (Integer) session.getAttribute("userId");
+final Integer sessRoleId = (Integer) session.getAttribute("userRoleId");
 %>
 <!DOCTYPE html>
 <html>
@@ -70,7 +70,7 @@ final Integer sessRoleId = (Integer) session.getAttribute("sessRoleId");
 </style>
   
 	<div class="navbar">
-		<!-- LEFT SIDE: SilverCare + Services + Feedback (all together now) -->
+		<!-- LEFT SIDE -->
 		<div class="nav-left">
 			<a href="<%= request.getContextPath() %>/" class="brand">SilverCare</a>
 			<a href="<%= request.getContextPath() %>/services/">Services</a> 

@@ -220,7 +220,7 @@
 						<strong>Additional Notes:</strong>
 						<%=medicalProfile.getNotes()%>
 					</div>
-					<a href="${pageContext.request.contextPath}/profile/"
+					<a href="${pageContext.request.contextPath}/medical/edit/?cid=<%=client.getClientId()%>"
 						class="btn-edit"> <strong>Edit Medical Profile</strong>
 					</a>
 					<%
