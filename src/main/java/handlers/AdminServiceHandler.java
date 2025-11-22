@@ -43,7 +43,7 @@ public class AdminServiceHandler {
             while (rs.next()) {
                 Map<String, Object> m = new HashMap<>();
                 m.put("categoryId", rs.getInt("category_id"));
-                m.put("name", rs.getString("name"));
+                m.put("categoryName", rs.getString("name"));
                 cats.add(m);
             }
         }
