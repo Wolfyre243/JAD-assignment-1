@@ -2,7 +2,13 @@
 <%@ page import="models.Product" %>
 <%@ page import="models.Category" %>
 <%@ page import="java.util.ArrayList" %>
-
+<%--
+  Author: Lim Song Chern Jayden
+  Admin No: P2424093
+  Class: DIT-2B-01
+  Last Edited: 23/11/2025
+  Description: Service page to see all categories, services
+--%>
 <!DOCTYPE html>
 <html>
 <head>

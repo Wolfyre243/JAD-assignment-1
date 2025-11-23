@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import db.JDBC;
 import lib.SessionManagement;
 
-@WebServlet("/user/reviews")
+@WebServlet("/reviews")
 public class UserReviewsServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -33,7 +33,7 @@ public class UserReviewsServlet extends HttpServlet {
 
         // --- 1) VIEW ALL REVIEWS ---
         if (action == null) {
-            request.getRequestDispatcher("/WEB-INF/components/user/review.jsp")
+            request.getRequestDispatcher("/reviews/index.jsp")
                    .forward(request, response);
             return;
         }
