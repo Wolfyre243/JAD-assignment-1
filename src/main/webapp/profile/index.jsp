@@ -13,7 +13,7 @@
 <head>
 <meta charset="UTF-8">
 <title>My Profile | Silver Care</title>
-<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/profile/index.css">
 </head>
 <body>
 	<jsp:include page="/WEB-INF/components/user/userNavBar.jsp"></jsp:include>
@@ -215,7 +215,7 @@
 						<strong>Additional Notes:</strong>
 						<%=medicalProfile.getNotes()%>
 					</div>
-					<a href="${pageContext.request.contextPath}/profile/"
+					<a href="${pageContext.request.contextPath}/medical/edit/"
 						class="btn-edit"> <strong>Edit Medical Profile</strong>
 					</a>
 					<%

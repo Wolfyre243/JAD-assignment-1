@@ -10,7 +10,7 @@
 <head>
 <meta charset="UTF-8">
 <title>My Family | SilverCare</title>
-<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/family/index.css">
 </head>
 <body>
 	<jsp:include page="/WEB-INF/components/user/userNavBar.jsp"></jsp:include>
@@ -28,7 +28,7 @@
 			ones below.</p>
 		<%
 		} else {
-		  final ArrayList<FamilyMember> familyList = userFamily.getMembers();
+		final ArrayList<FamilyMember> familyList = userFamily.getMembers();
 		%>
 		<table>
 			<thead>
@@ -43,18 +43,18 @@
 			<tbody>
 				<%
 				for (FamilyMember member : familyList) {
-					final Client clientData = Client.getClientById(member.getClientId());
+				  final Client clientData = Client.getClientById(member.getClientId());
 				%>
 				<tr>
 					<td><%=clientData.getFullName()%></td>
 					<td><%=member.getRelationship()%></td>
 					<td><%=clientData.getAge()%></td>
 					<td><%=clientData.getNric()%></td>
-					<td><a href="<%=request.getContextPath()%>/family/member?cid=<%=clientData.getClientId() %>" class="btn"
-						style="padding: 8px 15px; margin-right: 4px; font-size: 14px;">View</a><a
-						href="EditFamilyMemberServlet?id=1" class="btn"
-						style="padding: 8px 15px; font-size: 14px;">Edit</a> <a
-						href="DeleteFamilyMemberServlet?id=1" class="btn btn-danger"
+					<td><a
+						href="<%=request.getContextPath()%>/family/member?cid=<%=clientData.getClientId()%>"
+						class="btn"
+						style="padding: 8px 15px; margin-right: 4px; font-size: 14px;">View</a>
+						<a href="DeleteFamilyMemberServlet?id=1" class="btn btn-danger"
 						style="padding: 8px 15px; font-size: 14px;"
 						onclick="return confirm('Are you sure you want to remove <%=clientData.getFullName()%>?')">Delete</a>
 					</td>

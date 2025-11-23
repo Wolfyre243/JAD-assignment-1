@@ -14,7 +14,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Family Member | Silver Care</title>
-<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/family/member/index.css">
 </head>
 <body>
 	<jsp:include page="/WEB-INF/components/user/userNavBar.jsp"></jsp:include>
@@ -75,8 +75,9 @@
 				</dl>
 
 				<div style="text-align: center; margin-top: 25px;">
-					<a href="./edit/" class="btn-edit">Edit <%=client.getFullName()%>'s
-						Profile
+					<a
+						href="${pageContext.request.contextPath}/profile/edit<%= clientIdStr != null ? "?cid=" + request.getParameter("cid") : "" %>"
+						class="btn-edit">Edit <%=client.getFullName()%>'s Profile
 					</a>
 				</div>
 			</div>
@@ -220,7 +221,8 @@
 						<strong>Additional Notes:</strong>
 						<%=medicalProfile.getNotes()%>
 					</div>
-					<a href="${pageContext.request.contextPath}/profile/"
+					<a
+						href="${pageContext.request.contextPath}/medical/edit/?cid=<%=client.getClientId()%>"
 						class="btn-edit"> <strong>Edit Medical Profile</strong>
 					</a>
 					<%

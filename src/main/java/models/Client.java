@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -109,7 +110,7 @@ public class Client {
 	}
 
 	public static int createClient(
-	    int userId,
+	    Integer userId,
 	    String firstName,
 	    String lastName,
 	    Date dob,
@@ -132,6 +133,60 @@ public class Client {
 
 		// Load the params
 		final PreparedStatement stmt = conn.prepareStatement(sql);
+		if (userId != null) {
+			stmt.setInt(1, userId);
+		} else {
+			stmt.setNull(1, Types.INTEGER);
+		}
+		stmt.setString(2, firstName);
+		stmt.setString(3, lastName);
+		stmt.setDate(4, dob);
+		stmt.setString(5, gender);
+		stmt.setString(6, nric);
+		stmt.setString(7, phone);
+		stmt.setString(8, email);
+
+		int insertedClientId = -1;
+		final ResultSet rs = stmt.executeQuery();
+
+		if (rs.next()) {
+			insertedClientId = rs.getInt("client_id");
+		}
+
+		conn.close();
+		return insertedClientId;
+	}
+
+	public static void updateClient(
+	    int clientId,
+	    int userId,
+	    String firstName,
+	    String lastName,
+	    Date dob,
+	    String gender,
+	    String nric,
+	    String phone,
+	    String email) throws SQLException {
+
+		final Connection conn = JDBC.connect();
+		if (conn == null) {
+			throw new SQLException("Database connection failed");
+		}
+
+		final String sql = new StringBuilder()
+		    .append("UPDATE client ")
+		    .append("SET user_id = ?, ")
+		    .append("    first_name = ?, ")
+		    .append("    last_name = ?, ")
+		    .append("    dob = ?, ")
+		    .append("    gender = ?, ")
+		    .append("    nric = ?, ")
+		    .append("    phone = ?, ")
+		    .append("    email = ? ")
+		    .append("WHERE client_id = ?;")
+		    .toString();
+
+		final PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, userId);
 		stmt.setString(2, firstName);
 		stmt.setString(3, lastName);
@@ -140,16 +195,11 @@ public class Client {
 		stmt.setString(6, nric);
 		stmt.setString(7, phone);
 		stmt.setString(8, email);
-		
-		int insertedClientId = -1;
-		final ResultSet rs = stmt.executeQuery();
+		stmt.setInt(9, clientId);
 
-    if (rs.next()) {
-      insertedClientId = rs.getInt("client_id");
-    }
-
+		stmt.executeUpdate();
 		conn.close();
-		return insertedClientId;
+		return;
 	}
 
 	private static Client resultMapper(ResultSet rs) throws SQLException {

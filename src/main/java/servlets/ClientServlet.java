@@ -54,6 +54,45 @@ class ClientController {
       return;
     }
   }
+
+  public static void editClient(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    final HttpSession session = request.getSession();
+
+    int sessUserId = 0;
+    if (session.getAttribute("userId") == null) {
+      System.out.println("User not logged in. Redirecting to login page.");
+      response.sendRedirect(request.getContextPath() + "/auth/login/");
+      return;
+    } else {
+      sessUserId = (int) session.getAttribute("userId");
+    }
+
+    try {
+      Client client = Client.getClientByUserId(sessUserId);
+      if (client == null) {
+        response.sendRedirect(request.getContextPath() + "/profile/");
+        return;
+      }
+
+      String firstName = request.getParameter("firstName");
+      String lastName = request.getParameter("lastName");
+      Date dob = Date.valueOf(request.getParameter("dob"));
+      String gender = request.getParameter("gender");
+      String nric = request.getParameter("nric").toUpperCase();
+      String phone = request.getParameter("phone");
+      String email = request.getParameter("email");
+      Client.updateClient(
+          client.getClientId(),
+          sessUserId,
+          firstName, lastName, dob,
+          gender, nric, phone, email);
+      
+      response.sendRedirect(request.getContextPath() + "/profile/");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 }
 
 class EmergencyContactController {
@@ -90,7 +129,7 @@ class EmergencyContactController {
   }
 }
 
-@WebServlet({ "/profile/create", "/emergency-contact/add" })
+@WebServlet({ "/profile/create", "/emergency-contact/add", "/profile/edit" })
 public class ClientServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
@@ -103,6 +142,8 @@ public class ClientServlet extends HttpServlet {
 
     if (path.endsWith("/profile/create")) {
       request.getRequestDispatcher("/profile/create/index.jsp").include(request, response);
+    } else if (path.endsWith("/profile/edit")) {
+      request.getRequestDispatcher("/profile/edit/index.jsp").include(request, response);
     } else {
       response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
@@ -114,6 +155,9 @@ public class ClientServlet extends HttpServlet {
     if (path.endsWith("/profile/create")) {
       System.out.println("ClientServlet: Handling profile creation POST request.");
       ClientController.createClient(request, response);
+    } else if (path.endsWith("/profile/edit")) {
+      System.out.println("ClientServlet: Handling edit profile POST request.");
+      ClientController.editClient(request, response);
     } else if (path.endsWith("/emergency-contact/add")) {
       System.out.println("ClientServlet: Handling emergency contact creation POST request.");
       EmergencyContactController.createEmergencyContact(request, response);

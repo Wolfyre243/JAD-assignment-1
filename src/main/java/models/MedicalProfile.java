@@ -6,187 +6,241 @@ import db.JDBC;
 
 public class MedicalProfile {
 
-	private int medicalProfileId;
-	private int clientId;
-	private String bloodType;
-	private String allergies;
-	private String chronicConditions;
-	private String medications;
-	private String mobilityLevel;
-	private String cognitiveStatus;
-	private String preferredHospital;
-	private String doctorName;
-	private String doctorContact;
-	private String notes;
-	private Timestamp createdAt;
-	private Timestamp updatedAt;
+  private int medicalProfileId;
+  private int clientId;
+  private String bloodType;
+  private String allergies;
+  private String chronicConditions;
+  private String medications;
+  private String mobilityLevel;
+  private String cognitiveStatus;
+  private String preferredHospital;
+  private String doctorName;
+  private String doctorContact;
+  private String notes;
+  private Timestamp createdAt;
+  private Timestamp updatedAt;
 
-	public MedicalProfile(int medicalProfileId, int clientId, String bloodType, String allergies,
-	    String chronicConditions, String medications, String mobilityLevel, String cognitiveStatus,
-	    String preferredHospital, String doctorName, String doctorContact, String notes, Timestamp createdAt,
-	    Timestamp updatedAt) {
-		super();
-		this.medicalProfileId = medicalProfileId;
-		this.clientId = clientId;
-		this.bloodType = bloodType;
-		this.allergies = allergies;
-		this.chronicConditions = chronicConditions;
-		this.medications = medications;
-		this.mobilityLevel = mobilityLevel;
-		this.cognitiveStatus = cognitiveStatus;
-		this.preferredHospital = preferredHospital;
-		this.doctorName = doctorName;
-		this.doctorContact = doctorContact;
-		this.notes = notes;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
-	}
+  public MedicalProfile(int medicalProfileId, int clientId, String bloodType, String allergies,
+      String chronicConditions, String medications, String mobilityLevel, String cognitiveStatus,
+      String preferredHospital, String doctorName, String doctorContact, String notes, Timestamp createdAt,
+      Timestamp updatedAt) {
+    super();
+    this.medicalProfileId = medicalProfileId;
+    this.clientId = clientId;
+    this.bloodType = bloodType;
+    this.allergies = allergies;
+    this.chronicConditions = chronicConditions;
+    this.medications = medications;
+    this.mobilityLevel = mobilityLevel;
+    this.cognitiveStatus = cognitiveStatus;
+    this.preferredHospital = preferredHospital;
+    this.doctorName = doctorName;
+    this.doctorContact = doctorContact;
+    this.notes = notes;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
 
-	public static MedicalProfile getMedicalProfileByClientId(int _clientId) throws SQLException {
-		final Connection conn = JDBC.connect();
-		if (conn == null) {
-			throw new SQLException("Database connection failed");
-		}
+  public static MedicalProfile getMedicalProfileByClientId(int _clientId) throws SQLException {
+    final Connection conn = JDBC.connect();
+    if (conn == null) {
+      throw new SQLException("Database connection failed");
+    }
 
-		String sql = new StringBuilder()
-		    .append("SELECT * ")
-		    .append("FROM client_medical_profile ")
-		    .append("WHERE client_id = ?;")
-		    .toString();
+    String sql = new StringBuilder()
+        .append("SELECT * ")
+        .append("FROM client_medical_profile ")
+        .append("WHERE client_id = ?;")
+        .toString();
 
-		final PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, _clientId);
-		final ResultSet rs = stmt.executeQuery();
+    final PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.setInt(1, _clientId);
+    final ResultSet rs = stmt.executeQuery();
 
-		MedicalProfile profile = null;
-		if (rs.next()) {
-			profile = resultMapper(rs);
-		}
+    MedicalProfile profile = null;
+    if (rs.next()) {
+      profile = resultMapper(rs);
+    }
 
-		conn.close();
-		return profile;
-	}
+    conn.close();
+    return profile;
+  }
 
-	public static void createMedicalProfile(
-	    int clientId,
-	    String bloodType,
-	    String allergies,
-	    String chronicConditions,
-	    String medications,
-	    String mobilityLevel,
-	    String cognitiveStatus,
-	    String preferredHospital,
-	    String doctorName,
-	    String doctorContact,
-	    String notes) throws SQLException {
+  public static void createMedicalProfile(
+      int clientId,
+      String bloodType,
+      String allergies,
+      String chronicConditions,
+      String medications,
+      String mobilityLevel,
+      String cognitiveStatus,
+      String preferredHospital,
+      String doctorName,
+      String doctorContact,
+      String notes) throws SQLException {
 
-		final Connection conn = JDBC.connect();
-		if (conn == null) {
-			throw new SQLException("Database connection failed");
-		}
+    final Connection conn = JDBC.connect();
+    if (conn == null) {
+      throw new SQLException("Database connection failed");
+    }
 
-		final String sql = new StringBuilder()
-		    .append("INSERT INTO client_medical_profile ")
-		    .append("(client_id, blood_type, allergies, chronic_conditions, ")
-		    .append("medications, mobility_level, cognitive_status, ")
-		    .append("preferred_hospital, doctor_name, doctor_contact, notes) ")
-		    .append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")
-		    .toString();
+    final String sql = new StringBuilder()
+        .append("INSERT INTO client_medical_profile ")
+        .append("(client_id, blood_type, allergies, chronic_conditions, ")
+        .append("medications, mobility_level, cognitive_status, ")
+        .append("preferred_hospital, doctor_name, doctor_contact, notes) ")
+        .append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")
+        .toString();
 
-		final PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, clientId);
-		stmt.setString(2, bloodType);
-		stmt.setString(3, allergies);
-		stmt.setString(4, chronicConditions);
-		stmt.setString(5, medications);
-		stmt.setString(6, mobilityLevel);
-		stmt.setString(7, cognitiveStatus);
-		stmt.setString(8, preferredHospital);
-		stmt.setString(9, doctorName);
-		stmt.setString(10, doctorContact);
-		stmt.setString(11, notes);
+    final PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.setInt(1, clientId);
+    stmt.setString(2, bloodType);
+    stmt.setString(3, allergies);
+    stmt.setString(4, chronicConditions);
+    stmt.setString(5, medications);
+    stmt.setString(6, mobilityLevel);
+    stmt.setString(7, cognitiveStatus);
+    stmt.setString(8, preferredHospital);
+    stmt.setString(9, doctorName);
+    stmt.setString(10, doctorContact);
+    stmt.setString(11, notes);
 
-		stmt.executeUpdate();
-		
-		conn.close();
-	}
+    stmt.executeUpdate();
 
-	private static MedicalProfile resultMapper(ResultSet rs) throws SQLException {
-		int id = rs.getInt("medical_profile_id");
-		int clientId = rs.getInt("client_id");
-		final String bloodType = rs.getString("blood_type");
-		final String allergies = rs.getString("allergies");
-		final String chronicConditions = rs.getString("chronic_conditions");
-		final String medications = rs.getString("medications");
-		final String mobilityLevel = rs.getString("mobility_level");
-		final String cognitiveStatus = rs.getString("cognitive_status");
-		final String preferredHospital = rs.getString("preferred_hospital");
-		final String doctorName = rs.getString("doctor_name");
-		final String doctorContact = rs.getString("doctor_contact");
-		final String notes = rs.getString("notes");
-		final Timestamp createdAt = rs.getTimestamp("created_at");
-		final Timestamp updatedAt = rs.getTimestamp("updated_at");
+    conn.close();
+  }
 
-		return new MedicalProfile(id, clientId, bloodType, allergies,
-		    chronicConditions, medications, mobilityLevel,
-		    cognitiveStatus, preferredHospital, doctorName,
-		    doctorContact, notes, createdAt, updatedAt);
-	}
+  public static void updateMedicalProfile(
+      int clientId,
+      String bloodType,
+      String allergies,
+      String chronicConditions,
+      String medications,
+      String mobilityLevel,
+      String cognitiveStatus,
+      String preferredHospital,
+      String doctorName,
+      String doctorContact,
+      String notes) throws SQLException {
+    final Connection conn = JDBC.connect();
+    if (conn == null) {
+      throw new SQLException("Database connection failed");
+    }
 
-	public int getMedicalProfileId() {
-		return medicalProfileId;
-	}
+    String sql = new StringBuilder()
+        .append("UPDATE client_medical_profile SET ")
+        .append("    blood_type = ?, ")
+        .append("    allergies = ?, ")
+        .append("    chronic_conditions = ?, ")
+        .append("    medications = ?, ")
+        .append("    mobility_level = ?, ")
+        .append("    cognitive_status = ?, ")
+        .append("    preferred_hospital = ?, ")
+        .append("    doctor_name = ?, ")
+        .append("    doctor_contact = ?, ")
+        .append("    notes = ?, ")
+        .append("    updated_at = NOW() ")
+        .append("WHERE client_id = ?").toString();
 
-	public int getClientId() {
-		return clientId;
-	}
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setString(1, bloodType);
+      stmt.setString(2, allergies);
+      stmt.setString(3, chronicConditions);
+      stmt.setString(4, medications);
+      stmt.setString(5, mobilityLevel);
+      stmt.setString(6, cognitiveStatus);
+      stmt.setString(7, preferredHospital);
+      stmt.setString(8, doctorName);
+      stmt.setString(9, doctorContact);
+      stmt.setString(10, notes);
+      stmt.setInt(11, clientId);
 
-	public String getBloodType() {
-		return bloodType;
-	}
+      int rows = stmt.executeUpdate();
+      if (rows == 0) {
+        throw new SQLException("Update failed: No medical profile found for client ID " + clientId);
+      }
+    } finally {
+      conn.close();
+    }
+  }
 
-	public String getAllergies() {
-		return allergies;
-	}
+  private static MedicalProfile resultMapper(ResultSet rs) throws SQLException {
+    int id = rs.getInt("medical_profile_id");
+    int clientId = rs.getInt("client_id");
+    final String bloodType = rs.getString("blood_type");
+    final String allergies = rs.getString("allergies");
+    final String chronicConditions = rs.getString("chronic_conditions");
+    final String medications = rs.getString("medications");
+    final String mobilityLevel = rs.getString("mobility_level");
+    final String cognitiveStatus = rs.getString("cognitive_status");
+    final String preferredHospital = rs.getString("preferred_hospital");
+    final String doctorName = rs.getString("doctor_name");
+    final String doctorContact = rs.getString("doctor_contact");
+    final String notes = rs.getString("notes");
+    final Timestamp createdAt = rs.getTimestamp("created_at");
+    final Timestamp updatedAt = rs.getTimestamp("updated_at");
 
-	public String getChronicConditions() {
-		return chronicConditions;
-	}
+    return new MedicalProfile(id, clientId, bloodType, allergies,
+        chronicConditions, medications, mobilityLevel,
+        cognitiveStatus, preferredHospital, doctorName,
+        doctorContact, notes, createdAt, updatedAt);
+  }
 
-	public String getMedications() {
-		return medications;
-	}
+  public int getMedicalProfileId() {
+    return medicalProfileId;
+  }
 
-	public String getMobilityLevel() {
-		return mobilityLevel;
-	}
+  public int getClientId() {
+    return clientId;
+  }
 
-	public String getCognitiveStatus() {
-		return cognitiveStatus;
-	}
+  public String getBloodType() {
+    return bloodType;
+  }
 
-	public String getPreferredHospital() {
-		return preferredHospital;
-	}
+  public String getAllergies() {
+    return allergies;
+  }
 
-	public String getDoctorName() {
-		return doctorName;
-	}
+  public String getChronicConditions() {
+    return chronicConditions;
+  }
 
-	public String getDoctorContact() {
-		return doctorContact;
-	}
+  public String getMedications() {
+    return medications;
+  }
 
-	public String getNotes() {
-		return notes;
-	}
+  public String getMobilityLevel() {
+    return mobilityLevel;
+  }
 
-	public Timestamp getCreatedAt() {
-		return createdAt;
-	}
+  public String getCognitiveStatus() {
+    return cognitiveStatus;
+  }
 
-	public Timestamp getUpdatedAt() {
-		return updatedAt;
-	}
+  public String getPreferredHospital() {
+    return preferredHospital;
+  }
+
+  public String getDoctorName() {
+    return doctorName;
+  }
+
+  public String getDoctorContact() {
+    return doctorContact;
+  }
+
+  public String getNotes() {
+    return notes;
+  }
+
+  public Timestamp getCreatedAt() {
+    return createdAt;
+  }
+
+  public Timestamp getUpdatedAt() {
+    return updatedAt;
+  }
 
 }
