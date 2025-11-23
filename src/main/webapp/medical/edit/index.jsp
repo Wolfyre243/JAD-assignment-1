@@ -1,19 +1,25 @@
+<%@page import="models.Client"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ include file="/WEB-INF/components/auth/require-login.jsp"%>
 <%@ page import="models.MedicalProfile"%>
 <%@ page import="java.sql.SQLException"%>
+<%@ include file="/WEB-INF/components/auth/require-login.jsp"%>
 <%
-Integer clientId = 0;
+Integer clientId = null;
+MedicalProfile profile = null;
 
 if (request.getParameter("cid") != null) {
-  clientId = Integer.parseInt(request.getParameter("cid"));
+	clientId = Integer.parseInt(request.getParameter("cid"));
+
+	profile = MedicalProfile.getMedicalProfileByClientId(clientId);
+} else {
+	Client client = Client.getClientByUserId(sessUserId);
+	profile = MedicalProfile.getMedicalProfileByClientId(client.getClientId());
 }
 
-MedicalProfile profile = MedicalProfile.getMedicalProfileByClientId(clientId);
 if (profile == null) {
-  response.sendRedirect(request.getContextPath() + "/medical/create.jsp");
-  return;
+	response.sendRedirect(request.getContextPath() + "/medical/create/");
+	return;
 }
 %>
 <!DOCTYPE html>
@@ -33,9 +39,9 @@ if (profile == null) {
 		</div>
 
 		<div class="form-body">
-			<form action="${pageContext.request.contextPath}/medical/edit"
+			<form
+				action="${pageContext.request.contextPath}/medical/edit<%= clientId != null ? "?cid=" + request.getParameter("cid") : "" %>"
 				method="post">
-				<input type="hidden" name="clientId" value="<%=clientId%>">
 
 				<div class="form-grid">
 
