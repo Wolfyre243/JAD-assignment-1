@@ -9,21 +9,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Edit Profile | SilverCare</title>
-<link rel="stylesheet"
-	href="index.css">
- <style>
-
-</style>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/profile/edit/index.css">
 </head>
 <body>
-
 	<jsp:include page="/WEB-INF/components/user/userNavBar.jsp"></jsp:include>
-
 	<%
-	Client client = Client.getClientByUserId(sessUserId);
+	Integer clientId = null;
+	Client client = null;
+
+	if (request.getParameter("cid") != null) {
+		clientId = Integer.parseInt(request.getParameter("cid"));
+	  client = Client.getClientById(clientId);
+	} else {
+		client = Client.getClientByUserId(sessUserId);
+	}
+
 	if (client == null) {
-	  response.sendRedirect(request.getContextPath() + "/profile/create");
-	  return;
+		response.sendRedirect(request.getContextPath() + "/profile/create/");
+		return;
 	}
 	%>
 

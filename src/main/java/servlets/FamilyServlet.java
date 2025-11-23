@@ -37,7 +37,7 @@ class FamilyController {
       String email = request.getParameter("email");
 
       final int newClientId = Client.createClient(
-          sessUserId,
+          null,
           firstName, lastName, dob, gender, nric, phone, email);
       
       String relationship = request.getParameter("relationship");

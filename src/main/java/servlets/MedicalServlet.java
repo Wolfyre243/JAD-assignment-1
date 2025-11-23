@@ -29,10 +29,12 @@ class MedicalController {
 		}
 
 		try {
-			final boolean isInFamily = Family.checkMemberInFamily(sessUserId, clientId);
-			if (!isInFamily) {
-				response.sendRedirect(request.getContextPath() + "/");
-				return;
+			if (clientId > 0) {
+				final boolean isInFamily = Family.checkMemberInFamily(sessUserId, clientId);
+				if (!isInFamily) {
+					response.sendRedirect(request.getContextPath() + "/");
+					return;
+				}
 			}
 
 			MedicalProfile.createMedicalProfile(

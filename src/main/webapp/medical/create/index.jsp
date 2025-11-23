@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Create Medical Profile | Silver Care</title>
-<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/medical/create/index.css">
 </head>
 <body>
 	<jsp:include page="/WEB-INF/components/user/userNavBar.jsp"></jsp:include>
@@ -18,7 +18,7 @@
 		</div>
 
 		<div class="form-body">
-			<form action="${pageContext.request.contextPath}/medical/create?cid=<%=request.getParameter("cid")%>"
+			<form action="${pageContext.request.contextPath}/medical/create<%= request.getParameter("cid") != null ? "?cid=" + request.getParameter("cid") : "" %>"
 				method="post">
 				<div class="form-grid">
 					<div class="form-group">
