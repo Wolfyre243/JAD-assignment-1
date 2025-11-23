@@ -1,6 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/components/auth/user-session.jsp"%>
+<%--
+  Author: Lim Song Chern Jayden
+  Admin No: P2424093
+  Class: DIT-2B-01
+  Last Edited: 23/11/2025
+  Description: Client side NavBar on all client pages
+--%>
 <%
 final Integer sessUserId = (Integer) session.getAttribute("sessUserId");
 final Integer sessRoleId = (Integer) session.getAttribute("sessRoleId");
@@ -13,7 +20,7 @@ final Integer sessRoleId = (Integer) session.getAttribute("sessRoleId");
 </head>
 <body>
 
-	<style>
+<style>
 .navbar {
 	width: 100%;
 	background: #ffdce4;
@@ -74,7 +81,7 @@ final Integer sessRoleId = (Integer) session.getAttribute("sessRoleId");
 		<div class="nav-left">
 			<a href="<%= request.getContextPath() %>/" class="brand">SilverCare</a>
 			<a href="<%= request.getContextPath() %>/services/">Services</a> 
-      <a href="<%= request.getContextPath() %>/user/reviews">Feedback</a>
+      <a href="<%= request.getContextPath() %>/reviews">Feedback</a>
 			<%
 			if (sessUserId != null && sessRoleId == 3) {
 			%>

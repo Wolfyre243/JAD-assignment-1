@@ -1,5 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%--
+  Author: Lim Song Chern Jayden
+  Admin No: P2424093
+  Class: DIT-2B-01
+  Last Edited: 23/11/2025
+  Description: Landing page (Can be seen without logging in)
+--%>
 <!DOCTYPE html>
 <html>
 <head>

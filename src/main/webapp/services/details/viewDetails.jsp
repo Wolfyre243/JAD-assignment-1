@@ -2,7 +2,13 @@
 <%@ include file="/WEB-INF/components/auth/user-session.jsp"%>
 <%@ page import="models.Product" %>
 <%@ page import="java.util.ArrayList" %>
-
+<%--
+  Author: Lim Song Chern Jayden
+  Admin No: P2424093
+  Class: DIT-2B-01
+  Last Edited: 23/11/2025
+  Description: Users can see product details
+--%>
 <!DOCTYPE html>
 <html>
 <head>
