@@ -201,6 +201,25 @@ public class Client {
 		conn.close();
 		return;
 	}
+	
+	public static void deleteClientById(int clientId) throws SQLException {
+    final Connection conn = JDBC.connect();
+    if (conn == null) {
+      throw new SQLException("Database connection failed");
+    }
+
+    final String sql = new StringBuilder()
+        .append("DELETE FROM client ")
+        .append("WHERE client_id = ?;")
+        .toString();
+
+    final PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.setInt(1, clientId);
+
+    stmt.executeUpdate();
+    conn.close();
+    return;
+  }
 
 	private static Client resultMapper(ResultSet rs) throws SQLException {
 

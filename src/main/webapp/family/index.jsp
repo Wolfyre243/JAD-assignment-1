@@ -10,7 +10,8 @@
 <head>
 <meta charset="UTF-8">
 <title>My Family | SilverCare</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/family/index.css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/family/index.css">
 </head>
 <body>
 	<jsp:include page="/WEB-INF/components/user/userNavBar.jsp"></jsp:include>
@@ -50,14 +51,19 @@
 					<td><%=member.getRelationship()%></td>
 					<td><%=clientData.getAge()%></td>
 					<td><%=clientData.getNric()%></td>
-					<td><a
+					<td style="display: flex; flex-direction: row;"><a
 						href="<%=request.getContextPath()%>/family/member?cid=<%=clientData.getClientId()%>"
 						class="btn"
 						style="padding: 8px 15px; margin-right: 4px; font-size: 14px;">View</a>
-						<a href="DeleteFamilyMemberServlet?id=1" class="btn btn-danger"
-						style="padding: 8px 15px; font-size: 14px;"
-						onclick="return confirm('Are you sure you want to remove <%=clientData.getFullName()%>?')">Delete</a>
-					</td>
+						<form
+							action="<%=request.getContextPath()%>/family/remove?cid=<%=clientData.getClientId()%>"
+							method="post"
+							style="width: fit-content; margin: 0; padding: 0;">
+							<button type="submit" name="delete-member" value="delete-member"
+								class="btn btn-danger"
+								style="padding: 8px 15px; font-size: 14px;"
+								onclick="return confirm('Are you sure you want to remove <%=clientData.getFullName()%>?')">Delete</button>
+						</form></td>
 				</tr>
 				<%
 				}

@@ -18,84 +18,84 @@ import java.util.ArrayList;
 import db.JDBC;
 
 public class FamilyMember {
-	private int familyId;
-	private int clientId;
-	private String relationship;
+  private int familyId;
+  private int clientId;
+  private String relationship;
 
-	public FamilyMember(int familyId, int clientId, String relationship) {
-		super();
-		this.familyId = familyId;
-		this.clientId = clientId;
-		this.relationship = relationship;
-	}
+  public FamilyMember(int familyId, int clientId, String relationship) {
+    super();
+    this.familyId = familyId;
+    this.clientId = clientId;
+    this.relationship = relationship;
+  }
 
-	public static ArrayList<FamilyMember> getFamilyMembersByFamilyId(int familyId) throws SQLException {
-		final Connection conn = JDBC.connect();
-		if (conn == null) {
-			throw new SQLException("Database connection failed");
-		}
+  public static ArrayList<FamilyMember> getFamilyMembersByFamilyId(int familyId) throws SQLException {
+    final Connection conn = JDBC.connect();
+    if (conn == null) {
+      throw new SQLException("Database connection failed");
+    }
 
-		final String sql = new StringBuilder()
-		    .append("SELECT * ")
-		    .append("FROM family_member ")
-		    .append("WHERE family_id = ?")
-		    .toString();
+    final String sql = new StringBuilder()
+        .append("SELECT * ")
+        .append("FROM family_member ")
+        .append("WHERE family_id = ?")
+        .toString();
 
-		final PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, familyId);
+    final PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.setInt(1, familyId);
 
-		final ResultSet rs = stmt.executeQuery();
-		ArrayList<FamilyMember> memberArr = new ArrayList<FamilyMember>();
-		while (rs.next()) {
-			FamilyMember familyMember = resultMapper(rs);
-			memberArr.add(familyMember);
-		}
+    final ResultSet rs = stmt.executeQuery();
+    ArrayList<FamilyMember> memberArr = new ArrayList<FamilyMember>();
+    while (rs.next()) {
+      FamilyMember familyMember = resultMapper(rs);
+      memberArr.add(familyMember);
+    }
 
-		conn.close();
-		return memberArr;
-	}
+    conn.close();
+    return memberArr;
+  }
 
-	public static void createFamilyMember(int familyId, int clientId, String relationship) throws SQLException {
-		final Connection conn = JDBC.connect();
-		if (conn == null) {
-			throw new SQLException("Database connection failed");
-		}
+  public static void createFamilyMember(int familyId, int clientId, String relationship) throws SQLException {
+    final Connection conn = JDBC.connect();
+    if (conn == null) {
+      throw new SQLException("Database connection failed");
+    }
 
-		// Write the query
-		final String sql = new StringBuilder()
-		    .append("INSERT INTO family_member ")
-		    .append("(family_id, client_id, relationship) ")
-		    .append("VALUES (?, ?, ?);")
-		    .toString();
+    // Write the query
+    final String sql = new StringBuilder()
+        .append("INSERT INTO family_member ")
+        .append("(family_id, client_id, relationship) ")
+        .append("VALUES (?, ?, ?);")
+        .toString();
 
-		// Load the params
-		final PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, familyId);
-		stmt.setInt(2, clientId);
-		stmt.setString(3, relationship);
-		stmt.executeUpdate();
+    // Load the params
+    final PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.setInt(1, familyId);
+    stmt.setInt(2, clientId);
+    stmt.setString(3, relationship);
+    stmt.executeUpdate();
 
-		conn.close();
-	}
+    conn.close();
+  }
 
-	private static FamilyMember resultMapper(ResultSet rs) throws SQLException {
-		int familyId = rs.getInt("family_id");
-		int clientId = rs.getInt("client_id");
-		final String relationship = rs.getString("relationship");
+  private static FamilyMember resultMapper(ResultSet rs) throws SQLException {
+    int familyId = rs.getInt("family_id");
+    int clientId = rs.getInt("client_id");
+    final String relationship = rs.getString("relationship");
 
-		return new FamilyMember(familyId, clientId, relationship);
-	}
+    return new FamilyMember(familyId, clientId, relationship);
+  }
 
-	public int getFamilyId() {
-		return familyId;
-	}
+  public int getFamilyId() {
+    return familyId;
+  }
 
-	public int getClientId() {
-		return clientId;
-	}
+  public int getClientId() {
+    return clientId;
+  }
 
-	public String getRelationship() {
-		return relationship;
-	}
+  public String getRelationship() {
+    return relationship;
+  }
 
 }
