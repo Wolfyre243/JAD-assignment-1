@@ -54,10 +54,38 @@ class FamilyController {
       return;
     }
   }
+  
+  public static void removeFamilyMember(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    final HttpSession session = request.getSession();
+    
+    int sessUserId = 0;
+    if (session.getAttribute("userId") == null) {
+      System.out.println("User not logged in. Redirecting to login page.");
+      response.sendRedirect(request.getContextPath() + "/auth/login/");
+      return;
+    } else {
+      sessUserId = (int) session.getAttribute("userId");
+    }
+
+    try {
+      int clientId = Integer.parseInt(request.getParameter("cid"));
+
+      Client.deleteClientById(clientId);
+
+      response.sendRedirect(request.getContextPath() + "/family/");
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+          "Failed to remove family member. Please try again.");
+      return;
+    }
+  }
 }
 
 
-@WebServlet("/family/add")
+@WebServlet({ "/family/add", "/family/remove" })
 public class FamilyServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
@@ -66,15 +94,16 @@ public class FamilyServlet extends HttpServlet {
   }
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    response.getWriter().append("Served at: ").append(request.getContextPath());
+    response.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested resource was not found.");
   }
 
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     final String path = request.getServletPath();
 
     if (path.endsWith("/family/add")) {
-      System.out.println("ClientServlet: Handling profile creation POST request.");
       FamilyController.createFamilyMember(request, response);
+    } else if (path.endsWith("/family/remove")) {
+      FamilyController.removeFamilyMember(request, response);
     } else {
       response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
