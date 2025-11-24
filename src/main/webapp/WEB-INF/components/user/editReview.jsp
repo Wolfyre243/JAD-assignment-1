@@ -173,7 +173,7 @@
 <div class="page-container">
     <div class="form-box">
 
-        <a class="back-link" href="<%= request.getContextPath() %>/user/reviews">Back to Reviews</a>
+        <a class="back-link" href="<%= request.getContextPath() %>/reviews">Back to Reviews</a>
 
         <h2>Edit Your Review</h2>
 
@@ -197,7 +197,7 @@
         <% } %>
 
         <!-- FORM -->
-        <form action="<%=request.getContextPath()%>/user/reviews" method="post">
+        <form action="<%=request.getContextPath()%>/reviews" method="post">
             <input type="hidden" name="action" value="edit">
             <input type="hidden" name="feedbackId" value="<%= feedbackId %>">
 

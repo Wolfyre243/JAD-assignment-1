@@ -181,11 +181,11 @@
     <div class="right-panel">
         <div class="form-box">
 
-            <a class="back-link" href="<%= request.getContextPath() %>/user/reviews">Back to Reviews</a>
+            <a class="back-link" href="<%= request.getContextPath() %>/reviews">Back to Reviews</a>
 
             <h2>Add Your Review</h2>
 
-            <form action="<%= request.getContextPath() %>/user/reviews" method="post">
+            <form action="<%= request.getContextPath() %>/reviews" method="post">
     			<input type="hidden" name="action" value="add">
 
 				<!-- CAREGIVER LIST -->
