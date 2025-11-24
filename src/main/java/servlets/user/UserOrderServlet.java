@@ -26,7 +26,7 @@ public class UserOrderServlet extends HttpServlet {
             throws ServletException, IOException {
         // Check if user is logged in
         if (!SessionManagement.isLoggedIn(request)) {
-            response.sendRedirect(request.getContextPath() + "/auth/login");
+            response.sendRedirect(request.getContextPath() + "/auth/login/");
             return;
         }
 
