@@ -93,7 +93,7 @@ public class UserReviewsServlet extends HttpServlet {
                 caregiverIdStr == null || productIdStr == null ||
                 overallStr.isEmpty() || caregiverStr.isEmpty()) {
 
-            response.sendRedirect(request.getContextPath() + "/user/reviews?msg=invalid");
+            response.sendRedirect(request.getContextPath() + "/reviews?msg=invalid");
             return;
         }
 
@@ -114,7 +114,7 @@ public class UserReviewsServlet extends HttpServlet {
             }
 
         } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/user/reviews?msg=invalid");
+            response.sendRedirect(request.getContextPath() + "/reviews?msg=invalid");
             return;
         }
         
@@ -143,11 +143,11 @@ public class UserReviewsServlet extends HttpServlet {
             int rows = pstmt.executeUpdate();
             if (rows == 0) throw new SQLException("Insert failed");
 
-            response.sendRedirect(request.getContextPath() + "/user/reviews?msg=added");
+            response.sendRedirect(request.getContextPath() + "/reviews?msg=added");
 
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/user/reviews?msg=db_error");
+            response.sendRedirect(request.getContextPath() + "/reviews?msg=db_error");
 
         } finally {
             try { if (pstmt != null) pstmt.close(); } catch (Exception ignored) {}
@@ -169,7 +169,7 @@ public class UserReviewsServlet extends HttpServlet {
             overallStr == null || caregiverRatingStr == null) {
 
             response.sendRedirect(request.getContextPath()
-                    + "/user/reviews?action=edit&feedbackId=" + idStr + "&msg=invalid");
+                    + "/reviews?action=edit&feedbackId=" + idStr + "&msg=invalid");
             return;
         }
 
@@ -183,13 +183,13 @@ public class UserReviewsServlet extends HttpServlet {
             productId = Integer.parseInt(productStr);
             
         } catch (Exception e) {
-            response.sendRedirect(request.getContextPath() + "/user/reviews?action=edit&feedbackId=" + idStr + "&msg=invalid");
+            response.sendRedirect(request.getContextPath() + "/reviews?action=edit&feedbackId=" + idStr + "&msg=invalid");
             return;
         }
 
         // Bounds check
         if (overallRating < 1 || overallRating > 5 || caregiverRating < 1 || caregiverRating > 5) {
-            response.sendRedirect(request.getContextPath() + "/user/reviews?action=edit&feedbackId=" + idStr + "&msg=invalid");
+            response.sendRedirect(request.getContextPath() + "/reviews?action=edit&feedbackId=" + idStr + "&msg=invalid");
             return;
         }
 
@@ -214,14 +214,14 @@ public class UserReviewsServlet extends HttpServlet {
 
             if (rows == 0) {
                 // Either not found OR user does not own the review
-                response.sendRedirect(request.getContextPath() + "/user/reviews?action=edit&feedbackId=" + idStr + "&msg=forbidden");
+                response.sendRedirect(request.getContextPath() + "/reviews?action=edit&feedbackId=" + idStr + "&msg=forbidden");
             } else {
-                response.sendRedirect(request.getContextPath() + "/user/reviews?action=edit&feedbackId=" + idStr + "&msg=updated");
+                response.sendRedirect(request.getContextPath() + "/reviews?action=edit&feedbackId=" + idStr + "&msg=updated");
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/user/reviews?action=edit&feedbackId=" + idStr + "&msg=db_error");
+            response.sendRedirect(request.getContextPath() + "/reviews?action=edit&feedbackId=" + idStr + "&msg=db_error");
         }
     }
 }

@@ -120,7 +120,7 @@
         <p style="color:<%= color %>; font-weight:bold;"><%= text %></p>
     <% } %>
 
-    <a href="<%= request.getContextPath() %>/user/reviews?action=add" class="button">Add New Review</a>
+    <a href="<%= request.getContextPath() %>/reviews?action=add" class="button">Add New Review</a>
 
     <%
         Connection conn = null;
@@ -192,7 +192,7 @@
                  <td><%= formattedDate %></td>
                  <td>
                      <% if (sessUserId != null && sessUserId == ownerId) { %>
-                         <a href="<%= request.getContextPath() %>/user/reviews?action=edit&feedbackId=<%= feedbackId %>">Edit</a>
+                         <a href="<%= request.getContextPath() %>/reviews?action=edit&feedbackId=<%= feedbackId %>">Edit</a>
                      <% } else { %>
                          <span style="color:#aaa;">—</span>
                      <% } %>
