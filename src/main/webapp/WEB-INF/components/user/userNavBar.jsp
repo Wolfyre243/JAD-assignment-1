@@ -81,7 +81,8 @@ final Integer sessRoleId = (Integer) session.getAttribute("userRoleId");
 		<div class="nav-left">
 			<a href="<%= request.getContextPath() %>/" class="brand">SilverCare</a>
 			<a href="<%= request.getContextPath() %>/services/">Services</a> 
-      <a href="<%= request.getContextPath() %>/reviews">Feedback</a>
+      		<a href="<%= request.getContextPath() %>/reviews">Feedback</a>
+      		<a href="<%= request.getContextPath() %>/user/orders">Orders</a>
 			<%
 			if (sessUserId != null && sessRoleId == 3) {
 			%>
