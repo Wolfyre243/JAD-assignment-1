@@ -204,9 +204,9 @@
         Integer currentUserId = (Integer) request.getAttribute("sessUserId");
         Integer currentRoleId = (Integer) request.getAttribute("sessRoleId");
         
-        if (currentUserId != null && currentRoleId != null && currentRoleId == 2) { 
+        if (currentUserId != null && currentRoleId != null && (currentRoleId == 2 || currentRoleId == 3)) { 
         %>
-            <!-- USER LOGGED IN & IS CLIENT → SHOW "ADD TO CART" -->
+            <!-- USER LOGGED IN & IS CLIENT & IS GUARDIAN→ SHOW "ADD TO CART" -->
             <form action="<%=request.getContextPath()%>/product/addToCart" method="post">
                 <input type="hidden" name="productId" value="<%= product.getProductId() %>">
                 
@@ -237,9 +237,9 @@
             <!-- NOT LOGGED IN OR WRONG ROLE -->
             <div class="login-warning">
                 <% if (currentUserId == null) { %>
-                    Login as a client to add this service to your cart.
-                <% } else if (currentRoleId != 2) { %>
-                    Only clients can add services to cart.
+                    Login as a client guardian to add this service to your cart.
+                <% } else if (currentRoleId != 2 && currentRoleId != 3) { %>
+                    Only clients and guardian can add services to cart.
                 <% } %>
             </div>
         
