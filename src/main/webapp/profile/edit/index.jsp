@@ -9,17 +9,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Edit Profile | SilverCare</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/profile/edit/index.css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/profile/edit/index.css">
 </head>
 <body>
 	<jsp:include page="/WEB-INF/components/user/userNavBar.jsp"></jsp:include>
+
 	<%
 	Integer clientId = null;
 	Client client = null;
 
+	// Determine which client to edit
 	if (request.getParameter("cid") != null) {
 		clientId = Integer.parseInt(request.getParameter("cid"));
-	  client = Client.getClientById(clientId);
+		client = Client.getClientById(clientId);
 	} else {
 		client = Client.getClientByUserId(sessUserId);
 	}
@@ -32,10 +35,26 @@
 
 	<div class="container">
 		<div class="form-wrapper">
+
+			<!-- Success / Error Messages -->
+			<%
+			String success = (String) request.getAttribute("success");
+			String error = (String) request.getAttribute("error");
+			if (success != null) {
+			%>
+			<div class="message success"><%=success%></div>
+			<%
+			} else if (error != null) {
+			%>
+			<div class="message error"><%=error%></div>
+			<%
+			}
+			%>
+
 			<h2>Edit Your Profile</h2>
 			<p class="subtitle">Update your personal details below.</p>
 
-			<form action="<%=request.getContextPath()%>/profile/edit"
+			<form action="${pageContext.request.contextPath}/profile/edit"
 				method="post" class="profile-form">
 
 				<input type="hidden" name="clientId"
@@ -90,15 +109,16 @@
 				</div>
 
 				<div class="form-group">
-					<label for="email">Email Address <span class="required">*</span></label>
-					<input type="email" id="email" name="email" required
+					<label for="email">Email Address</label> <input type="email"
+						id="email" name="email"
 						value="<%=client.getEmail() != null ? client.getEmail() : ""%>"
 						placeholder="john@example.com">
 				</div>
 
 				<div class="form-actions">
 					<button type="submit" class="btn-primary">Update Profile</button>
-					<a href="<%=request.getContextPath()%>/profile/" class="btn-cancel">Cancel</a>
+					<a href="${pageContext.request.contextPath}/profile/"
+						class="btn-cancel">Cancel</a>
 				</div>
 			</form>
 		</div>

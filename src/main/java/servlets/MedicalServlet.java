@@ -61,8 +61,9 @@ class MedicalController {
 //      session.setAttribute("medicalError", "Failed to create medical profile. Please try again.");
 //      response.sendRedirect("client/medical/createMedicalProfile.jsp");
 			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-			    "An error occurred while creating medical profile.");
+			request.setAttribute("error", "An occurred while creating medical profile. Please try again later.");
+      request.getRequestDispatcher("/error/index.jsp").forward(request, response);
+      return;
 		}
 	}
 
@@ -115,8 +116,9 @@ class MedicalController {
 //      session.setAttribute("medicalError", "Failed to create medical profile. Please try again.");
 //      response.sendRedirect("client/medical/createMedicalProfile.jsp");
 			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-			    "An error occurred while creating medical profile.");
+			request.setAttribute("error", "An occurred while editing medical profile. Please try again later.");
+      request.getRequestDispatcher("/error/index.jsp").forward(request, response);
+      return;
 		}
 	}
 }

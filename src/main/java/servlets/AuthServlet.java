@@ -33,7 +33,8 @@ class AuthController {
       final User user = User.getUserByEmail(email);
       // Validate credentials
       if (user == null || !user.getPassword().equals(password)) {
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid email or password.");
+      	request.setAttribute("error", "Invalid login credentials");
+        request.getRequestDispatcher("/auth/login/index.jsp").forward(request, response);
         return;
       }
 
@@ -63,7 +64,9 @@ class AuthController {
 
     } catch (Exception e) {
       e.printStackTrace();
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during login.");
+      request.setAttribute("error", "An unexpected error occurred. Please try again later.");
+      request.getRequestDispatcher("/error/index.jsp").forward(request, response);
+      return;
     }
   }
 
@@ -92,7 +95,8 @@ class AuthController {
       session.setAttribute("userRoleName", userRoleName);
     } catch (Exception e) {
       e.printStackTrace();
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during registration.");
+      request.setAttribute("error", "An error occurred during registration.");
+      request.getRequestDispatcher("/auth/register/index.jsp").forward(request, response);
       return;
     }
 
@@ -120,7 +124,9 @@ class AuthController {
       return;
     } catch (Exception e) {
       e.printStackTrace();
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred while logging out.");
+      request.setAttribute("error", "An error occurred during registration.");
+      request.getRequestDispatcher("/error/index.jsp").forward(request, response);
+      return;
     }
   }
 }

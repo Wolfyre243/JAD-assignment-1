@@ -112,16 +112,26 @@ input {
 	<%
 	// Redirect logged-in users
 	if (request.getAttribute("sessUserId") != null) {
-	  response.sendRedirect(request.getContextPath() + "/");
-	  return;
+		response.sendRedirect(request.getContextPath() + "/");
+		return;
 	}
 	%>
 
 	<div class="login-card">
 		<h1>Login</h1>
 
-		<form action="<%=request.getContextPath()%>/auth/login"
-			method="post">
+		<%
+		String error = (String) request.getAttribute("error");
+		if (error != null && !error.trim().isEmpty()) {
+		%>
+		<div class="error-message">
+			Error: <%=error%>
+		</div>
+		<%
+		}
+		%>
+
+		<form action="<%=request.getContextPath()%>/auth/login" method="post">
 
 			<label>Email</label> <input type="email" name="email" required>
 

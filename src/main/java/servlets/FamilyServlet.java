@@ -44,13 +44,15 @@ class FamilyController {
       
       final int familyId = Family.getUserFamily(sessUserId).getFamilyId();
       FamilyMember.createFamilyMember(familyId, newClientId, relationship);
-
-      response.sendRedirect(request.getContextPath() + "/family/");
+      
+      request.setAttribute("success", "Family member '" + firstName + " " + lastName + "' added successfully!");
+      request.getRequestDispatcher("/family/index.jsp").forward(request, response);
 
     } catch (Exception e) {
       e.printStackTrace();
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-          "Failed to add family member. Please try again.");
+      request.setAttribute("error", "Failed to add family member. Please try again.");
+//      response.sendRedirect(request.getContextPath() + "/family/");
+      request.getRequestDispatcher("/family/index.jsp").forward(request, response);
       return;
     }
   }

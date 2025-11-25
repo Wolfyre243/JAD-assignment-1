@@ -46,11 +46,12 @@ class ClientController {
           sessUserId,
           firstName, lastName, dob, gender, nric, phone, email);
 
-      response.sendRedirect(request.getContextPath() + "/");
+      response.sendRedirect(request.getContextPath() + "/profile/");
 
     } catch (Exception e) {
       e.printStackTrace();
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to create profile. Please try again.");
+      request.setAttribute("error", "An occurred while creating account. Please try again later.");
+      request.getRequestDispatcher("/error/index.jsp").forward(request, response);
       return;
     }
   }
@@ -91,6 +92,9 @@ class ClientController {
       response.sendRedirect(request.getContextPath() + "/profile/");
     } catch (Exception e) {
       e.printStackTrace();
+      request.setAttribute("error", "An unexpected error occurred. Please try again later.");
+      request.getRequestDispatcher("/error/index.jsp").forward(request, response);
+      return;
     }
   }
 }
@@ -100,7 +104,6 @@ class EmergencyContactController {
       throws ServletException, IOException {
 
     int sessClientId = 0;
-    System.out.println("CID: " + request.getParameter("cid"));
     if (request.getParameter("cid") == null) {
       System.out.println("Client profile not found. Redirecting to profile creation page.");
       response.sendRedirect(request.getContextPath() + "/profile/create");
@@ -122,8 +125,8 @@ class EmergencyContactController {
 
     } catch (Exception e) {
       e.printStackTrace();
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-          "Failed to create emergency contact. Please try again.");
+      request.setAttribute("error", "Failed to create emergency contact. Please try again later.");
+      request.getRequestDispatcher("/error/index.jsp").forward(request, response);
       return;
     }
   }
