@@ -121,7 +121,7 @@
 					<div id="addContactForm" class="add-contact-form">
 						<h4>Add New Emergency Contact</h4>
 						<form
-							action="${pageContext.request.contextPath}/emergency-contact/add?cid=<%= client.getClientId() %>"
+							action="${pageContext.request.contextPath}/emergency-contact/add"
 							method="post">
 							<table>
 								<tr>

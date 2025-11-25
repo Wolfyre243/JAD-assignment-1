@@ -77,14 +77,16 @@ class ClientController {
 
 		try {
 			Client client = null;
-
+			boolean isInFamily = false;
+			
 			if (clientId > 0) {
-				final boolean isInFamily = Family.checkMemberInFamily(sessUserId, clientId);
-				if (!isInFamily) {
-					client = Client.getClientByUserId(sessUserId);
-				} else {
-					client = Client.getClientById(clientId);
-				}
+				isInFamily = Family.checkMemberInFamily(sessUserId, clientId);
+			}
+			
+			if (!isInFamily) {
+				client = Client.getClientByUserId(sessUserId);
+			} else {
+				client = Client.getClientById(clientId);
 			}
 
 			if (client == null) {
@@ -123,25 +125,55 @@ class ClientController {
 class EmergencyContactController {
 	public static void createEmergencyContact(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-
-		int sessClientId = 0;
-		if (request.getParameter("cid") == null) {
-			System.out.println("Client profile not found. Redirecting to profile creation page.");
-			response.sendRedirect(request.getContextPath() + "/profile/create");
+		final HttpSession session = request.getSession();
+		
+		int sessUserId = 0;
+		if (session.getAttribute("userId") == null) {
+			System.out.println("User not logged in. Redirecting to login page.");
+			response.sendRedirect(request.getContextPath() + "/auth/login/");
 			return;
 		} else {
-			sessClientId = Integer.parseInt(request.getParameter("cid"));
+			sessUserId = (int) session.getAttribute("userId");
+		}
+
+		int clientId = 0;
+		if (request.getParameter("cid") != null) {
+			clientId = Integer.parseInt(request.getParameter("cid"));
 		}
 
 		try {
+			Client client = null;
+
+boolean isInFamily = false;
+			
+			if (clientId > 0) {
+				isInFamily = Family.checkMemberInFamily(sessUserId, clientId);
+			}
+			
+			if (!isInFamily) {
+				client = Client.getClientByUserId(sessUserId);
+			} else {
+				client = Client.getClientById(clientId);
+			}
+			
+			if (client == null) {
+				response.sendRedirect(request.getContextPath() + "/profile/");
+				return;
+			}
+			
 			String name = request.getParameter("name");
 			String phone = request.getParameter("phone");
 			String relationship = request.getParameter("relationship");
 
 			models.EmergencyContact.createEmergencyContact(
-			    sessClientId,
+			    client.getClientId(),
 			    name, phone, relationship);
-
+			
+			
+			if (clientId > 0) {
+				response.sendRedirect(request.getContextPath() + "/family/member?cid=" + clientId);
+				return;
+			}
 			response.sendRedirect(request.getContextPath() + "/profile/");
 
 		} catch (Exception e) {
