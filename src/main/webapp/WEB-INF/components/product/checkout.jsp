@@ -7,13 +7,6 @@
 --%>
 <%@ page import="java.sql.*" %>
 <%@ page import="db.JDBC" %>
-<%--
-  Author: Goh Yi Xin Karys
-  Admin No: P2424431
-  Class: DIT-2B-01
-  Last Edited: 06/11/2025
-  Description: Secure checkout — converts active cart to order + bookings with full transaction safety
---%>
 <%
     // === 1. AUTHENTICATION ===
     Integer userId = (Integer) session.getAttribute("userId");
