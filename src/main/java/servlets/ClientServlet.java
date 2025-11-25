@@ -7,166 +7,187 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.Client;
+import models.Family;
 import models.User;
 
 import java.io.IOException;
 import java.sql.Date;
 
 class ClientController {
-  public static void createClient(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    final HttpSession session = request.getSession();
+	public static void createClient(HttpServletRequest request, HttpServletResponse response)
+	    throws ServletException, IOException {
+		final HttpSession session = request.getSession();
 
-    int sessUserId = 0;
-    if (session.getAttribute("userId") == null) {
-      System.out.println("User not logged in. Redirecting to login page.");
-      response.sendRedirect(request.getContextPath() + "/auth/login/");
-      return;
-    } else {
-      sessUserId = (int) session.getAttribute("userId");
-    }
+		int sessUserId = 0;
+		if (session.getAttribute("userId") == null) {
+			System.out.println("User not logged in. Redirecting to login page.");
+			response.sendRedirect(request.getContextPath() + "/auth/login/");
+			return;
+		} else {
+			sessUserId = (int) session.getAttribute("userId");
+		}
 
-    try {
-      // Verify if user already has a client profile
-      Client client = Client.getClientByUserId(sessUserId);
-      if (client != null) {
-        response.sendRedirect(request.getContextPath() + "/");
-        return;
-      }
+		try {
+			// Verify if user already has a client profile
+			Client client = Client.getClientByUserId(sessUserId);
+			if (client != null) {
+				response.sendRedirect(request.getContextPath() + "/");
+				return;
+			}
 
-      String firstName = request.getParameter("firstName");
-      String lastName = request.getParameter("lastName");
-      Date dob = Date.valueOf(request.getParameter("dob"));
-      String gender = request.getParameter("gender");
-      String nric = request.getParameter("nric").toUpperCase();
-      String phone = request.getParameter("phone");
-      String email = request.getParameter("email");
+			String firstName = request.getParameter("firstName");
+			String lastName = request.getParameter("lastName");
+			Date dob = Date.valueOf(request.getParameter("dob"));
+			String gender = request.getParameter("gender");
+			String nric = request.getParameter("nric").toUpperCase();
+			String phone = request.getParameter("phone");
+			String email = request.getParameter("email");
 
-      Client.createClient(
-          sessUserId,
-          firstName, lastName, dob, gender, nric, phone, email);
+			Client.createClient(
+			    sessUserId,
+			    firstName, lastName, dob, gender, nric, phone, email);
 
-      response.sendRedirect(request.getContextPath() + "/profile/");
+			response.sendRedirect(request.getContextPath() + "/profile/");
 
-    } catch (Exception e) {
-      e.printStackTrace();
-      request.setAttribute("error", "An occurred while creating account. Please try again later.");
-      request.getRequestDispatcher("/error/index.jsp").forward(request, response);
-      return;
-    }
-  }
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.setAttribute("error", "An occurred while creating account. Please try again later.");
+			request.getRequestDispatcher("/error/index.jsp").forward(request, response);
+			return;
+		}
+	}
 
-  public static void editClient(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    final HttpSession session = request.getSession();
+	public static void editClient(HttpServletRequest request, HttpServletResponse response)
+	    throws ServletException, IOException {
+		final HttpSession session = request.getSession();
 
-    int sessUserId = 0;
-    if (session.getAttribute("userId") == null) {
-      System.out.println("User not logged in. Redirecting to login page.");
-      response.sendRedirect(request.getContextPath() + "/auth/login/");
-      return;
-    } else {
-      sessUserId = (int) session.getAttribute("userId");
-    }
+		int sessUserId = 0;
+		if (session.getAttribute("userId") == null) {
+			System.out.println("User not logged in. Redirecting to login page.");
+			response.sendRedirect(request.getContextPath() + "/auth/login/");
+			return;
+		} else {
+			sessUserId = (int) session.getAttribute("userId");
+		}
 
-    try {
-      Client client = Client.getClientByUserId(sessUserId);
-      if (client == null) {
-        response.sendRedirect(request.getContextPath() + "/profile/");
-        return;
-      }
+		int clientId = -1;
+		if (request.getParameter("cid") != null) {
+			clientId = Integer.parseInt(request.getParameter("cid"));
+		}
 
-      String firstName = request.getParameter("firstName");
-      String lastName = request.getParameter("lastName");
-      Date dob = Date.valueOf(request.getParameter("dob"));
-      String gender = request.getParameter("gender");
-      String nric = request.getParameter("nric").toUpperCase();
-      String phone = request.getParameter("phone");
-      String email = request.getParameter("email");
-      Client.updateClient(
-          client.getClientId(),
-          sessUserId,
-          firstName, lastName, dob,
-          gender, nric, phone, email);
-      
-      response.sendRedirect(request.getContextPath() + "/profile/");
-    } catch (Exception e) {
-      e.printStackTrace();
-      request.setAttribute("error", "An unexpected error occurred. Please try again later.");
-      request.getRequestDispatcher("/error/index.jsp").forward(request, response);
-      return;
-    }
-  }
+		try {
+			Client client = null;
+
+			if (clientId > 0) {
+				final boolean isInFamily = Family.checkMemberInFamily(sessUserId, clientId);
+				if (!isInFamily) {
+					client = Client.getClientByUserId(sessUserId);
+				} else {
+					client = Client.getClientById(clientId);
+				}
+			}
+
+			if (client == null) {
+				response.sendRedirect(request.getContextPath() + "/profile/");
+				return;
+			}
+
+			String firstName = request.getParameter("firstName");
+			String lastName = request.getParameter("lastName");
+			Date dob = Date.valueOf(request.getParameter("dob"));
+			String gender = request.getParameter("gender");
+			String nric = request.getParameter("nric").toUpperCase();
+			String phone = request.getParameter("phone");
+			String email = request.getParameter("email");
+			Client.updateClient(
+			    client.getClientId(),
+			    sessUserId,
+			    firstName, lastName, dob,
+			    gender, nric, phone, email);
+
+			if (clientId != -1) {
+				response.sendRedirect(request.getContextPath() + "/family/member?cid=" + clientId);
+				return;
+			}
+			response.sendRedirect(request.getContextPath() + "/profile/");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.setAttribute("error", "An unexpected error occurred. Please try again later.");
+			request.getRequestDispatcher("/error/index.jsp").forward(request, response);
+			return;
+		}
+	}
 }
 
 class EmergencyContactController {
-  public static void createEmergencyContact(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+	public static void createEmergencyContact(HttpServletRequest request, HttpServletResponse response)
+	    throws ServletException, IOException {
 
-    int sessClientId = 0;
-    if (request.getParameter("cid") == null) {
-      System.out.println("Client profile not found. Redirecting to profile creation page.");
-      response.sendRedirect(request.getContextPath() + "/profile/create");
-      return;
-    } else {
-      sessClientId = Integer.parseInt(request.getParameter("cid"));
-    }
+		int sessClientId = 0;
+		if (request.getParameter("cid") == null) {
+			System.out.println("Client profile not found. Redirecting to profile creation page.");
+			response.sendRedirect(request.getContextPath() + "/profile/create");
+			return;
+		} else {
+			sessClientId = Integer.parseInt(request.getParameter("cid"));
+		}
 
-    try {
-      String name = request.getParameter("name");
-      String phone = request.getParameter("phone");
-      String relationship = request.getParameter("relationship");
+		try {
+			String name = request.getParameter("name");
+			String phone = request.getParameter("phone");
+			String relationship = request.getParameter("relationship");
 
-      models.EmergencyContact.createEmergencyContact(
-          sessClientId,
-          name, phone, relationship);
+			models.EmergencyContact.createEmergencyContact(
+			    sessClientId,
+			    name, phone, relationship);
 
-      response.sendRedirect(request.getContextPath() + "/profile/");
+			response.sendRedirect(request.getContextPath() + "/profile/");
 
-    } catch (Exception e) {
-      e.printStackTrace();
-      request.setAttribute("error", "Failed to create emergency contact. Please try again later.");
-      request.getRequestDispatcher("/error/index.jsp").forward(request, response);
-      return;
-    }
-  }
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.setAttribute("error", "Failed to create emergency contact. Please try again later.");
+			request.getRequestDispatcher("/error/index.jsp").forward(request, response);
+			return;
+		}
+	}
 }
 
 @WebServlet({ "/profile/create", "/emergency-contact/add", "/profile/edit" })
 public class ClientServlet extends HttpServlet {
-  private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-  public ClientServlet() {
-    super();
-  }
+	public ClientServlet() {
+		super();
+	}
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    final String path = request.getServletPath();
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		final String path = request.getServletPath();
 
-    if (path.endsWith("/profile/create")) {
-      request.getRequestDispatcher("/profile/create/index.jsp").include(request, response);
-    } else if (path.endsWith("/profile/edit")) {
-      request.getRequestDispatcher("/profile/edit/index.jsp").include(request, response);
-    } else {
-      response.sendError(HttpServletResponse.SC_NOT_FOUND);
-    }
-  }
+		if (path.endsWith("/profile/create")) {
+			request.getRequestDispatcher("/profile/create/index.jsp").include(request, response);
+		} else if (path.endsWith("/profile/edit")) {
+			request.getRequestDispatcher("/profile/edit/index.jsp").include(request, response);
+		} else {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+		}
+	}
 
-  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    final String path = request.getServletPath();
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		final String path = request.getServletPath();
 
-    if (path.endsWith("/profile/create")) {
-      System.out.println("ClientServlet: Handling profile creation POST request.");
-      ClientController.createClient(request, response);
-    } else if (path.endsWith("/profile/edit")) {
-      System.out.println("ClientServlet: Handling edit profile POST request.");
-      ClientController.editClient(request, response);
-    } else if (path.endsWith("/emergency-contact/add")) {
-      System.out.println("ClientServlet: Handling emergency contact creation POST request.");
-      EmergencyContactController.createEmergencyContact(request, response);
-    } else {
-      response.sendError(HttpServletResponse.SC_NOT_FOUND);
-    }
-  }
+		if (path.endsWith("/profile/create")) {
+			System.out.println("ClientServlet: Handling profile creation POST request.");
+			ClientController.createClient(request, response);
+		} else if (path.endsWith("/profile/edit")) {
+			System.out.println("ClientServlet: Handling edit profile POST request.");
+			ClientController.editClient(request, response);
+		} else if (path.endsWith("/emergency-contact/add")) {
+			System.out.println("ClientServlet: Handling emergency contact creation POST request.");
+			EmergencyContactController.createEmergencyContact(request, response);
+		} else {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+		}
+	}
 
 }

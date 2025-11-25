@@ -54,7 +54,7 @@
 			<h2>Edit Your Profile</h2>
 			<p class="subtitle">Update your personal details below.</p>
 
-			<form action="${pageContext.request.contextPath}/profile/edit"
+			<form action="${pageContext.request.contextPath}/profile/edit<%= clientId != null ? "?cid=" + request.getParameter("cid") : "" %>"
 				method="post" class="profile-form">
 
 				<input type="hidden" name="clientId"
