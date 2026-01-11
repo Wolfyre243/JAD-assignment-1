@@ -110,6 +110,39 @@ public class Cart implements Serializable {
     }
     
     /**
+     * GST rate for Singapore (9%)
+     */
+    private static final double GST_RATE = 0.09;
+    
+    /**
+     * Get subtotal (before GST)
+     */
+    public double getSubtotal() {
+        return getTotal();
+    }
+    
+    /**
+     * Get GST amount
+     */
+    public double getGSTAmount() {
+        return getSubtotal() * GST_RATE;
+    }
+    
+    /**
+     * Get total including GST
+     */
+    public double getTotalWithGST() {
+        return getSubtotal() + getGSTAmount();
+    }
+    
+    /**
+     * Check if GST applies (for eldercare services in Singapore, GST typically applies)
+     */
+    public boolean isGSTApplicable() {
+        return true; // GST applies to most eldercare services in Singapore
+    }
+    
+    /**
      * Check if cart is empty
      */
     public boolean isEmpty() {

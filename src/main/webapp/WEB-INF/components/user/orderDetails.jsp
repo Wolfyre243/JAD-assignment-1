@@ -109,25 +109,35 @@
     }
 
     /* Total section */
-    .order-total {
+    .order-total-breakdown {
         background: white;
         padding: 25px;
         border-radius: 15px;
         margin: 20px 0;
-        text-align: right;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    .order-total .total-label {
-        font-size: 24px;
-        font-weight: bold;
-        color: #222;
+    .order-total-breakdown h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #b3003b;
+        font-size: 22px;
     }
 
-    .order-total .total-amount {
-        font-size: 32px;
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 18px;
+        color: #333;
+    }
+
+    .total-row.final-total {
         font-weight: bold;
-        color: #b3003b;
+        font-size: 20px;
+        color: #222;
+        border-top: 2px solid #333;
+        padding-top: 10px;
         margin-top: 10px;
     }
 
@@ -188,7 +198,17 @@
             int orderId = (Integer) orderDetails.get("orderId");
             Timestamp createdAt = (Timestamp) orderDetails.get("createdAt");
             List<Map<String, Object>> bookings = (List<Map<String, Object>>) orderDetails.get("bookings");
-            double totalAmount = (Double) orderDetails.get("totalAmount");
+            Double subtotal = (Double) orderDetails.get("subtotal");
+            Double gstAmount = (Double) orderDetails.get("gstAmount");
+            Double totalAmount = (Double) orderDetails.get("totalAmount");
+            
+            // Fallback for older orders without GST breakdown
+            if (subtotal == null || gstAmount == null || totalAmount == null) {
+                double oldTotal = (Double) orderDetails.get("totalAmount");
+                subtotal = oldTotal / 1.09; // Reverse calculate assuming GST was included
+                gstAmount = oldTotal - subtotal;
+                totalAmount = oldTotal;
+            }
     %>
             <h1>Order #<%= orderId %></h1>
             <a href="<%= request.getContextPath() %>/user/orders" class="back-link">← Back to My Orders</a>
@@ -235,9 +255,20 @@
                 </tbody>
             </table>
 
-            <div class="order-total">
-                <div class="total-label">Total Amount:</div>
-                <div class="total-amount">$<%= String.format("%.2f", totalAmount) %></div>
+            <div class="order-total-breakdown">
+                <h3>Order Summary</h3>
+                <div class="total-row">
+                    <span>Subtotal:</span>
+                    <span>$<%= String.format("%.2f", subtotal) %></span>
+                </div>
+                <div class="total-row">
+                    <span>GST (9%):</span>
+                    <span>$<%= String.format("%.2f", gstAmount) %></span>
+                </div>
+                <div class="total-row final-total">
+                    <span>Total Paid:</span>
+                    <span>$<%= String.format("%.2f", totalAmount) %></span>
+                </div>
             </div>
 
             <div class="action-buttons">
