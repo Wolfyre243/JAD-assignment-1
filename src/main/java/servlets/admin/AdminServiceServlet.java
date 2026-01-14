@@ -8,6 +8,7 @@ package servlets.admin;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,8 +18,14 @@ import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import handlers.AdminServiceHandler;
 import lib.SessionManagement;
+import lib.ImageUploadUtil;
 
 @WebServlet("/admin/service")
+@MultipartConfig(
+    maxFileSize = 5 * 1024 * 1024, // 5MB
+    maxRequestSize = 10 * 1024 * 1024, // 10MB
+    fileSizeThreshold = 1024 * 1024 // 1MB
+)
 public class AdminServiceServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -120,14 +127,32 @@ public class AdminServiceServlet extends HttpServlet {
 
         boolean isActive = Boolean.parseBoolean(isActiveStr);
 
+        // Handle image upload
+        String imagePath = null;
         try {
-            boolean ok = AdminServiceHandler.addService(categoryId, name.trim(), description != null ? description.trim() : null, price, isActive);
+            imagePath = ImageUploadUtil.processImageUpload(request, "imageFile");
+        } catch (ServletException | IOException e) {
+            response.sendRedirect(request.getContextPath() + "/admin/services?msg=upload_error&details=" + URLEncoder.encode(e.getMessage(), "UTF-8"));
+            return;
+        }
+
+        try {
+            boolean ok = AdminServiceHandler.addService(categoryId, name.trim(), 
+                description != null ? description.trim() : null, price, isActive, imagePath);
             if (!ok) {
+                // Clean up uploaded image if database insert failed
+                if (imagePath != null) {
+                    ImageUploadUtil.deleteImage(request, imagePath);
+                }
                 response.sendRedirect(request.getContextPath() + "/admin/services?msg=db_error");
             } else {
                 response.sendRedirect(request.getContextPath() + "/admin/services?msg=added");
             }
         } catch (SQLException e) {
+            // Clean up uploaded image if database error
+            if (imagePath != null) {
+                ImageUploadUtil.deleteImage(request, imagePath);
+            }
             e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/admin/services?msg=db_error");
         }
@@ -140,8 +165,10 @@ public class AdminServiceServlet extends HttpServlet {
         String description = request.getParameter("description");
         String priceStr = request.getParameter("price");
         String isActiveStr = request.getParameter("isActive");
+        String keepCurrentImage = request.getParameter("keepCurrentImage");
 
-        if (productIdStr == null || productIdStr.trim().isEmpty() || name == null || name.trim().isEmpty() || categoryIdStr == null || priceStr == null || isActiveStr == null) {
+        if (productIdStr == null || productIdStr.trim().isEmpty() || name == null || name.trim().isEmpty() || 
+            categoryIdStr == null || priceStr == null || isActiveStr == null) {
             response.sendRedirect(request.getContextPath() + "/admin/services?msg=invalid");
             return;
         }
@@ -161,14 +188,53 @@ public class AdminServiceServlet extends HttpServlet {
 
         boolean isActive = Boolean.parseBoolean(isActiveStr);
 
+        // Handle image upload
+        String newImagePath = null;
+        String oldImagePath = null;
+        
         try {
-            boolean ok = AdminServiceHandler.updateService(productId, categoryId, name.trim(), description != null ? description.trim() : null, price, isActive);
+            // Get current service to find old image
+            java.util.Map<String, Object> currentService = AdminServiceHandler.getServiceById(productId);
+            if (currentService != null) {
+                oldImagePath = (String) currentService.get("imagePath");
+            }
+            
+            // Check if user wants to keep current image or upload new one
+            if ("true".equals(keepCurrentImage)) {
+                newImagePath = oldImagePath; // Keep existing image
+            } else {
+                // Try to upload new image
+                newImagePath = ImageUploadUtil.processImageUpload(request, "imageFile");
+                if (newImagePath == null) {
+                    newImagePath = oldImagePath; // No new image uploaded, keep old one
+                }
+            }
+        } catch (ServletException | IOException | SQLException e) {
+            response.sendRedirect(request.getContextPath() + "/admin/services?msg=upload_error&details=" + URLEncoder.encode(e.getMessage(), "UTF-8"));
+            return;
+        }
+
+        try {
+            boolean ok = AdminServiceHandler.updateService(productId, categoryId, name.trim(), 
+                description != null ? description.trim() : null, price, isActive, newImagePath);
             if (!ok) {
+                // Clean up new uploaded image if database update failed
+                if (newImagePath != null && !newImagePath.equals(oldImagePath)) {
+                    ImageUploadUtil.deleteImage(request, newImagePath);
+                }
                 response.sendRedirect(request.getContextPath() + "/admin/services?msg=not_found");
             } else {
+                // Delete old image if a new one was successfully uploaded and saved
+                if (newImagePath != null && !newImagePath.equals(oldImagePath) && oldImagePath != null) {
+                    ImageUploadUtil.deleteImage(request, oldImagePath);
+                }
                 response.sendRedirect(request.getContextPath() + "/admin/services?msg=updated");
             }
         } catch (SQLException e) {
+            // Clean up new uploaded image if database error
+            if (newImagePath != null && !newImagePath.equals(oldImagePath)) {
+                ImageUploadUtil.deleteImage(request, newImagePath);
+            }
             e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/admin/services?msg=db_error");
         }

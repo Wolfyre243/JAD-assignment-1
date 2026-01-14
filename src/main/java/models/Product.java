@@ -24,11 +24,12 @@ public class Product {
 	private String description;
 	private float price;
 	private boolean isActive;
+	private String imagePath;
 	private Timestamp createdAt;
 	private Timestamp updatedAt;
 
 	public Product(int productId, Category category, String name, String description, float price, boolean isActive,
-	    Timestamp createdAt, Timestamp updatedAt) {
+	    String imagePath, Timestamp createdAt, Timestamp updatedAt) {
 		super();
 		this.productId = productId;
 		this.category = category;
@@ -36,6 +37,7 @@ public class Product {
 		this.description = description;
 		this.price = price;
 		this.isActive = isActive;
+		this.imagePath = imagePath;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
@@ -156,12 +158,13 @@ public class Product {
 		final String description = rs.getString("description");
 		final float price = rs.getFloat("price");
 		final boolean isActive = rs.getBoolean("is_active");
+		final String imagePath = rs.getString("image_path");
 		final Timestamp createdAt = rs.getTimestamp("created_at");
 		final Timestamp updatedAt = rs.getTimestamp("updated_at");
 
 		final Category category = Category.getCategoryById(categoryId);
 
-		return new Product(id, category, name, description, price, isActive, createdAt, updatedAt);
+		return new Product(id, category, name, description, price, isActive, imagePath, createdAt, updatedAt);
 	}
 
 	public int getProductId() {
@@ -186,6 +189,10 @@ public class Product {
 
 	public boolean isActive() {
 		return isActive;
+	}
+
+	public String getImagePath() {
+		return imagePath;
 	}
 
 	public Timestamp getCreatedAt() {

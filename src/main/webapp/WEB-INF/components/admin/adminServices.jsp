@@ -24,6 +24,11 @@
                 case "invalid":    text = "Invalid request.";                 color = "red";   break;
                 case "not_found":  text = "Service not found.";               color = "red";   break;
                 case "db_error":   text = "Database error. Please try again.";color = "red";   break;
+                case "upload_error": 
+                    String details = request.getParameter("details");
+                    text = "Image upload error: " + (details != null ? details : "Please check file format and size.");
+                    color = "red"; 
+                    break;
                 default:           text = "Action completed.";                color = "green";
             }
     %>
@@ -53,6 +58,7 @@
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Image</th>
                     <th>Name</th>
                     <th>Category</th>
                     <th>Description</th>
@@ -70,9 +76,21 @@
                     double price = (Double) row.get("price");
                     boolean isActive = Boolean.TRUE.equals(row.get("isActive"));
                     String categoryName = (String) row.get("categoryName");
+                    String imagePath = (String) row.get("imagePath");
             %>
                 <tr>
                     <td><%= productId %></td>
+                    <td>
+                        <% if (imagePath != null && !imagePath.trim().isEmpty()) { %>
+                            <img src="<%= request.getContextPath() %>/images/services/<%= imagePath %>" 
+                                 alt="<%= name %>" 
+                                 style="width: 50px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
+                        <% } else { %>
+                            <img src="<%= request.getContextPath() %>/images/default.png" 
+                                 alt="No image" 
+                                 style="width: 50px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; opacity: 0.6;">
+                        <% } %>
+                    </td>
                     <td><%= name %></td>
                     <td><%= categoryName %></td>
                     <td><%= description != null && !description.trim().isEmpty() ? description : "—" %></td>

@@ -18,7 +18,7 @@ public class AdminServiceHandler {
 
     public static List<Map<String, Object>> listServices() throws SQLException {
         List<Map<String, Object>> services = new ArrayList<>();
-        String sql = "SELECT p.product_id, p.name, p.description, p.price, p.is_active, c.name AS category_name FROM product p JOIN category c ON p.category_id = c.category_id ORDER BY p.product_id";
+        String sql = "SELECT p.product_id, p.name, p.description, p.price, p.is_active, p.image_path, c.name AS category_name FROM product p JOIN category c ON p.category_id = c.category_id ORDER BY p.product_id";
         try (Connection conn = JDBC.connect(); PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
             if (conn == null) throw new SQLException("Connection failed");
             while (rs.next()) {
@@ -28,6 +28,7 @@ public class AdminServiceHandler {
                 m.put("description", rs.getString("description"));
                 m.put("price", rs.getDouble("price"));
                 m.put("isActive", rs.getBoolean("is_active"));
+                m.put("imagePath", rs.getString("image_path"));
                 m.put("categoryName", rs.getString("category_name"));
                 services.add(m);
             }
@@ -51,7 +52,7 @@ public class AdminServiceHandler {
     }
 
     public static Map<String, Object> getServiceById(int productId) throws SQLException {
-        String sql = "SELECT product_id, category_id, name, description, price, is_active FROM product WHERE product_id = ?";
+        String sql = "SELECT product_id, category_id, name, description, price, is_active, image_path FROM product WHERE product_id = ?";
         try (Connection conn = JDBC.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             if (conn == null) throw new SQLException("Connection failed");
             pstmt.setInt(1, productId);
@@ -64,6 +65,7 @@ public class AdminServiceHandler {
                 m.put("description", rs.getString("description"));
                 m.put("price", rs.getDouble("price"));
                 m.put("isActive", rs.getBoolean("is_active"));
+                m.put("imagePath", rs.getString("image_path"));
                 return m;
             }
         }
@@ -79,8 +81,8 @@ public class AdminServiceHandler {
         }
     }
 
-    public static boolean addService(int categoryId, String name, String description, double price, boolean isActive) throws SQLException {
-        String sql = "INSERT INTO product (category_id, name, description, price, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+    public static boolean addService(int categoryId, String name, String description, double price, boolean isActive, String imagePath) throws SQLException {
+        String sql = "INSERT INTO product (category_id, name, description, price, is_active, image_path, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
         try (Connection conn = JDBC.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             if (conn == null) throw new SQLException("Connection failed");
             pstmt.setInt(1, categoryId);
@@ -88,12 +90,13 @@ public class AdminServiceHandler {
             if (description != null) pstmt.setString(3, description); else pstmt.setNull(3, Types.VARCHAR);
             pstmt.setDouble(4, price);
             pstmt.setBoolean(5, isActive);
+            if (imagePath != null) pstmt.setString(6, imagePath); else pstmt.setString(6, "default.png");
             return pstmt.executeUpdate() > 0;
         }
     }
 
-    public static boolean updateService(int productId, int categoryId, String name, String description, double price, boolean isActive) throws SQLException {
-        String sql = "UPDATE product SET category_id = ?, name = ?, description = ?, price = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE product_id = ?";
+    public static boolean updateService(int productId, int categoryId, String name, String description, double price, boolean isActive, String imagePath) throws SQLException {
+        String sql = "UPDATE product SET category_id = ?, name = ?, description = ?, price = ?, is_active = ?, image_path = ?, updated_at = CURRENT_TIMESTAMP WHERE product_id = ?";
         try (Connection conn = JDBC.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             if (conn == null) throw new SQLException("Connection failed");
             pstmt.setInt(1, categoryId);
@@ -101,7 +104,8 @@ public class AdminServiceHandler {
             if (description != null) pstmt.setString(3, description); else pstmt.setNull(3, Types.VARCHAR);
             pstmt.setDouble(4, price);
             pstmt.setBoolean(5, isActive);
-            pstmt.setInt(6, productId);
+            if (imagePath != null) pstmt.setString(6, imagePath); else pstmt.setString(6, "default.png");
+            pstmt.setInt(7, productId);
             return pstmt.executeUpdate() > 0;
         }
     }
