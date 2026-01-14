@@ -12,13 +12,6 @@
 final Integer sessUserId = (Integer) session.getAttribute("userId");
 final Integer sessRoleId = (Integer) session.getAttribute("userRoleId");
 %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>User Navigation Bar</title>
-</head>
-<body>
 
 <style>
 .navbar {
@@ -76,49 +69,48 @@ final Integer sessRoleId = (Integer) session.getAttribute("userRoleId");
 }
 </style>
   
-	<div class="navbar">
-		<!-- LEFT SIDE -->
-		<div class="nav-left">
-			<a href="<%= request.getContextPath() %>/" class="brand">SilverCare</a>
-			<a href="<%= request.getContextPath() %>/services/">Services</a> 
-			<a href="<%= request.getContextPath() %>/reviews">Feedback</a>
-			<% if (sessUserId != null && (sessRoleId == 2 || sessRoleId == 3)) { %>
-				<a href="<%= request.getContextPath() %>/user/orders">Orders</a>
+<div class="navbar">
+	<!-- LEFT SIDE -->
+	<div class="nav-left">
+		<a href="<%= request.getContextPath() %>/" class="brand">SilverCare</a>
+		<a href="<%= request.getContextPath() %>/services/">Services</a> 
+		<a href="<%= request.getContextPath() %>/reviews">Feedback</a>
+		<% if (sessUserId != null && (sessRoleId == 2 || sessRoleId == 3)) { %>
+			<a href="<%= request.getContextPath() %>/user/orders">Orders</a>
+		<% } %>
+		<% if (sessUserId != null && sessRoleId != null) { %>
+			<% if (sessRoleId == 1) { %>
+				<a href="<%=request.getContextPath()%>/admin/dashboard">Admin Dashboard</a>
+			<% } else if (sessRoleId == 3) { %>
+				<a href="<%=request.getContextPath()%>/family/">Family</a>
+			<% } else if (sessRoleId == 5) { %>
+				<a href="<%=request.getContextPath()%>/caregiver/profile">My Profile</a>
 			<% } %>
-			<% if (sessUserId != null && sessRoleId != null) { %>
-				<% if (sessRoleId == 1) { %>
-					<a href="<%=request.getContextPath()%>/admin/dashboard">Admin Dashboard</a>
-				<% } else if (sessRoleId == 3) { %>
-					<a href="<%=request.getContextPath()%>/family/">Family</a>
-				<% } %>
-			<% } %>
-		</div>
-
-		<div class="nav-right">
-			<%
-			// Access request attribute directly to avoid duplicate variable declaration
-			if (request.getAttribute("sessUserId") == null) {
-			%>
-
-			<!-- NOT LOGGED IN -->
-			<a href="<%=request.getContextPath()%>/auth/register/"
-				class="register">Register</a> <a
-				href="<%=request.getContextPath()%>/auth/login/" class="login">Login</a>
-
-			<%
-			} else {
-			%>
-
-			<!-- LOGGED IN -->
-			<div>
-				<jsp:include page="/WEB-INF/components/auth/logout-button.jsp" />
-				<jsp:include page="/WEB-INF/components/user/profile-dropdown.jsp" />
-			</div>
-			<%
-			}
-			%>
-		</div>
+		<% } %>
 	</div>
 
-</body>
-</html>
+	<div class="nav-right">
+		<%
+		// Access request attribute directly to avoid duplicate variable declaration
+		if (request.getAttribute("sessUserId") == null) {
+		%>
+
+		<!-- NOT LOGGED IN -->
+		<a href="<%=request.getContextPath()%>/auth/register/"
+			class="register">Register</a> <a
+			href="<%=request.getContextPath()%>/auth/login/" class="login">Login</a>
+
+		<%
+		} else {
+		%>
+
+		<!-- LOGGED IN -->
+		<div>
+			<jsp:include page="/WEB-INF/components/auth/logout-button.jsp" />
+			<jsp:include page="/WEB-INF/components/user/profile-dropdown.jsp" />
+		</div>
+		<%
+		}
+		%>
+	</div>
+</div>

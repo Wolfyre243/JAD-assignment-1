@@ -175,13 +175,32 @@
         border-top: 2px solid #333;
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-end;
+    }
+
+    .total-breakdown {
+        text-align: right;
+    }
+
+    .subtotal-row, .gst-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 18px;
+        color: #555;
+        min-width: 200px;
     }
 
     .total-price {
+        display: flex;
+        justify-content: space-between;
         font-size: 28px;
         font-weight: bold;
         color: #222;
+        border-top: 2px solid #333;
+        padding-top: 8px;
+        margin-top: 8px;
+        min-width: 200px;
     }
 
     .checkout-btn {
@@ -298,12 +317,38 @@
             </table>
 
             <div class="cart-footer">
-                <div class="total-price">
-                    Total: $<%= String.format("%.2f", total != null ? total : 0.0) %>
+                <%
+                    // Get cart from request to calculate GST
+                    Cart cart = (Cart) request.getAttribute("cart");
+                    double subtotal = total != null ? total : 0.0;
+                    double gstAmount = 0.0;
+                    double totalWithGST = subtotal;
+                    
+                    if (cart != null && cart.isGSTApplicable()) {
+                        subtotal = cart.getSubtotal();
+                        gstAmount = cart.getGSTAmount();
+                        totalWithGST = cart.getTotalWithGST();
+                    }
+                %>
+                <div class="total-breakdown">
+                    <div class="subtotal-row">
+                        <span>Subtotal:</span>
+                        <span>$<%= String.format("%.2f", subtotal) %></span>
+                    </div>
+                    <% if (cart != null && cart.isGSTApplicable()) { %>
+                    <div class="gst-row">
+                        <span>GST (9%):</span>
+                        <span>$<%= String.format("%.2f", gstAmount) %></span>
+                    </div>
+                    <% } %>
+                    <div class="total-price">
+                        <span>Total:</span>
+                        <span>$<%= String.format("%.2f", totalWithGST) %></span>
+                    </div>
                 </div>
                 <form action="<%= request.getContextPath() %>/product/checkout" method="post" style="margin:0;">
                     <button type="submit" class="checkout-btn">
-                        Proceed to Checkout
+                        Proceed to Checkout ($<%= String.format("%.2f", totalWithGST) %>)
                     </button>
                 </form>
             </div>

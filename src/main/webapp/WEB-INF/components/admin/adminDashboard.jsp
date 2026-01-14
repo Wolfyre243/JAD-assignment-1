@@ -62,6 +62,7 @@
     <h2>Management Sections</h2>
     <ul style="list-style-type: none; padding-left: 0;">
         <li>📊 <a href="<%= request.getContextPath() %>/admin/users">User Management</a></li>
+        <li>🩺 <a href="<%= request.getContextPath() %>/admin/caregivers">Caregiver Management</a></li>
         <li>💬 <a href="<%= request.getContextPath() %>/admin/feedback">Feedback Management</a></li>
         <li>📦 <a href="<%= request.getContextPath() %>/admin/orders">Order Management</a></li>
         <li>🛠️ <a href="<%= request.getContextPath() %>/admin/services">Services Management</a></li>

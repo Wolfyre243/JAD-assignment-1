@@ -149,7 +149,7 @@
         String orderDetails = "";
 
         if (userId == null) {
-            response.sendRedirect(request.getContextPath() + "/auth/login");
+            response.sendRedirect(request.getContextPath() + "/auth/login/");
             return;
         }
 

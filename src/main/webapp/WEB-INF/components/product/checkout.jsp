@@ -11,7 +11,7 @@
     // === 1. AUTHENTICATION ===
     Integer userId = (Integer) session.getAttribute("userId");
     if (userId == null) {
-        response.sendRedirect(request.getContextPath() + "/auth/login");
+        response.sendRedirect(request.getContextPath() + "/auth/login/");
         return;
     }
 

@@ -86,6 +86,26 @@
     table tr:hover {
         background: #fff3f7;
     }
+
+    .msg-success {
+        color: green;
+        font-weight: bold;
+        padding: 12px;
+        background: #d4edda;
+        border: 1px solid #28a745;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    .msg-error {
+        color: red;
+        font-weight: bold;
+        padding: 12px;
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
 </style>
 
 </head>
@@ -107,17 +127,17 @@
         String msg = request.getParameter("msg");
         if (msg != null) {
             String text = "";
-            String color = "";
+            String msgClass = "";
             switch (msg) {
-                case "added": text = "Review added successfully!"; color = "green"; break;
-                case "updated": text = "Review updated successfully!"; color = "green"; break;
-                case "invalid": text = "Invalid request."; color = "red"; break;
-                case "not_found": text = "Review not found."; color = "red"; break;
-                case "db_error": text = "Database error. Please try again."; color = "red"; break;
-                default: text = "Action completed."; color = "green"; break;
+                case "added": text = "Review added successfully!"; msgClass = "msg-success"; break;
+                case "updated": text = "Review updated successfully!"; msgClass = "msg-success"; break;
+                case "invalid": text = "Invalid request."; msgClass = "msg-error"; break;
+                case "not_found": text = "Review not found."; msgClass = "msg-error"; break;
+                case "db_error": text = "Database error. Please try again."; msgClass = "msg-error"; break;
+                default: text = "Action completed."; msgClass = "msg-success"; break;
             }
     %>
-        <p style="color:<%= color %>; font-weight:bold;"><%= text %></p>
+        <p class="<%= msgClass %>"><%= text %></p>
     <% } %>
 
     <a href="<%= request.getContextPath() %>/reviews?action=add" class="button">Add New Review</a>

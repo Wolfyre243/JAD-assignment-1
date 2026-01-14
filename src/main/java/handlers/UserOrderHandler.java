@@ -97,7 +97,15 @@ public class UserOrderHandler {
             }
             
             result.put("bookings", bookings);
-            result.put("totalAmount", totalAmount);
+            
+            // Calculate totals with GST
+            double subtotal = totalAmount;
+            double gstAmount = subtotal * 0.09; // 9% GST
+            double totalWithGST = subtotal + gstAmount;
+            
+            result.put("subtotal", subtotal);
+            result.put("gstAmount", gstAmount);
+            result.put("totalAmount", totalWithGST);
             return result;
         }
     }
