@@ -210,10 +210,33 @@
             <form action="<%=request.getContextPath()%>/product/addToCart" method="post">
                 <input type="hidden" name="productId" value="<%= product.getProductId() %>">
                 
+                <%
+                    java.util.List<models.Caregiver> availableCaregivers = (java.util.List<models.Caregiver>) request.getAttribute("availableCaregivers");
+                %>
+                
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 16px; margin-bottom: 5px;">Caregiver ID (Optional):</label>
-                    <input type="number" name="caregiverId" placeholder="Enter caregiver ID" 
-                           style="padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 10px; width: 200px;">
+                    <label style="display: block; font-size: 16px; margin-bottom: 5px; font-weight: bold;">Preferred Caregiver (Optional):</label>
+                    <% if (availableCaregivers != null && !availableCaregivers.isEmpty()) { %>
+                        <select name="caregiverId" style="padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 10px; width: 100%; max-width: 400px; font-family: 'Georgia', serif;">
+                            <option value="">Select a caregiver (Optional)</option>
+                            <% for (models.Caregiver caregiver : availableCaregivers) { %>
+                                <option value="<%= caregiver.getCaregiverId() %>">
+                                    <%= caregiver.getFullName() %> - <%= caregiver.getQualifications() %> ($<%= caregiver.getHourlyRate() %>/hr)
+                                </option>
+                            <% } %>
+                        </select>
+                        <div style="margin-top: 8px;">
+                            <small style="color: #666; font-size: 14px;">
+                                💡 Choose a specific caregiver or leave unselected for automatic assignment
+                            </small>
+                        </div>
+                    <% } else { %>
+                        <div style="padding: 12px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; color: #856404;">
+                            <strong>No specialized caregivers available for this service at the moment.</strong><br>
+                            <small>Don't worry - we'll assign a qualified caregiver when you book this service.</small>
+                        </div>
+                        <input type="hidden" name="caregiverId" value="">
+                    <% } %>
                 </div>
                 
                 <div style="margin-bottom: 15px;">

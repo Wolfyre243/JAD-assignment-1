@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lib.SessionManagement;
 
-@WebServlet({"/admin/dashboard","/admin/dashboard/","/admin/users","/admin/services","/admin/orders","/admin/feedback"})
+@WebServlet({"/admin/dashboard","/admin/dashboard/","/admin/users","/admin/services","/admin/orders","/admin/feedback","/admin/caregivers"})
 public class AdminPanelServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -48,6 +48,10 @@ public class AdminPanelServlet extends HttpServlet {
                 includeFile = "/WEB-INF/components/admin/adminFeedback.jsp";
                 active = "feedback";
                 break;
+            case "/admin/caregivers":
+                includeFile = "/WEB-INF/components/admin/adminCaregivers.jsp";
+                active = "caregivers";
+                break;
             default:
                 includeFile = "/WEB-INF/components/admin/adminDashboard.jsp";
                 active = "dashboard";
@@ -62,6 +66,12 @@ public class AdminPanelServlet extends HttpServlet {
             } else if ("edit".equals(includeParam) && "/admin/services".equals(path)) {
                 includeFile = "/WEB-INF/components/admin/adminEditService.jsp";
                 active = "services";
+            } else if ("add".equals(includeParam) && "/admin/caregivers".equals(path)) {
+                includeFile = "/WEB-INF/components/admin/adminAddCaregiver.jsp";
+                active = "caregivers";
+            } else if ("edit".equals(includeParam) && "/admin/caregivers".equals(path)) {
+                includeFile = "/WEB-INF/components/admin/adminEditCaregiver.jsp";
+                active = "caregivers";
             } else if ("details".equals(includeParam) && "/admin/orders".equals(path)) {
                 // show the order details partial when requested
                 includeFile = "/WEB-INF/components/admin/adminOrderDetails.jsp";
@@ -127,6 +137,11 @@ public class AdminPanelServlet extends HttpServlet {
                 request.setAttribute("selectedCaregiverId", caregiverIdParam != null ? caregiverIdParam : "all");
             }
 
+            if ("/admin/caregivers".equals(path)) {
+                java.util.List<java.util.Map<String,Object>> caregivers = handlers.AdminCaregiverHandler.listCaregivers();
+                request.setAttribute("caregivers", caregivers);
+            }
+
             if ("/admin/orders".equals(path)) {
                 java.util.List<java.util.Map<String,Object>> orders = handlers.AdminOrderHandler.listOrders();
                 request.setAttribute("orders", orders);
@@ -167,6 +182,26 @@ public class AdminPanelServlet extends HttpServlet {
                     request.setAttribute("serviceError", "No product id provided");
                 }
             }
+            
+            // if showing caregiver edit form, provide the existing caregiver data
+            if (includeParam != null && "edit".equals(includeParam) && "/admin/caregivers".equals(path)) {
+                String caregiverIdStr = request.getParameter("caregiverId");
+                if (caregiverIdStr != null && !caregiverIdStr.trim().isEmpty()) {
+                    try {
+                        int cid = Integer.parseInt(caregiverIdStr.trim());
+                        java.util.Map<String,Object> caregiver = handlers.AdminCaregiverHandler.getCaregiverById(cid);
+                        if (caregiver != null) {
+                            request.setAttribute("caregiver", caregiver);
+                        } else {
+                            request.setAttribute("caregiverError", "Caregiver not found");
+                        }
+                    } catch (NumberFormatException e) {
+                        request.setAttribute("caregiverError", "Invalid caregiver id");
+                    }
+                } else {
+                    request.setAttribute("caregiverError", "No caregiver id provided");
+                }
+            }
 
             // if showing order details via include=details and orderId param, provide order data
             if (includeParam != null && "details".equals(includeParam) && "/admin/orders".equals(path)) {
@@ -194,6 +229,7 @@ public class AdminPanelServlet extends HttpServlet {
             // ensure lists/maps exist so JSPs render gracefully
             request.setAttribute("services", new java.util.ArrayList<java.util.Map<String,Object>>() );
             request.setAttribute("users", new java.util.ArrayList<java.util.Map<String,Object>>() );
+            request.setAttribute("caregivers", new java.util.ArrayList<java.util.Map<String,Object>>() );
             request.setAttribute("feedbacks", new java.util.ArrayList<java.util.Map<String,Object>>() );
             request.setAttribute("orders", new java.util.ArrayList<java.util.Map<String,Object>>() );
             java.util.Map<String,Integer> emptyStats = new java.util.HashMap<>();

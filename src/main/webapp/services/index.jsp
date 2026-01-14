@@ -195,7 +195,7 @@
         <div class="card-subtitle"><%= p.getCategory().getName() %></div>
 
         <a class="details-btn"
-           href="<%= request.getContextPath() %>/services/details/viewDetails.jsp?id=<%= p.getProductId() %>">
+           href="<%= request.getContextPath() %>/services/details?id=<%= p.getProductId() %>">
             View Details
         </a>
     </div>

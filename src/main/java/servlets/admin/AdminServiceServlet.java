@@ -53,6 +53,36 @@ public class AdminServiceServlet extends HttpServlet {
             return;
         }
 
+        // Handle delete action
+        if ("delete".equals(action)) {
+            String productIdStr = request.getParameter("productId");
+            if (productIdStr == null || productIdStr.trim().isEmpty()) {
+                response.sendRedirect(request.getContextPath() + "/admin/services?msg=invalid");
+                return;
+            }
+
+            int productId;
+            try {
+                productId = Integer.parseInt(productIdStr.trim());
+            } catch (NumberFormatException e) {
+                response.sendRedirect(request.getContextPath() + "/admin/services?msg=invalid");
+                return;
+            }
+
+            try {
+                boolean ok = AdminServiceHandler.deleteService(productId);
+                if (!ok) {
+                    response.sendRedirect(request.getContextPath() + "/admin/services?msg=not_found");
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/admin/services?msg=deleted");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendRedirect(request.getContextPath() + "/admin/services?msg=db_error");
+            }
+            return;
+        }
+
         // Only support activate/deactivate as GET actions
         String productIdStr = request.getParameter("productId");
         if (productIdStr == null || productIdStr.trim().isEmpty() || !("activate".equals(action) || "deactivate".equals(action))) {

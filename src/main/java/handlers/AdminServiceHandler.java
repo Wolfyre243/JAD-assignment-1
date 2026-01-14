@@ -109,4 +109,44 @@ public class AdminServiceHandler {
             return pstmt.executeUpdate() > 0;
         }
     }
+
+    /**
+     * Delete service - cascades to delete service_caregiver associations
+     */
+    public static boolean deleteService(int productId) throws SQLException {
+        try (Connection conn = JDBC.connect()) {
+            if (conn == null) throw new SQLException("Connection failed");
+            
+            // Start transaction
+            conn.setAutoCommit(false);
+            
+            try {
+                // First, delete all service_caregiver associations for this product
+                String deleteServiceCaregiverSql = "DELETE FROM service_caregiver WHERE product_id = ?";
+                try (PreparedStatement pstmt = conn.prepareStatement(deleteServiceCaregiverSql)) {
+                    pstmt.setInt(1, productId);
+                    pstmt.executeUpdate();
+                }
+                
+                // Then, delete the product/service
+                String deleteProductSql = "DELETE FROM product WHERE product_id = ?";
+                try (PreparedStatement pstmt = conn.prepareStatement(deleteProductSql)) {
+                    pstmt.setInt(1, productId);
+                    int result = pstmt.executeUpdate();
+                    
+                    // Commit transaction only if product deletion was successful
+                    if (result > 0) {
+                        conn.commit();
+                        return true;
+                    } else {
+                        conn.rollback();
+                        return false;
+                    }
+                }
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            }
+        }
+    }
 }

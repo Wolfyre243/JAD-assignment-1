@@ -19,6 +19,7 @@
             switch (msg) {
                 case "added":      text = "Service added successfully!";      color = "green"; break;
                 case "updated":    text = "Service updated successfully!";    color = "green"; break;
+                case "deleted":    text = "Service deleted successfully!";    color = "green"; break;
                 case "activated":  text = "Service activated successfully!";  color = "green"; break;
                 case "deactivated":text = "Service deactivated successfully!";color = "green"; break;
                 case "invalid":    text = "Invalid request.";                 color = "red";   break;
@@ -107,6 +108,13 @@
                         <% } %>
                         |
                         <a href="<%= request.getContextPath() %>/admin/services?include=edit&productId=<%= productId %>">Edit</a>
+                        |
+                        <a href="<%= request.getContextPath() %>/admin/service-caregivers?productId=<%= productId %>" 
+                           style="color: #007bff;">Manage Caregivers</a>
+                        |
+                        <a href="<%= request.getContextPath() %>/admin/service?action=delete&productId=<%= productId %>" 
+                           onclick="return confirm('Delete this service? This will remove all caregiver associations.');" 
+                           style="color: red;">Delete</a>
                     </td>
                 </tr>
             <%

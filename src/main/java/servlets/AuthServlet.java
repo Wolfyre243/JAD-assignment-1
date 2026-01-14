@@ -59,6 +59,10 @@ class AuthController {
         response.sendRedirect(request.getContextPath() + "/admin/dashboard/");
         return;
       }
+      if (userRoleId == 5) {
+        response.sendRedirect(request.getContextPath() + "/caregiver/profile");
+        return;
+      }
       response.sendRedirect(request.getContextPath() + "/");
       return;
 

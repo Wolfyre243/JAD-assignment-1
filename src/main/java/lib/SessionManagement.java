@@ -44,4 +44,8 @@ public class SessionManagement {
 	    return roleId != null && roleId == 2; // role_id 2 = client
 	}
 	
+	public static boolean isCaregiver(HttpServletRequest req) {
+	    Integer roleId = getUserRoleId(req);
+	    return roleId != null && roleId == 5; // role_id 5 = caregiver
+	}
 }

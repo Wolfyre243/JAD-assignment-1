@@ -43,7 +43,7 @@
                     String selectedCaregiverId = (String) request.getAttribute("selectedCaregiverId");
                     if (caregivers != null) {
                         for (java.util.Map<String,Object> caregiver : caregivers) {
-                            int caregiverId = (Integer) caregiver.get("caregiverId");
+                            int caregiverId = (caregiver.get("caregiverId") instanceof Number) ? ((Number) caregiver.get("caregiverId")).intValue() : Integer.parseInt(caregiver.get("caregiverId").toString());
                             String caregiverName = (String) caregiver.get("name");
                             boolean isSelected = selectedCaregiverId != null && selectedCaregiverId.equals(String.valueOf(caregiverId));
                 %>
