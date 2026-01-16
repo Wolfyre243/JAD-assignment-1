@@ -282,10 +282,6 @@
         <h1 class="page-title">My Profile</h1>
         <div class="page-subtitle">Manage your caregiver information and profile picture</div>
         
-        <div class="breadcrumb">
-            <a href="<%= request.getContextPath() %>/">← Home</a>
-        </div>
-        
         <div class="messages">
             <%
                 if (msg != null) {

@@ -76,7 +76,7 @@ final Integer sessRoleId = (Integer) session.getAttribute("userRoleId");
 		<a href="<%= request.getContextPath() %>/services/">Services</a> 
 		<a href="<%= request.getContextPath() %>/reviews">Feedback</a>
 		<% if (sessUserId != null && (sessRoleId == 2 || sessRoleId == 3)) { %>
-			<a href="<%= request.getContextPath() %>/user/orders">Orders</a>
+			<a href="<%= request.getContextPath() %>/user/orders">Order History</a>
 		<% } %>
 		<% if (sessUserId != null && sessRoleId != null) { %>
 			<% if (sessRoleId == 1) { %>
@@ -85,6 +85,10 @@ final Integer sessRoleId = (Integer) session.getAttribute("userRoleId");
 				<a href="<%=request.getContextPath()%>/family/">Family</a>
 			<% } else if (sessRoleId == 5) { %>
 				<a href="<%=request.getContextPath()%>/caregiver/profile">My Profile</a>
+			<% } %>
+			<% if (sessUserId != null && sessRoleId != 1) { %>
+			  <!-- Display for everyone except admins -->
+			  <a href="<%=request.getContextPath()%>/bookings"><%= sessRoleId == 5 ? "My Schedule" : "Bookings" %></a>
 			<% } %>
 		<% } %>
 	</div>
