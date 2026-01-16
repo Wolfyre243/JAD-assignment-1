@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import db.JDBC;
@@ -54,9 +55,15 @@ public class Booking {
 	public int getProductId() {
 		return productId;
 	}
+	public Product getProduct() throws SQLException {
+    return Product.getProductById(this.productId);
+  }
 	public int getCaregiverId() {
 		return caregiverId;
 	}
+	public Caregiver getCaregiver() throws SQLException {
+    return Caregiver.getCaregiverById(this.caregiverId);
+  }
 	public int getClientId() {
 		return clientId;
 	}
@@ -72,6 +79,10 @@ public class Booking {
 	public Timestamp getCreatedAt() {
 		return createdAt;
 	}
+	public String getCreatedAtFormatted() {
+	  final SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+    return sdf.format(this.createdAt);
+  }
 	public Timestamp getUpdatedAt() {
 		return updatedAt;
 	}
