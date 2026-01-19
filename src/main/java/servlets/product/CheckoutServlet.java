@@ -93,8 +93,8 @@ public class CheckoutServlet extends HttpServlet {
         
         // 2. Insert bookings from cart items
         String insertBookingSql = "INSERT INTO booking (order_id, product_id, caregiver_id, client_id, " +
-                                 "special_requests, created_at, updated_at) " +
-                                 "VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+                                 "special_requests, booking_timeslot, created_at, updated_at) " +
+                                 "VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
         try (PreparedStatement pstmt = conn.prepareStatement(insertBookingSql)) {
           for (Cart.CartItem item : cart.getItems()) {
             pstmt.setInt(1, orderId);
@@ -102,6 +102,16 @@ public class CheckoutServlet extends HttpServlet {
             pstmt.setObject(3, item.getCaregiverId());
             pstmt.setObject(4, item.getClientId());
             pstmt.setString(5, item.getSpecialRequests());
+            // Convert timeslot string (ISO 8601 format from datetime-local) to Timestamp
+            String timeslot = item.getTimeslot();
+            if (timeslot != null && !timeslot.isEmpty()) {
+              // datetime-local returns format: "2024-01-15T14:30"
+              // Convert to SQL Timestamp: "2024-01-15 14:30:00"
+              String sqlTimestamp = timeslot.replace("T", " ");
+              pstmt.setString(6, sqlTimestamp);
+            } else {
+              pstmt.setNull(6, java.sql.Types.TIMESTAMP);
+            }
             pstmt.addBatch();
           }
           pstmt.executeBatch();
