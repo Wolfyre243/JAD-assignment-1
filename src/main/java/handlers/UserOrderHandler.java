@@ -51,7 +51,7 @@ public class UserOrderHandler {
                          "WHERE o.order_id = ? AND o.user_id = ?";
         
         String bookingsSql = "SELECT b.booking_id, p.name AS product_name, p.price, " +
-                           "b.caregiver_id, b.client_id, b.special_requests, b.created_at " +
+                           "b.caregiver_id, b.client_id, b.special_requests, b.booking_timeslot, b.created_at " +
                            "FROM booking b " +
                            "LEFT JOIN product p ON b.product_id = p.product_id " +
                            "WHERE b.order_id = ? " +
@@ -88,6 +88,7 @@ public class UserOrderHandler {
                         booking.put("caregiverId", rs.getObject("caregiver_id"));
                         booking.put("clientId", rs.getObject("client_id"));
                         booking.put("specialRequests", rs.getString("special_requests"));
+                        booking.put("bookingTimeslot", rs.getTimestamp("booking_timeslot"));
                         booking.put("createdAt", rs.getTimestamp("created_at"));
                         bookings.add(booking);
                         

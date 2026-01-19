@@ -228,6 +228,7 @@
                         <th>Price</th>
                         <th>Caregiver ID</th>
                         <th>Client ID</th>
+                        <th>Booking Time</th>
                         <th>Special Requests</th>
                     </tr>
                 </thead>
@@ -240,6 +241,8 @@
                         Object caregiverId = booking.get("caregiverId");
                         Object clientId = booking.get("clientId");
                         String specialRequests = (String) booking.get("specialRequests");
+                        Timestamp bookingTimeslot = (Timestamp) booking.get("bookingTimeslot");
+                        String formattedTimeslot = bookingTimeslot != null ? dateFormat.format(bookingTimeslot) : "Not specified";
                 %>
                     <tr>
                         <td>#<%= bookingId %></td>
@@ -247,6 +250,7 @@
                         <td>$<%= String.format("%.2f", price) %></td>
                         <td><%= caregiverId != null ? caregiverId : "N/A" %></td>
                         <td><%= clientId != null ? clientId : "N/A" %></td>
+                        <td><%= formattedTimeslot %></td>
                         <td><%= specialRequests != null && !specialRequests.isEmpty() ? specialRequests : "None" %></td>
                     </tr>
                 <%

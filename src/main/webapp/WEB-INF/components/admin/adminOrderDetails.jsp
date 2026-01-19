@@ -48,6 +48,7 @@
                 <tr>
                     <th>Booking ID</th>
                     <th>Product/Service</th>
+                    <th>Booking Time</th>
                     <th>Special Requests</th>
                     <th>Created At</th>
                 </tr>
@@ -59,11 +60,14 @@
                     String productName = (String) b.get("productName");
                     String specialRequests = (String) b.get("specialRequests");
                     java.sql.Timestamp bookingCreatedAt = (java.sql.Timestamp) b.get("createdAt");
+                    java.sql.Timestamp bookingTimeslot = (java.sql.Timestamp) b.get("bookingTimeslot");
                     String formattedBookingDate = bookingCreatedAt != null ? bookingCreatedAt.toString().substring(0,19).replace("T"," ") : "";
+                    String formattedTimeslot = bookingTimeslot != null ? bookingTimeslot.toString().substring(0,19).replace("T"," ") : "Not specified";
             %>
                 <tr>
                     <td><%= bookingId %></td>
                     <td><%= productName != null ? productName : "N/A" %></td>
+                    <td><%= formattedTimeslot %></td>
                     <td><%= specialRequests != null && !specialRequests.trim().isEmpty() ? specialRequests : "None" %></td>
                     <td><%= formattedBookingDate %></td>
                 </tr>

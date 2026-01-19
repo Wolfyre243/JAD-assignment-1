@@ -1,5 +1,5 @@
 /*
- * Name: GitHub Copilot
+ * Name: Karys Goh Yi Xin
  * Date: January 14, 2026
  * Description: Service details servlet to show service information with available caregivers
  */

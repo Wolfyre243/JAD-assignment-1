@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%--
-  Name: GitHub Copilot
+  Name: Karys Goh Yi Xin
   Date: January 14, 2026
   Description: Admin caregiver management with list, add, edit, activate/deactivate and profile image display
 --%>

@@ -245,6 +245,17 @@
                            style="padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 10px; width: 200px;">
                 </div>
                 
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 16px; margin-bottom: 5px; font-weight: bold;">Preferred Timeslot (Optional):</label>
+                    <input type="datetime-local" name="timeslot" 
+                           style="padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 10px; width: 100%; max-width: 400px;">
+                    <div style="margin-top: 8px;">
+                        <small style="color: #666; font-size: 14px;">
+                            💡 Select a date and time for when you'd like to book this service
+                        </small>
+                    </div>
+                </div>
+                
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; font-size: 16px; margin-bottom: 5px;">Special Requests (Optional):</label>
                     <textarea name="specialRequests" placeholder="Any special requirements..." 
