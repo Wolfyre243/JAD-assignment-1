@@ -211,7 +211,7 @@
 
     <div class="action-buttons">
         <a href="<%= request.getContextPath() %>/services/" class="btn btn-secondary">Continue Shopping</a>
-        <a href="<%= request.getContextPath() %>/user/orders" class="btn btn-primary">View My Orders</a>
+        <a href="<%= request.getContextPath() %>/bookings" class="btn btn-primary">View My Bookings</a>
     </div>
 </div>
 

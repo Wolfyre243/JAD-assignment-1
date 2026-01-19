@@ -246,7 +246,7 @@
                 </div>
                 
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 16px; margin-bottom: 5px; font-weight: bold;">Preferred Timeslot (Optional):</label>
+                    <label style="display: block; font-size: 16px; margin-bottom: 5px; font-weight: bold;">Preferred Timeslot:</label>
                     <input type="datetime-local" name="timeslot" 
                            style="padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 10px; width: 100%; max-width: 400px;">
                     <div style="margin-top: 8px;">

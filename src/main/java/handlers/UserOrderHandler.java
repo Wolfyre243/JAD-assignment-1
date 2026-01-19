@@ -28,15 +28,19 @@ public class UserOrderHandler {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             if (conn == null) throw new SQLException("Connection failed");
             
+            System.out.println("DEBUG: UserOrderHandler.getUserOrders - userId: " + userId);
             pstmt.setInt(1, userId);
             try (ResultSet rs = pstmt.executeQuery()) {
+                int count = 0;
                 while (rs.next()) {
+                    count++;
                     Map<String, Object> order = new HashMap<>();
                     order.put("orderId", rs.getInt("order_id"));
                     order.put("createdAt", rs.getTimestamp("created_at"));
                     order.put("bookingCount", rs.getInt("booking_count"));
                     orders.add(order);
                 }
+                System.out.println("DEBUG: UserOrderHandler.getUserOrders - found " + count + " orders");
             }
         }
         return orders;
@@ -50,7 +54,7 @@ public class UserOrderHandler {
                          "FROM \"order\" o " +
                          "WHERE o.order_id = ? AND o.user_id = ?";
         
-        String bookingsSql = "SELECT b.booking_id, p.name AS product_name, p.price, " +
+        String bookingsSql = "SELECT b.booking_id, b.product_id, p.name AS product_name, p.price, " +
                            "b.caregiver_id, b.client_id, b.special_requests, b.booking_timeslot, b.created_at " +
                            "FROM booking b " +
                            "LEFT JOIN product p ON b.product_id = p.product_id " +
@@ -66,10 +70,15 @@ public class UserOrderHandler {
             try (PreparedStatement pstmt = conn.prepareStatement(orderSql)) {
                 pstmt.setInt(1, orderId);
                 pstmt.setInt(2, userId);
+                System.out.println("DEBUG: UserOrderHandler.getOrderDetails - orderId: " + orderId + ", userId: " + userId);
                 try (ResultSet rs = pstmt.executeQuery()) {
-                    if (!rs.next()) return null; // Order not found or doesn't belong to user
+                    if (!rs.next()) {
+                        System.out.println("DEBUG: UserOrderHandler.getOrderDetails - order not found or doesn't belong to user");
+                        return null; // Order not found or doesn't belong to user
+                    }
                     result.put("orderId", rs.getInt("order_id"));
                     result.put("createdAt", rs.getTimestamp("created_at"));
+                    System.out.println("DEBUG: UserOrderHandler.getOrderDetails - order found");
                 }
             }
             
@@ -80,9 +89,12 @@ public class UserOrderHandler {
             try (PreparedStatement pstmt = conn.prepareStatement(bookingsSql)) {
                 pstmt.setInt(1, orderId);
                 try (ResultSet rs = pstmt.executeQuery()) {
+                    int bookingCount = 0;
                     while (rs.next()) {
+                        bookingCount++;
                         Map<String, Object> booking = new HashMap<>();
                         booking.put("bookingId", rs.getInt("booking_id"));
+                        booking.put("productId", rs.getObject("product_id"));
                         booking.put("productName", rs.getString("product_name"));
                         booking.put("price", rs.getDouble("price"));
                         booking.put("caregiverId", rs.getObject("caregiver_id"));
@@ -94,6 +106,7 @@ public class UserOrderHandler {
                         
                         totalAmount += rs.getDouble("price");
                     }
+                    System.out.println("DEBUG: UserOrderHandler.getOrderDetails - found " + bookingCount + " bookings for order " + orderId);
                 }
             }
             

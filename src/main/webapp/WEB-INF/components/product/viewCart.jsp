@@ -277,6 +277,7 @@
                         <th>Price</th>
                         <th>Quantity</th>
                         <th>Subtotal</th>
+                        <th>Booking Time</th>
                         <th>Caregiver ID</th>
                         <th>Client ID</th>
                         <th>Special Requests</th>
@@ -287,6 +288,9 @@
                 <%
                     int index = 0;
                     for (Cart.CartItem item : items) {
+                        String bookingTime = item.getTimeslot() != null && !item.getTimeslot().isEmpty() 
+                            ? item.getTimeslot().replace("T", " ") 
+                            : "Not specified";
                 %>
                     <tr>
                         <td><strong><%= item.getServiceName() %></strong></td>
@@ -299,6 +303,7 @@
                             </form>
                         </td>
                         <td><strong>$<%= String.format("%.2f", item.getSubtotal()) %></strong></td>
+                        <td><%= bookingTime %></td>
                         <td><%= item.getCaregiverId() != null ? item.getCaregiverId() : "N/A" %></td>
                         <td><%= item.getClientId() != null ? item.getClientId() : "N/A" %></td>
                         <td><%= item.getSpecialRequests() != null && !item.getSpecialRequests().isEmpty() ? item.getSpecialRequests() : "None" %></td>

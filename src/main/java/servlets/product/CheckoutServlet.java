@@ -106,9 +106,16 @@ public class CheckoutServlet extends HttpServlet {
             String timeslot = item.getTimeslot();
             if (timeslot != null && !timeslot.isEmpty()) {
               // datetime-local returns format: "2024-01-15T14:30"
-              // Convert to SQL Timestamp: "2024-01-15 14:30:00"
-              String sqlTimestamp = timeslot.replace("T", " ");
-              pstmt.setString(6, sqlTimestamp);
+              // Convert to java.sql.Timestamp for database
+              try {
+                // Parse the ISO 8601 format and create a Timestamp
+                String sqlDateTimeStr = timeslot.replace("T", " ") + ":00"; // Add seconds
+                java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(sqlDateTimeStr);
+                pstmt.setTimestamp(6, sqlTimestamp);
+              } catch (IllegalArgumentException e) {
+                // If parsing fails, set NULL
+                pstmt.setNull(6, java.sql.Types.TIMESTAMP);
+              }
             } else {
               pstmt.setNull(6, java.sql.Types.TIMESTAMP);
             }

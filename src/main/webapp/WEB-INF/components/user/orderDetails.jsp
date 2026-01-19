@@ -211,7 +211,7 @@
             }
     %>
             <h1>Order #<%= orderId %></h1>
-            <a href="<%= request.getContextPath() %>/user/orders" class="back-link">← Back to My Orders</a>
+            <a href="<%= request.getContextPath() %>/bookings" class="back-link">← Back to My Bookings</a>
 
             <div class="order-info">
                 <h2>Order Information</h2>
@@ -276,7 +276,7 @@
             </div>
 
             <div class="action-buttons">
-                <a href="<%= request.getContextPath() %>/user/orders" class="btn btn-primary">Back to Orders</a>
+                <a href="<%= request.getContextPath() %>/bookings" class="btn btn-primary">Back to My Bookings</a>
                 <a href="<%= request.getContextPath() %>/services/" class="btn btn-secondary">Continue Shopping</a>
             </div>
     <%
@@ -285,7 +285,7 @@
             <h1>Order Not Found</h1>
             <p style="font-size: 18px; color: #a94442;">The order you're looking for doesn't exist or you don't have permission to view it.</p>
             <div class="action-buttons">
-                <a href="<%= request.getContextPath() %>/user/orders" class="btn btn-primary">Back to My Orders</a>
+                <a href="<%= request.getContextPath() %>/bookings" class="btn btn-primary">Back to My Bookings</a>
             </div>
     <%
         }

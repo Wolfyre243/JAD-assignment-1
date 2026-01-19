@@ -75,9 +75,6 @@ final Integer sessRoleId = (Integer) session.getAttribute("userRoleId");
 		<a href="<%= request.getContextPath() %>/" class="brand">SilverCare</a>
 		<a href="<%= request.getContextPath() %>/services/">Services</a> 
 		<a href="<%= request.getContextPath() %>/reviews">Feedback</a>
-		<% if (sessUserId != null && (sessRoleId == 2 || sessRoleId == 3)) { %>
-			<a href="<%= request.getContextPath() %>/user/orders">Order History</a>
-		<% } %>
 		<% if (sessUserId != null && sessRoleId != null) { %>
 			<% if (sessRoleId == 1) { %>
 				<a href="<%=request.getContextPath()%>/admin/dashboard">Admin Dashboard</a>
@@ -86,9 +83,9 @@ final Integer sessRoleId = (Integer) session.getAttribute("userRoleId");
 			<% } else if (sessRoleId == 5) { %>
 				<a href="<%=request.getContextPath()%>/caregiver/profile">My Profile</a>
 			<% } %>
-			<% if (sessUserId != null && sessRoleId != 1) { %>
+			<% if (sessRoleId != 1) { %>
 			  <!-- Display for everyone except admins -->
-			  <a href="<%=request.getContextPath()%>/bookings"><%= sessRoleId == 5 ? "My Schedule" : "Bookings" %></a>
+			  <a href="<%=request.getContextPath()%>/bookings"><%= sessRoleId == 5 ? "My Schedule" : "My Bookings" %></a>
 			<% } %>
 		<% } %>
 	</div>
