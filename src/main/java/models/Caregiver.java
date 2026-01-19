@@ -1,5 +1,5 @@
 /*
- * Name: GitHub Copilot
+ * Name: Karys Goh Yi Xin
  * Date: January 14, 2026
  * Description: Caregiver model for managing caregiver data with profile images
  */

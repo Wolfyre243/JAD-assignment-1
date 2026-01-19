@@ -26,14 +26,22 @@ public class Cart implements Serializable {
     
     /**
      * Add item to cart or update quantity if already exists
-     * For products with additional details (caregiver, client, special requests)
+     * For products with additional details (caregiver, client, special requests, timeslot)
      */
     public void addItem(int serviceId, String serviceName, double price, int quantity, 
-                       Integer caregiverId, Integer clientId, String specialRequests) {
+                       Integer caregiverId, Integer clientId, String specialRequests, String timeslot) {
         // For items with special attributes, always add as new item
         // (even if same serviceId, different caregiver/client/requests = different booking)
         items.add(new CartItem(serviceId, serviceName, price, quantity, 
-                              caregiverId, clientId, specialRequests));
+                              caregiverId, clientId, specialRequests, timeslot));
+    }
+    
+    /**
+     * Add item to cart without timeslot (backward compatibility)
+     */
+    public void addItem(int serviceId, String serviceName, double price, int quantity, 
+                       Integer caregiverId, Integer clientId, String specialRequests) {
+        addItem(serviceId, serviceName, price, quantity, caregiverId, clientId, specialRequests, null);
     }
     
     /**
@@ -171,13 +179,19 @@ public class Cart implements Serializable {
         private Integer caregiverId;
         private Integer clientId;
         private String specialRequests;
+        private String timeslot;
         
         public CartItem(int serviceId, String serviceName, double price, int quantity) {
-            this(serviceId, serviceName, price, quantity, null, null, null);
+            this(serviceId, serviceName, price, quantity, null, null, null, null);
         }
         
         public CartItem(int serviceId, String serviceName, double price, int quantity,
                        Integer caregiverId, Integer clientId, String specialRequests) {
+            this(serviceId, serviceName, price, quantity, caregiverId, clientId, specialRequests, null);
+        }
+        
+        public CartItem(int serviceId, String serviceName, double price, int quantity,
+                       Integer caregiverId, Integer clientId, String specialRequests, String timeslot) {
             this.serviceId = serviceId;
             this.serviceName = serviceName;
             this.price = price;
@@ -185,6 +199,7 @@ public class Cart implements Serializable {
             this.caregiverId = caregiverId;
             this.clientId = clientId;
             this.specialRequests = specialRequests;
+            this.timeslot = timeslot;
         }
         
         // Getters and setters
@@ -242,6 +257,14 @@ public class Cart implements Serializable {
         
         public void setSpecialRequests(String specialRequests) {
             this.specialRequests = specialRequests;
+        }
+        
+        public String getTimeslot() {
+            return timeslot;
+        }
+        
+        public void setTimeslot(String timeslot) {
+            this.timeslot = timeslot;
         }
         
         public double getSubtotal() {
