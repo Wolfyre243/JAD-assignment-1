@@ -52,6 +52,7 @@ public class CheckoutServlet extends HttpServlet {
 
 		// Set params
 		double GST = 0.09; // GST multiplier
+		double priceAfterGST = 0;
 
 //		String secretKey = System.getenv("STRIPE_SECRET_KEY");
 //    if (secretKey == null || secretKey.trim().isEmpty()) {
@@ -64,7 +65,7 @@ public class CheckoutServlet extends HttpServlet {
 			ArrayList<SessionCreateParams.LineItem> lineItems = new ArrayList<>();
 			for (Cart.CartItem item : cart.getItems()) {
 				// Calc price
-				double priceAfterGST = (double) item.getPrice() * (1 + GST);
+				priceAfterGST = (double) item.getPrice() * (1 + GST);
 				long priceInCents = (long) priceAfterGST * 100;
 
 				lineItems.add(
@@ -83,8 +84,8 @@ public class CheckoutServlet extends HttpServlet {
 			}
 
 			String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-			String successUrl = baseUrl + "/product/payment-success?session_id={CHECKOUT_SESSION_ID}";
-			String cancelUrl = baseUrl + "/product/payment-cancel";
+			String successUrl = baseUrl + "/product/payment-success?stripeSessionId={CHECKOUT_SESSION_ID}";
+			String cancelUrl = baseUrl + "/product/payment-cancel?stripeSessionId={CHECKOUT_SESSION_ID}";
 			
 			// Create Checkout Session
 			SessionCreateParams params = SessionCreateParams.builder()
@@ -96,6 +97,7 @@ public class CheckoutServlet extends HttpServlet {
 			    .build();
 
 			Session session = Session.create(params);
+			request.setAttribute("total", priceAfterGST);
 			response.sendRedirect(session.getUrl());
 
 		} catch (StripeException e) {

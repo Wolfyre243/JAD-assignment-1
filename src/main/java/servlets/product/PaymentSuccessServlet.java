@@ -36,15 +36,12 @@ public class PaymentSuccessServlet extends HttpServlet {
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String stripeSessionId = (String) request.getParameter("stripeSessionId");
+		if (stripeSessionId == null) {
+			response.sendRedirect(request.getContextPath() + "/");
+			return;
+		}
+		
 		Integer userId = (Integer) request.getSession().getAttribute("userId");
 		
 		Cart cart = CartSessionManager.getCart(request);
@@ -146,6 +143,14 @@ public class PaymentSuccessServlet extends HttpServlet {
 			e.printStackTrace();
 			response.sendRedirect(request.getContextPath() + "/product/viewCart?msg=checkout_error");
 		}
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 	}
 
 }
