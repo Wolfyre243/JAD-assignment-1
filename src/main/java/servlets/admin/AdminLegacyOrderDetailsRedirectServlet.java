@@ -16,7 +16,8 @@ import java.net.URLEncoder;
 import java.io.UnsupportedEncodingException;
 import lib.SessionManagement;
 
-@WebServlet("/admin/adminOrderDetails.jsp")
+// Disabled: Use AdminOrderDetailsServlet instead (/admin/adminOrderDetails)
+// @WebServlet("/admin/adminOrderDetails.jsp")
 public class AdminLegacyOrderDetailsRedirectServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

@@ -1,15 +1,47 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/components/auth/user-session.jsp"%>
 <%@ page import="models.Product" %>
+<%@ page import="models.CaregiverAvailability" %>
 <%@ page import="java.util.ArrayList" %>
-<%--
-  Author: Lim Song Chern Jayden
-  Admin No: P2424093
-  Class: DIT-2B-01
-  Last Edited: 23/11/2025
-  Description: Users can see product details
---%>
-<!DOCTYPE html>
+<%
+// Handle AJAX timeslot requests early so we return only the snippet (avoid returning full page)
+if ("1".equals(request.getParameter("ajaxTimeslots"))) {
+    String idParamAjax = request.getParameter("id");
+    String dateStrAjax = request.getParameter("date");
+    if (idParamAjax == null || idParamAjax.isEmpty() || dateStrAjax == null || dateStrAjax.isEmpty()) {
+        out.print("<div style='color:red'>Invalid request</div>");
+        return;
+    }
+    int productIdAjax = Integer.parseInt(idParamAjax);
+    java.sql.Date dateAjax = null;
+    try { dateAjax = java.sql.Date.valueOf(dateStrAjax); } catch (Exception e) { out.print("<div style='color:red'>Invalid date</div>"); return; }
+    java.util.List<models.CaregiverAvailability> slotsAjax = new java.util.ArrayList<>();
+    try {
+        slotsAjax = models.CaregiverAvailability.getAvailableTimeslots(productIdAjax, dateAjax);
+    } catch (Exception e) {
+        out.print("<div style='color:red'>Error loading timeslots</div>");
+        return;
+    }
+    if (slotsAjax == null || slotsAjax.isEmpty()) {
+        out.print("<div style='color:#888'>No available timeslots for this date.</div>");
+    } else {
+        out.print("<label style='font-weight:bold;'>Available Timeslots (caregiver shown):</label><br>");
+        out.print("<select id='timeslotSelect' name='timeslotSelect' required onchange='onTimeslotChange(this.value)' style='padding:10px; font-size:16px; border-radius:10px; border:2px solid #ccc; width:100%; max-width:400px;'>");
+        for (models.CaregiverAvailability slot : slotsAjax) {
+            String slotStr = slot.getStartTime().toString().substring(0,5) + " - " + slot.getEndTime().toString().substring(0,5);
+            models.Caregiver cg = null;
+            try { cg = models.Caregiver.getCaregiverById(slot.getCaregiverId()); } catch (Exception e) { /* ignore */ }
+            String caregiverName = (cg != null) ? cg.getFullName() : "Caregiver #" + slot.getCaregiverId();
+            String optVal = slot.getAvailabilityId() + "|" + slot.getCaregiverId() + "|" + slot.getStartTime() + "|" + slot.getEndTime() + "|" + slot.getAvailabilityDate();
+            out.print("<option value='" + optVal + "'>" + slotStr + " — " + caregiverName + "</option>");
+        }
+        out.print("</select>");
+        out.print("<div style='margin-top:8px;font-size:13px;color:#666;'>Selected timeslot will assign the caregiver shown above.</div>");
+    }
+    return;
+}
+%>
+<%-- AJAX handler moved to top of file to avoid returning full page for XHR requests --%>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -214,30 +246,6 @@
                     java.util.List<models.Caregiver> availableCaregivers = (java.util.List<models.Caregiver>) request.getAttribute("availableCaregivers");
                 %>
                 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 16px; margin-bottom: 5px; font-weight: bold;">Preferred Caregiver (Optional):</label>
-                    <% if (availableCaregivers != null && !availableCaregivers.isEmpty()) { %>
-                        <select name="caregiverId" style="padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 10px; width: 100%; max-width: 400px; font-family: 'Georgia', serif;">
-                            <option value="">Select a caregiver (Optional)</option>
-                            <% for (models.Caregiver caregiver : availableCaregivers) { %>
-                                <option value="<%= caregiver.getCaregiverId() %>">
-                                    <%= caregiver.getFullName() %> - <%= caregiver.getQualifications() %> ($<%= caregiver.getHourlyRate() %>/hr)
-                                </option>
-                            <% } %>
-                        </select>
-                        <div style="margin-top: 8px;">
-                            <small style="color: #666; font-size: 14px;">
-                                💡 Choose a specific caregiver or leave unselected for automatic assignment
-                            </small>
-                        </div>
-                    <% } else { %>
-                        <div style="padding: 12px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; color: #856404;">
-                            <strong>No specialized caregivers available for this service at the moment.</strong><br>
-                            <small>Don't worry - we'll assign a qualified caregiver when you book this service.</small>
-                        </div>
-                        <input type="hidden" name="caregiverId" value="">
-                    <% } %>
-                </div>
                 
                 <div style="margin-bottom: 15px;">
                     <label style="display: block; font-size: 16px; margin-bottom: 5px;">Client ID (Optional):</label>
@@ -246,14 +254,93 @@
                 </div>
                 
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 16px; margin-bottom: 5px; font-weight: bold;">Preferred Timeslot (Optional):</label>
-                    <input type="datetime-local" name="timeslot" 
-                           style="padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 10px; width: 100%; max-width: 400px;">
-                    <div style="margin-top: 8px;">
-                        <small style="color: #666; font-size: 14px;">
-                            💡 Select a date and time for when you'd like to book this service
-                        </small>
-                    </div>
+                    <label style="display: block; font-size: 16px; margin-bottom: 5px; font-weight: bold;">Select Date:</label>
+                    <input type="date" id="clientDate" name="clientDate" style="padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 10px; width: 100%; max-width: 400px;" onchange="showTimeslots()">
+                    <div id="timeslotContainer" style="margin-top: 15px;"></div>
+                    <!-- Hidden fields to capture selected caregiver and timeslot for addToCart -->
+                    <input type="hidden" id="selectedCaregiverId" name="caregiverId" value="">
+                    <input type="hidden" id="selectedTimeslot" name="timeslot" value="">
+                    <input type="hidden" id="selectedTimeslotEnd" name="timeslotEnd" value="">
+                    <input type="hidden" id="selectedAvailabilityId" name="availabilityId" value="">
+                    <script>
+                    function showTimeslots() {
+                        var date = document.getElementById('clientDate').value;
+                        var container = document.getElementById('timeslotContainer');
+                        var addBtn = document.getElementById('addToCartBtn');
+                        // clear previous selection and disable add button while loading
+                        try {
+                            document.getElementById('selectedCaregiverId').value = '';
+                            document.getElementById('selectedTimeslot').value = '';
+                            document.getElementById('selectedTimeslotEnd').value = '';
+                            document.getElementById('selectedAvailabilityId').value = '';
+                        } catch (e) { }
+                        if (addBtn) addBtn.disabled = true;
+                        if (!date) { container.innerHTML = ''; updateAddButtonState(); return; }
+                        var xhr = new XMLHttpRequest();
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState == 4) {
+                                if (xhr.status == 200) container.innerHTML = xhr.responseText;
+                                else container.innerHTML = "<div style='color:red'>Error loading timeslots</div>";
+                                // after insertion, ensure event handlers and button state are correct
+                                updateAddButtonState();
+                            }
+                        };
+                        xhr.open('GET', '<%=request.getContextPath()%>/services/details/viewDetails.jsp?id=<%=product.getProductId()%>&ajaxTimeslots=1&date=' + date, true);
+                        xhr.send();
+                    }
+
+                    function onTimeslotChange(val) {
+                        if (!val) {
+                            document.getElementById('selectedCaregiverId').value = '';
+                            document.getElementById('selectedTimeslot').value = '';
+                            document.getElementById('selectedAvailabilityId').value = '';
+                            updateAddButtonState();
+                            return;
+                        }
+                        // value format: availabilityId|caregiverId|start|end|date
+                        var parts = val.split('|');
+                        var availabilityId = parts[0];
+                        var caregiverId = parts[1];
+                        var start = parts[2];
+                        var end = parts[3];
+                        var date = parts[4];
+                        // set hidden field and, if a visible caregiver select exists, set that too
+                        document.getElementById('selectedCaregiverId').value = caregiverId;
+                        var vis = document.querySelector('select[name="caregiverId"]');
+                        if (vis) {
+                            try { vis.value = caregiverId; } catch (e) { /* ignore */ }
+                        }
+                        document.getElementById('selectedAvailabilityId').value = availabilityId;
+                        // timeslot string format: YYYY-MM-DDTHH:MM (ISO datetime for booking start)
+                        var timeslotStr = date + 'T' + start.substring(0,5);
+                        var timeslotEndStr = date + 'T' + end.substring(0,5);
+                        document.getElementById('selectedTimeslot').value = timeslotStr;
+                        document.getElementById('selectedTimeslotEnd').value = timeslotEndStr;
+                        // enable add button now that a timeslot is selected
+                        var addBtn = document.getElementById('addToCartBtn');
+                        if (addBtn) addBtn.disabled = false;
+                    }
+
+                    function updateAddButtonState() {
+                        var addBtn = document.getElementById('addToCartBtn');
+                        if (!addBtn) return;
+
+                        // If the injected timeslot select exists, and has a value, use it to populate hidden fields
+                        var sel = document.getElementById('timeslotSelect');
+                        if (sel && sel.value) {
+                            // populate hidden fields from the select's current value
+                            try { onTimeslotChange(sel.value); } catch (e) { /* ignore */ }
+                            addBtn.disabled = false;
+                            return;
+                        }
+
+                        var ts = document.getElementById('selectedTimeslot');
+                        if (ts && ts.value && ts.value.trim() !== '') addBtn.disabled = false;
+                        else addBtn.disabled = true;
+                    }
+
+                    document.addEventListener('DOMContentLoaded', function(){ updateAddButtonState(); });
+                    </script>
                 </div>
                 
                 <div style="margin-bottom: 20px;">
@@ -262,7 +349,7 @@
                               style="padding: 10px; font-size: 16px; border: 2px solid #ccc; border-radius: 10px; width: 100%; max-width: 500px; min-height: 80px; font-family: 'Georgia', serif;"></textarea>
                 </div>
                 
-                <button type="submit" class="add-btn">Add To Cart</button>
+                <button type="submit" id="addToCartBtn" class="add-btn">Add To Cart</button>
                 <a href="<%=request.getContextPath()%>/product/viewCart" class="view-cart-btn">View Cart</a>
             </form>
         
@@ -286,3 +373,4 @@
 
 </body>
 </html>
+

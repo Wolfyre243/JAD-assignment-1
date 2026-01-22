@@ -28,11 +28,12 @@ public class Booking {
 	private String specialRequests;
 	private boolean checkedIn;
 	private boolean checkedOut;
+	private Timestamp bookingTimeslot;
 	private Timestamp createdAt;
 	private Timestamp updatedAt;
 	
 	public Booking(int bookingId, int orderId, int productId, int caregiverId, int clientId, String specialRequests,
-	    boolean checkedIn, boolean checkedOut, Timestamp createdAt, Timestamp updatedAt) {
+	    boolean checkedIn, boolean checkedOut, Timestamp bookingTimeslot, Timestamp createdAt, Timestamp updatedAt) {
 		super();
 		this.bookingId = bookingId;
 		this.orderId = orderId;
@@ -42,6 +43,7 @@ public class Booking {
 		this.specialRequests = specialRequests;
 		this.checkedIn = checkedIn;
 		this.checkedOut = checkedOut;
+		this.bookingTimeslot = bookingTimeslot;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
@@ -75,6 +77,14 @@ public class Booking {
 	}
 	public boolean isCheckedOut() {
 		return checkedOut;
+	}
+	public Timestamp getBookingTimeslot() {
+		return bookingTimeslot;
+	}
+	public String getBookingTimeslotFormatted() {
+		if (bookingTimeslot == null) return "Not specified";
+		final SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd, yyyy 'at' hh:mm a");
+		return sdf.format(this.bookingTimeslot);
 	}
 	public Timestamp getCreatedAt() {
 		return createdAt;
@@ -165,6 +175,48 @@ public class Booking {
 		conn.close();
 		return bookingArr;
 	}
+
+	public static Booking getBookingById(int bookingId) throws SQLException {
+		final Connection conn = JDBC.connect();
+		if (conn == null) throw new SQLException("Database connection failed");
+
+		final String sql = "SELECT * FROM booking WHERE booking_id = ?";
+		final PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, bookingId);
+		final ResultSet rs = stmt.executeQuery();
+		Booking booking = null;
+		if (rs.next()) {
+			booking = resultMapper(rs);
+		}
+		conn.close();
+		return booking;
+	}
+
+	public static boolean updateCheckedIn(int bookingId, boolean checkedIn) throws SQLException {
+		final Connection conn = JDBC.connect();
+		if (conn == null) throw new SQLException("Database connection failed");
+		final String sql = "UPDATE booking SET checked_in = ?, updated_at = CURRENT_TIMESTAMP WHERE booking_id = ?";
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setBoolean(1, checkedIn);
+			stmt.setInt(2, bookingId);
+			int updated = stmt.executeUpdate();
+			conn.close();
+			return updated > 0;
+		}
+	}
+
+	public static boolean updateCheckedOut(int bookingId, boolean checkedOut) throws SQLException {
+		final Connection conn = JDBC.connect();
+		if (conn == null) throw new SQLException("Database connection failed");
+		final String sql = "UPDATE booking SET checked_out = ?, updated_at = CURRENT_TIMESTAMP WHERE booking_id = ?";
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setBoolean(1, checkedOut);
+			stmt.setInt(2, bookingId);
+			int updated = stmt.executeUpdate();
+			conn.close();
+			return updated > 0;
+		}
+	}
 	
 	// Helper method
 	private static Booking resultMapper(ResultSet rs) throws SQLException {
@@ -177,10 +229,11 @@ public class Booking {
 		String specialRequests = rs.getString("special_requests");
 		boolean checkedIn = rs.getBoolean("checked_in");
 		boolean checkedOut = rs.getBoolean("checked_out");
+		Timestamp bookingTimeslot = rs.getTimestamp("booking_timeslot");
 		final Timestamp createdAt = rs.getTimestamp("created_at");
 		final Timestamp updatedAt = rs.getTimestamp("updated_at");
 
-		return new Booking(bookingId, orderId, productId, caregiverId, clientId, specialRequests, checkedIn, checkedOut, createdAt, updatedAt);
+		return new Booking(bookingId, orderId, productId, caregiverId, clientId, specialRequests, checkedIn, checkedOut, bookingTimeslot, createdAt, updatedAt);
 	}
 	
 }

@@ -275,8 +275,8 @@
                     <tr>
                         <th>Service</th>
                         <th>Price</th>
-                        <th>Quantity</th>
                         <th>Subtotal</th>
+                        <th>Booking Time</th>
                         <th>Caregiver ID</th>
                         <th>Client ID</th>
                         <th>Special Requests</th>
@@ -287,19 +287,38 @@
                 <%
                     int index = 0;
                     for (Cart.CartItem item : items) {
+                        String bookingTime = "Not specified";
+                        if (item.getTimeslot() != null && !item.getTimeslot().isEmpty()) {
+                            bookingTime = item.getTimeslot().replace("T", " ");
+                            if (item.getTimeslotEnd() != null && !item.getTimeslotEnd().isEmpty()) {
+                                bookingTime += " - " + item.getTimeslotEnd().replace("T", " ");
+                            }
+                        }
                 %>
                     <tr>
                         <td><strong><%= item.getServiceName() %></strong></td>
                         <td>$<%= String.format("%.2f", item.getPrice()) %></td>
-                        <td>
-                            <form action="<%= request.getContextPath() %>/product/updateCartQuantity" method="post" style="margin:0; display:inline;">
-                                <input type="hidden" name="itemIndex" value="<%= index %>">
-                                <input type="number" name="quantity" value="<%= item.getQuantity() %>" min="1" max="99">
-                                <button type="submit">Update</button>
-                            </form>
-                        </td>
                         <td><strong>$<%= String.format("%.2f", item.getSubtotal()) %></strong></td>
-                        <td><%= item.getCaregiverId() != null ? item.getCaregiverId() : "N/A" %></td>
+                        <td><%= bookingTime %></td>
+                        <td>
+                            <%
+                                String caregiverDisplay = "N/A";
+                                if (item.getCaregiverId() != null) {
+                                    // If a timeslot was selected for this item, show the caregiver ID
+                                    if (item.getTimeslot() != null && !item.getTimeslot().isEmpty()) {
+                                        caregiverDisplay = String.valueOf(item.getCaregiverId());
+                                    } else {
+                                        try {
+                                            models.Caregiver cg = models.Caregiver.getCaregiverById(item.getCaregiverId());
+                                            caregiverDisplay = (cg != null) ? cg.getFullName() : ("ID: " + item.getCaregiverId());
+                                        } catch (Exception e) {
+                                            caregiverDisplay = "ID: " + item.getCaregiverId();
+                                        }
+                                    }
+                                }
+                            %>
+                            <%= caregiverDisplay %>
+                        </td>
                         <td><%= item.getClientId() != null ? item.getClientId() : "N/A" %></td>
                         <td><%= item.getSpecialRequests() != null && !item.getSpecialRequests().isEmpty() ? item.getSpecialRequests() : "None" %></td>
                         <td>

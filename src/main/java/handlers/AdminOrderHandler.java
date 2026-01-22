@@ -31,7 +31,7 @@ public class AdminOrderHandler {
 
     public static Map<String,Object> getOrderDetails(int orderId) throws SQLException {
         String orderSql = "SELECT o.order_id, o.created_at, u.email FROM \"order\" o JOIN \"user\" u ON o.user_id = u.user_id WHERE o.order_id = ?";
-        String bookingSql = "SELECT b.booking_id, p.name AS product_name, b.special_requests, b.booking_timeslot, b.created_at FROM booking b LEFT JOIN product p ON b.product_id = p.product_id WHERE b.order_id = ? ORDER BY b.created_at";
+        String bookingSql = "SELECT b.booking_id, p.name AS product_name, p.price AS price, b.caregiver_id, b.client_id, b.special_requests, b.booking_timeslot, b.created_at FROM booking b LEFT JOIN product p ON b.product_id = p.product_id WHERE b.order_id = ? ORDER BY b.created_at";
         try (Connection conn = JDBC.connect()) {
             if (conn == null) throw new SQLException("Connection failed");
             Map<String,Object> result = new HashMap<>();
@@ -54,6 +54,11 @@ public class AdminOrderHandler {
                         Map<String,Object> b = new HashMap<>();
                         b.put("bookingId", rs.getInt("booking_id"));
                         b.put("productName", rs.getString("product_name"));
+                        b.put("price", rs.getDouble("price"));
+                        Object caregiverIdObj = rs.getObject("caregiver_id");
+                        Object clientIdObj = rs.getObject("client_id");
+                        b.put("caregiverId", caregiverIdObj);
+                        b.put("clientId", clientIdObj);
                         b.put("specialRequests", rs.getString("special_requests"));
                         b.put("bookingTimeslot", rs.getTimestamp("booking_timeslot"));
                         b.put("createdAt", rs.getTimestamp("created_at"));
@@ -63,6 +68,19 @@ public class AdminOrderHandler {
             }
 
             result.put("bookings", bookings);
+
+            // Compute totals if price available
+            double subtotal = 0.0;
+            for (Map<String,Object> b : bookings) {
+                Object p = b.get("price");
+                if (p instanceof Number) subtotal += ((Number) p).doubleValue();
+            }
+            double gstAmount = subtotal * 0.09;
+            double totalAmount = subtotal + gstAmount;
+            result.put("subtotal", subtotal);
+            result.put("gstAmount", gstAmount);
+            result.put("totalAmount", totalAmount);
+
             return result;
         }
     }

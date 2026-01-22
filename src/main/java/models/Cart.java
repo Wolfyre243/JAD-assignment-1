@@ -33,7 +33,23 @@ public class Cart implements Serializable {
         // For items with special attributes, always add as new item
         // (even if same serviceId, different caregiver/client/requests = different booking)
         items.add(new CartItem(serviceId, serviceName, price, quantity, 
-                              caregiverId, clientId, specialRequests, timeslot));
+                              caregiverId, clientId, specialRequests, timeslot, null));
+    }
+
+    /**
+     * Add item with explicit end timeslot
+     */
+    public void addItem(int serviceId, String serviceName, double price, int quantity,
+                       Integer caregiverId, Integer clientId, String specialRequests, String timeslot, String timeslotEnd) {
+        items.add(new CartItem(serviceId, serviceName, price, quantity, caregiverId, clientId, specialRequests, timeslot, timeslotEnd));
+    }
+
+    /**
+     * Add item with explicit availability id (from caregiver_availability)
+     */
+    public void addItem(int serviceId, String serviceName, double price, int quantity,
+                       Integer caregiverId, Integer clientId, String specialRequests, String timeslot, String timeslotEnd, Integer availabilityId) {
+        items.add(new CartItem(serviceId, serviceName, price, quantity, caregiverId, clientId, specialRequests, timeslot, timeslotEnd, availabilityId));
     }
     
     /**
@@ -178,8 +194,10 @@ public class Cart implements Serializable {
         private int quantity;
         private Integer caregiverId;
         private Integer clientId;
+        private Integer availabilityId;
         private String specialRequests;
         private String timeslot;
+        private String timeslotEnd;
         
         public CartItem(int serviceId, String serviceName, double price, int quantity) {
             this(serviceId, serviceName, price, quantity, null, null, null, null);
@@ -189,9 +207,15 @@ public class Cart implements Serializable {
                        Integer caregiverId, Integer clientId, String specialRequests) {
             this(serviceId, serviceName, price, quantity, caregiverId, clientId, specialRequests, null);
         }
-        
+
+        // Backwards-compatible constructor (8 parameters) kept for existing code
         public CartItem(int serviceId, String serviceName, double price, int quantity,
                        Integer caregiverId, Integer clientId, String specialRequests, String timeslot) {
+            this(serviceId, serviceName, price, quantity, caregiverId, clientId, specialRequests, timeslot, null);
+        }
+        
+        public CartItem(int serviceId, String serviceName, double price, int quantity,
+                       Integer caregiverId, Integer clientId, String specialRequests, String timeslot, String timeslotEnd) {
             this.serviceId = serviceId;
             this.serviceName = serviceName;
             this.price = price;
@@ -200,6 +224,29 @@ public class Cart implements Serializable {
             this.clientId = clientId;
             this.specialRequests = specialRequests;
             this.timeslot = timeslot;
+            this.timeslotEnd = timeslotEnd;
+        }
+
+        public CartItem(int serviceId, String serviceName, double price, int quantity,
+                       Integer caregiverId, Integer clientId, String specialRequests, String timeslot, String timeslotEnd, Integer availabilityId) {
+            this(serviceId, serviceName, price, quantity, caregiverId, clientId, specialRequests, timeslot, timeslotEnd);
+            this.availabilityId = availabilityId;
+        }
+
+        public Integer getAvailabilityId() {
+            return availabilityId;
+        }
+
+        public void setAvailabilityId(Integer availabilityId) {
+            this.availabilityId = availabilityId;
+        }
+
+        public String getTimeslotEnd() {
+            return timeslotEnd;
+        }
+
+        public void setTimeslotEnd(String timeslotEnd) {
+            this.timeslotEnd = timeslotEnd;
         }
         
         // Getters and setters

@@ -15,10 +15,10 @@ import java.io.IOException;
 import lib.SessionManagement;
 
 /**
- * Servlet wrapper for /admin/adminOrderDetails.jsp.
+ * Servlet wrapper for /admin/adminOrderDetails.
  * Performs auth checks and forwards to the protected JSP under WEB-INF.
  */
-@WebServlet({"/admin/adminOrderDetails", "/admin/adminOrderDetails.jsp"})
+@WebServlet("/admin/adminOrderDetails")
 public class AdminOrderDetailsServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
 

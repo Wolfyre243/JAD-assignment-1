@@ -46,6 +46,8 @@ public class AddToCartServlet extends HttpServlet {
       Integer clientId = parseIntOrNull(request.getParameter("clientId"));
       String specialRequests = request.getParameter("specialRequests");
       String timeslot = request.getParameter("timeslot");
+      String timeslotEnd = request.getParameter("timeslotEnd");
+      Integer availabilityId = parseIntOrNull(request.getParameter("availabilityId"));
 
       if (productId <= 0) {
         redirectMsg = "invalid_product";
@@ -65,7 +67,9 @@ public class AddToCartServlet extends HttpServlet {
               
               // Add to SESSION cart (not database!)
               Cart cart = CartSessionManager.getCart(request);
-              cart.addItem(productId, serviceName, price, 1, caregiverId, clientId, specialRequests, timeslot);
+              // Use overload that accepts availabilityId and optional end time
+              String tsEnd = (timeslotEnd != null && !timeslotEnd.trim().isEmpty()) ? timeslotEnd : null;
+              cart.addItem(productId, serviceName, price, 1, caregiverId, clientId, specialRequests, timeslot, tsEnd, availabilityId);
               CartSessionManager.saveCart(request, cart);
               
               redirectMsg = "added";
