@@ -175,6 +175,48 @@ public class Booking {
 		conn.close();
 		return bookingArr;
 	}
+
+	public static Booking getBookingById(int bookingId) throws SQLException {
+		final Connection conn = JDBC.connect();
+		if (conn == null) throw new SQLException("Database connection failed");
+
+		final String sql = "SELECT * FROM booking WHERE booking_id = ?";
+		final PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, bookingId);
+		final ResultSet rs = stmt.executeQuery();
+		Booking booking = null;
+		if (rs.next()) {
+			booking = resultMapper(rs);
+		}
+		conn.close();
+		return booking;
+	}
+
+	public static boolean updateCheckedIn(int bookingId, boolean checkedIn) throws SQLException {
+		final Connection conn = JDBC.connect();
+		if (conn == null) throw new SQLException("Database connection failed");
+		final String sql = "UPDATE booking SET checked_in = ?, updated_at = CURRENT_TIMESTAMP WHERE booking_id = ?";
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setBoolean(1, checkedIn);
+			stmt.setInt(2, bookingId);
+			int updated = stmt.executeUpdate();
+			conn.close();
+			return updated > 0;
+		}
+	}
+
+	public static boolean updateCheckedOut(int bookingId, boolean checkedOut) throws SQLException {
+		final Connection conn = JDBC.connect();
+		if (conn == null) throw new SQLException("Database connection failed");
+		final String sql = "UPDATE booking SET checked_out = ?, updated_at = CURRENT_TIMESTAMP WHERE booking_id = ?";
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setBoolean(1, checkedOut);
+			stmt.setInt(2, bookingId);
+			int updated = stmt.executeUpdate();
+			conn.close();
+			return updated > 0;
+		}
+	}
 	
 	// Helper method
 	private static Booking resultMapper(ResultSet rs) throws SQLException {

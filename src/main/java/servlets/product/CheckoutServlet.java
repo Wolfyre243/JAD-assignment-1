@@ -92,45 +92,112 @@ public class CheckoutServlet extends HttpServlet {
         }
         
         // 2. Insert bookings from cart items
-        String insertBookingSql = "INSERT INTO booking (order_id, product_id, caregiver_id, client_id, " +
-                                 "special_requests, booking_timeslot, created_at, updated_at) " +
-                                 "VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
-        try (PreparedStatement pstmt = conn.prepareStatement(insertBookingSql)) {
-          for (Cart.CartItem item : cart.getItems()) {
-            pstmt.setInt(1, orderId);
-            pstmt.setInt(2, item.getServiceId());
-            pstmt.setObject(3, item.getCaregiverId());
-            pstmt.setObject(4, item.getClientId());
-            pstmt.setString(5, item.getSpecialRequests());
-            // Convert timeslot string (ISO 8601 format from datetime-local) to Timestamp
-            String timeslot = item.getTimeslot();
-            if (timeslot != null && !timeslot.isEmpty()) {
-              // datetime-local returns format: "2024-01-15T14:30"
-              // Convert to java.sql.Timestamp for database
-              try {
-                // Parse the ISO 8601 format and create a Timestamp
-                String sqlDateTimeStr = timeslot.replace("T", " ") + ":00"; // Add seconds
-                java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(sqlDateTimeStr);
-                pstmt.setTimestamp(6, sqlTimestamp);
-              } catch (IllegalArgumentException e) {
-                // If parsing fails, set NULL
+        // Detect whether the `booking_end_time` column exists and pick the appropriate INSERT
+        boolean hasBookingEndColumn = false;
+        try (ResultSet cols = conn.getMetaData().getColumns(null, null, "booking", "booking_end_time")) {
+          if (cols.next()) hasBookingEndColumn = true;
+        } catch (SQLException ex) {
+          // If metadata check fails, conservatively assume column does not exist
+          hasBookingEndColumn = false;
+        }
+
+        if (hasBookingEndColumn) {
+          String insertBookingSqlWithEnd = "INSERT INTO booking (order_id, product_id, caregiver_id, client_id, " +
+                                 "special_requests, booking_timeslot, booking_end_time, created_at, updated_at) " +
+                                 "VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+          try (PreparedStatement pstmt = conn.prepareStatement(insertBookingSqlWithEnd)) {
+            for (Cart.CartItem item : cart.getItems()) {
+              pstmt.setInt(1, orderId);
+              pstmt.setInt(2, item.getServiceId());
+              pstmt.setObject(3, item.getCaregiverId());
+              pstmt.setObject(4, item.getClientId());
+              pstmt.setString(5, item.getSpecialRequests());
+              // booking_timeslot (start)
+              String timeslot = item.getTimeslot();
+              if (timeslot != null && !timeslot.isEmpty()) {
+                try {
+                  String sqlDateTimeStr = timeslot.replace("T", " ") + ":00";
+                  java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(sqlDateTimeStr);
+                  pstmt.setTimestamp(6, sqlTimestamp);
+                } catch (IllegalArgumentException e) {
+                  pstmt.setNull(6, java.sql.Types.TIMESTAMP);
+                }
+              } else {
                 pstmt.setNull(6, java.sql.Types.TIMESTAMP);
               }
-            } else {
-              pstmt.setNull(6, java.sql.Types.TIMESTAMP);
+
+              // booking_end_time
+              String timeslotEnd = null;
+              try { timeslotEnd = item.getTimeslotEnd(); } catch (NoSuchMethodError ex) { timeslotEnd = null; }
+              if (timeslotEnd != null && !timeslotEnd.isEmpty()) {
+                try {
+                  String sqlDateTimeEndStr = timeslotEnd.replace("T", " ") + ":00";
+                  java.sql.Timestamp sqlEndTimestamp = java.sql.Timestamp.valueOf(sqlDateTimeEndStr);
+                  pstmt.setTimestamp(7, sqlEndTimestamp);
+                } catch (IllegalArgumentException e) {
+                  pstmt.setNull(7, java.sql.Types.TIMESTAMP);
+                }
+              } else {
+                pstmt.setNull(7, java.sql.Types.TIMESTAMP);
+              }
+
+              pstmt.addBatch();
             }
-            pstmt.addBatch();
+            pstmt.executeBatch();
           }
-          pstmt.executeBatch();
+        } else {
+          String insertBookingSql = "INSERT INTO booking (order_id, product_id, caregiver_id, client_id, " +
+                               "special_requests, booking_timeslot, created_at, updated_at) " +
+                               "VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+          try (PreparedStatement pstmt = conn.prepareStatement(insertBookingSql)) {
+            for (Cart.CartItem item : cart.getItems()) {
+              pstmt.setInt(1, orderId);
+              pstmt.setInt(2, item.getServiceId());
+              pstmt.setObject(3, item.getCaregiverId());
+              pstmt.setObject(4, item.getClientId());
+              pstmt.setString(5, item.getSpecialRequests());
+              String timeslot = item.getTimeslot();
+              if (timeslot != null && !timeslot.isEmpty()) {
+                try {
+                  String sqlDateTimeStr = timeslot.replace("T", " ") + ":00";
+                  java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(sqlDateTimeStr);
+                  pstmt.setTimestamp(6, sqlTimestamp);
+                } catch (IllegalArgumentException ex2) {
+                  pstmt.setNull(6, java.sql.Types.TIMESTAMP);
+                }
+              } else {
+                pstmt.setNull(6, java.sql.Types.TIMESTAMP);
+              }
+              pstmt.addBatch();
+            }
+            pstmt.executeBatch();
+          }
         }
         
-        // 3. Commit transaction
+        // 3. After inserting bookings, remove any used caregiver availability entries
+        String deleteAvailSql = "DELETE FROM caregiver_availability WHERE availability_id = ?";
+        try (PreparedStatement delStmt = conn.prepareStatement(deleteAvailSql)) {
+          for (Cart.CartItem item : cart.getItems()) {
+            Integer availId = item.getAvailabilityId();
+            if (availId != null) {
+              delStmt.setInt(1, availId);
+              delStmt.addBatch();
+            }
+          }
+          try {
+            delStmt.executeBatch();
+          } catch (SQLException ex) {
+            // ignore deletion errors (availability may already be removed)
+          }
+        }
+
+        // 4. Commit transaction
         conn.commit();
-        
-        // 4. Clear cart from session 
+
+        // 5. Clear cart from session 
         CartSessionManager.clearCart(request);
-        
-        // 5. Redirect to order confirmation
+
+        // 6. Redirect to order confirmation
         response.sendRedirect(request.getContextPath() + "/product/orderConfirmation?orderId=" + orderId);
         
       } catch (SQLException e) {

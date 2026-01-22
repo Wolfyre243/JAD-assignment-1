@@ -97,6 +97,23 @@ public class Caregiver implements Serializable {
         }
         return null;
     }
+
+    /**
+     * Get caregiver by user id
+     */
+    public static Caregiver getCaregiverByUserId(int userId) throws SQLException {
+        String sql = "SELECT caregiver_id, user_id, first_name, last_name, qualifications, hourly_rate, photo_url, profile_image_path, created_at, updated_at FROM caregiver WHERE user_id = ?";
+        try (Connection conn = JDBC.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            if (conn == null) throw new SQLException("Database connection failed");
+            pstmt.setInt(1, userId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSet(rs);
+                }
+            }
+        }
+        return null;
+    }
     
     /**
      * Get caregivers who provide a specific service

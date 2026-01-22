@@ -9,8 +9,9 @@
   Description: Client side NavBar on all client pages
 --%>
 <%
-final Integer sessUserId = (Integer) session.getAttribute("userId");
-final Integer sessRoleId = (Integer) session.getAttribute("userRoleId");
+// Prefer request attributes (set by includes) then fall back to session attributes
+Integer sessUserId = (request.getAttribute("sessUserId") != null) ? (Integer) request.getAttribute("sessUserId") : (Integer) session.getAttribute("userId");
+Integer sessRoleId = (request.getAttribute("sessRoleId") != null) ? (Integer) request.getAttribute("sessRoleId") : (Integer) session.getAttribute("userRoleId");
 %>
 
 <style>
@@ -84,8 +85,11 @@ final Integer sessRoleId = (Integer) session.getAttribute("userRoleId");
 				<a href="<%=request.getContextPath()%>/caregiver/profile">My Profile</a>
 			<% } %>
 			<% if (sessRoleId != 1) { %>
-			  <!-- Display for everyone except admins -->
-			  <a href="<%=request.getContextPath()%>/bookings"><%= sessRoleId == 5 ? "My Schedule" : "My Bookings" %></a>
+			  <!-- Display links for non-admins; bookings only for caregivers -->
+					<% if (sessRoleId == 5) { %>
+						<a href="<%=request.getContextPath()%>/caregiver/setServiceTimeslots.jsp">My Schedule</a>
+						<a href="<%=request.getContextPath()%>/caregiver/bookings/">My Bookings</a>
+					<% } %>
 			<% } %>
 		<% } %>
 	</div>
