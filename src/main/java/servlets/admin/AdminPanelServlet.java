@@ -80,6 +80,10 @@ public class AdminPanelServlet extends HttpServlet {
                 // show the order details partial when requested
                 includeFile = "/WEB-INF/components/admin/adminOrderDetails.jsp";
                 active = "orders";
+            } else if ("details".equals(includeParam) && "/admin/events".equals(path)) {
+                // show event signups details when requested
+                includeFile = "/WEB-INF/components/admin/adminEventDetails.jsp";
+                active = "events";
             } else if ("delete".equals(includeParam) && "/admin/feedback".equals(path)) {
                 includeFile = "/WEB-INF/components/admin/adminDeleteFeedback.jsp";
                 active = "feedback";
@@ -96,6 +100,60 @@ public class AdminPanelServlet extends HttpServlet {
             if ("/admin/events".equals(path)) {
                 java.util.List<models.Event> events = models.Event.getAllEvents();
                 request.setAttribute("events", events);
+
+                // compute booking counts for each event
+                java.util.Map<Integer,Integer> bookingCounts = new java.util.HashMap<>();
+                for (models.Event e : events) {
+                  try {
+                    bookingCounts.put(e.getEventId(), models.EventBooking.getBookingCount(e.getEventId()));
+                  } catch (Exception ignored) {
+                    bookingCounts.put(e.getEventId(), 0);
+                  }
+                }
+                request.setAttribute("bookingCounts", bookingCounts);
+
+                // If admin requested details for a specific event, prepare bookings list
+                if (includeParam != null && "details".equals(includeParam)) {
+                  String eventIdStr = request.getParameter("event_id");
+                  if (eventIdStr != null && !eventIdStr.trim().isEmpty()) {
+                    try {
+                      int eid = Integer.parseInt(eventIdStr.trim());
+                      models.Event selected = models.Event.getEventById(eid);
+                      java.util.List<models.EventBooking> bookings = models.EventBooking.getBookingsForEvent(eid);
+
+                      java.util.List<java.util.Map<String,Object>> bookingInfo = new java.util.ArrayList<>();
+                      for (models.EventBooking b : bookings) {
+                        java.util.Map<String,Object> m = new java.util.HashMap<>();
+                        m.put("bookingId", b.getBookingId());
+                        m.put("createdAt", b.getCreatedAt());
+                        // prefer client info
+                        if (b.getClientId() != null) {
+                          models.Client c = models.Client.getClientById(b.getClientId());
+                          if (c != null) {
+                            m.put("name", (c.getFirstName()!=null?c.getFirstName():"") + (c.getLastName()!=null?" "+c.getLastName():""));
+                            m.put("email", c.getEmail());
+                          } else {
+                            m.put("name", b.getGuestName());
+                            m.put("email", b.getGuestEmail());
+                          }
+                        } else if (b.getUserId() != null) {
+                          models.User u = models.User.getUserById(b.getUserId());
+                          m.put("name", "");
+                          m.put("email", (u!=null?u.getEmail():b.getGuestEmail()));
+                        } else {
+                          m.put("name", b.getGuestName());
+                          m.put("email", b.getGuestEmail());
+                        }
+                        bookingInfo.add(m);
+                      }
+
+                      request.setAttribute("selectedEvent", selected);
+                      request.setAttribute("bookings", bookingInfo);
+                    } catch (NumberFormatException nfe) {
+                      request.setAttribute("eventsError", "Invalid event id");
+                    }
+                  }
+                }
             }
 
             if ("/admin/users".equals(path)) {

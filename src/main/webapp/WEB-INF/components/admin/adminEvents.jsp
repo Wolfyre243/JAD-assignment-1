@@ -89,9 +89,10 @@
               <th>Title</th>
               <th>When</th>
               <th>Location</th>
-              <th>Capacity</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th class="col-small">Capacity</th>
+              <th class="col-registered">Registered</th>
+              <th class="col-small">Status</th>
+              <th class="col-actions">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -103,11 +104,18 @@
               <td><%= e.getTitle() %></td>
               <td><%= e.getStartTime() %> - <%= e.getEndTime() %></td>
               <td><%= e.getLocation() %></td>
-              <td><%= e.getCapacity() %></td>
+              <td class="col-small"><%= e.getCapacity() %></td>
+              <% java.util.Map<Integer,Integer> bookingCounts = (java.util.Map<Integer,Integer>) request.getAttribute("bookingCounts");
+                 Integer reg = (bookingCounts != null && bookingCounts.get(e.getEventId()) != null) ? bookingCounts.get(e.getEventId()) : 0;
+                 boolean isFull = reg >= e.getCapacity();
+              %>
+              <td class="col-registered"><span class="<%= isFull ? "badge-full" : "badge-normal" %>"><%= reg %></span></td>
               <% String statusClass = active ? "status-active" : "status-inactive"; %>
-              <td class="<%= statusClass %>"><%= active ? "Active" : "Inactive" %></td>
-              <td>
+              <td class="col-small <%= statusClass %>"><%= active ? "Active" : "Inactive" %></td>
+              <td class="col-actions">
                 <a href="<%= request.getContextPath() %>/admin/events?action=edit&event_id=<%= e.getEventId() %>">Edit</a>
+                |
+                <a href="<%= request.getContextPath() %>/admin/events?include=details&event_id=<%= e.getEventId() %>">View signups</a>
                 |
                 <form method="POST" action="<%= request.getContextPath() %>/admin/events/action" style="display:inline">
                   <input type="hidden" name="action" value="delete" />

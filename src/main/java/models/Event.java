@@ -153,6 +153,22 @@ public class Event {
     }
   }
 
+  /**
+   * Set active status for an event (used to auto-deactivate when capacity reached)
+   */
+  public static void setActive(int eventId, boolean isActive) throws SQLException {
+    final Connection conn = JDBC.connect();
+    if (conn == null) throw new SQLException("Database connection failed");
+
+    final String sql = "UPDATE event SET is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE event_id = ?";
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setBoolean(1, isActive);
+      stmt.setInt(2, eventId);
+      stmt.executeUpdate();
+      conn.close();
+    }
+  }
+
   private static Event resultMapper(ResultSet rs) throws SQLException {
     int id = rs.getInt("event_id");
     String title = rs.getString("title");
