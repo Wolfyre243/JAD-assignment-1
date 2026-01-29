@@ -8,6 +8,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="models.Event" %>
 <%@ page import="lib.SessionManagement" %>
+<%@ page import="models.Client" %>
+<%@ page import="models.User" %> 
 <!DOCTYPE html>
 <html>
 <head>
@@ -144,6 +146,24 @@
         margin-bottom: 20px;
     }
 
+    .alert-success {
+        background: #e6ffed;
+        border-left: 6px solid #2ecc71;
+        color: #213;
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .alert-error {
+        background: #fff0f0;
+        border-left: 6px solid #e74c3c;
+        color: #611;
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
     @media (max-width: 800px) {
         .card {
             flex-direction: column;
@@ -163,6 +183,18 @@
     <div class="container">
       <%
         Event e = (Event) request.getAttribute("event");
+        String error = (String) request.getAttribute("errorMessage");
+        String success = (String) request.getAttribute("successMessage");
+        if (error != null) {
+      %>
+        <div class="alert-error"><%= error %></div>
+      <%
+        }
+        if (success != null) {
+      %>
+        <div class="alert-success"><%= success %></div>
+      <%
+        }
         if (e == null) {
       %>
         <div class="card" style="text-align: center;">
@@ -187,15 +219,24 @@
               <input type="hidden" name="eventId" value="<%= e.getEventId() %>" />
               <%
                 boolean loggedIn = SessionManagement.isLoggedIn(request);
-                if (!loggedIn) {
-              %>
-                <label>Email</label>
-                <input type="email" name="guestEmail" required />
-                <label>Full name</label>
-                <input type="text" name="guestName" required />
-              <%
+                String preEmail = "";
+                if (loggedIn) {
+                  Integer sessUserIdLocal = SessionManagement.getUserId(request);
+                  try {
+                    Client c = Client.getClientByUserId(sessUserIdLocal);
+                    if (c != null && c.getEmail() != null) preEmail = c.getEmail();
+                    else {
+                      User u = User.getUserById(sessUserIdLocal);
+                      if (u != null && u.getEmail() != null) preEmail = u.getEmail();
+                    }
+                  } catch (Exception ignored) { }
                 }
               %>
+                <label>Email</label>
+                <input type="email" name="guestEmail" value="<%= preEmail %>" <%= loggedIn ? "readonly" : "required" %> />
+                <label>Full name</label>
+                <input type="text" name="guestName" required />
+
               <button class="login-btn" type="submit">Sign up</button>
             </form>
             <p class="muted">You will receive a confirmation email after signing up.</p>

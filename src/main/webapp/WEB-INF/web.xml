@@ -2,4 +2,35 @@
 <web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
          version="6.0">
     <display-name>Your App</display-name>
+
+    <!-- SMTP / JavaMail configuration (edit with your SMTP provider credentials) -->
+    <context-param>
+        <param-name>mail.smtp.host</param-name>
+        <param-value>smtp.gmail.com</param-value>
+    </context-param>
+    <context-param>
+        <param-name>mail.smtp.port</param-name>
+        <param-value>587</param-value>
+    </context-param>
+    <context-param>
+        <param-name>mail.smtp.auth</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>mail.smtp.starttls.enable</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>mail.username</param-name>
+        <param-value>k4rysgoh@gmail.com</param-value>
+    </context-param>
+    <context-param>
+        <param-name>mail.password</param-name>
+        <param-value>tyyj lvaf itkd spvh</param-value>
+    </context-param>
+    <context-param>
+        <param-name>mail.from</param-name>
+        <param-value>k4rysgoh@gmail.com</param-value>
+    </context-param>
+
 </web-app>

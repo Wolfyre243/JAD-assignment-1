@@ -93,6 +93,33 @@
     border-bottom: 1px solid #f0f0f0;
     font-size: 16px;
   }
+
+  /* Keep small numeric columns from wrapping; allow other cells to wrap for responsive layout */
+  .admin-card .col-small, .admin-card .col-registered, .admin-card .col-actions {
+    white-space: nowrap;
+  }
+
+  /* Small numeric columns */
+  .admin-card .col-small { width: 90px; text-align: center; }
+  .admin-card .col-actions { width: 220px; text-align: right; }
+  .admin-card .col-registered { width: 100px; text-align: center; }
+
+  /* Badge styles for registered count */
+  .badge-full {
+    color: #b3003b;
+    font-weight: bold;
+    background: #fff0f2;
+    padding: 6px 10px;
+    border-radius: 8px;
+    display: inline-block;
+  }
+  .badge-normal {
+    color: #333;
+    background: transparent;
+    padding: 6px 10px;
+    border-radius: 8px;
+    display: inline-block;
+  }
   
   .admin-card table tr:last-child td {
     border-bottom: none;
@@ -181,6 +208,14 @@
   .status-inactive {
     color: #a94442;
     font-weight: bold;
+  }
+
+  .status-full {
+    color: #b3003b;
+    font-weight: bold;
+    background: #fff0f2;
+    padding: 4px 8px;
+    border-radius: 6px;
   }
   
   /* Form elements */
