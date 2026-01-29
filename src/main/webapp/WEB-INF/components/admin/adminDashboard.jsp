@@ -66,6 +66,7 @@
         <li>💬 <a href="<%= request.getContextPath() %>/admin/feedback">Feedback Management</a></li>
         <li>📦 <a href="<%= request.getContextPath() %>/admin/orders">Order Management</a></li>
         <li>🛠️ <a href="<%= request.getContextPath() %>/admin/services">Services Management</a></li>
+        <li>🎫 <a href="<%= request.getContextPath() %>/admin/events">Events Management</a></li>
     </ul>
 
 

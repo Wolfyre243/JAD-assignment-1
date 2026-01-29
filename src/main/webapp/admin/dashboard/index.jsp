@@ -172,6 +172,17 @@
     margin: 15px 0;
   }
   
+  /* Status classes */
+  .status-active {
+    color: #2d7a2d;
+    font-weight: bold;
+  }
+  
+  .status-inactive {
+    color: #a94442;
+    font-weight: bold;
+  }
+  
   /* Form elements */
   .admin-card label {
     display: block;
@@ -184,6 +195,7 @@
   .admin-card input[type="text"],
   .admin-card input[type="email"],
   .admin-card input[type="number"],
+  .admin-card input[type="date"],
   .admin-card input[type="password"],
   .admin-card textarea,
   .admin-card select {

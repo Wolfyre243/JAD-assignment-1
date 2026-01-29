@@ -74,7 +74,8 @@ Integer sessRoleId = (request.getAttribute("sessRoleId") != null) ? (Integer) re
 	<!-- LEFT SIDE -->
 	<div class="nav-left">
 		<a href="<%= request.getContextPath() %>/" class="brand">SilverCare</a>
-		<a href="<%= request.getContextPath() %>/services/">Services</a> 
+		<a href="<%= request.getContextPath() %>/services/">Services</a>
+		<a href="<%= request.getContextPath() %>/events">Events</a>
 		<a href="<%= request.getContextPath() %>/reviews">Feedback</a>
 		<% if (sessUserId != null && sessRoleId != null) { %>
 			<% if (sessRoleId == 1) { %>

@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lib.SessionManagement;
 
-@WebServlet({"/admin/dashboard","/admin/dashboard/","/admin/users","/admin/services","/admin/orders","/admin/feedback","/admin/caregivers"})
+@WebServlet({"/admin/dashboard","/admin/dashboard/","/admin/users","/admin/services","/admin/orders","/admin/feedback","/admin/caregivers","/admin/events"})
 public class AdminPanelServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -52,6 +52,10 @@ public class AdminPanelServlet extends HttpServlet {
                 includeFile = "/WEB-INF/components/admin/adminCaregivers.jsp";
                 active = "caregivers";
                 break;
+            case "/admin/events":
+                includeFile = "/WEB-INF/components/admin/adminEvents.jsp";
+                active = "events";
+                break;
             default:
                 includeFile = "/WEB-INF/components/admin/adminDashboard.jsp";
                 active = "dashboard";
@@ -87,6 +91,11 @@ public class AdminPanelServlet extends HttpServlet {
             if ("/admin/services".equals(path)) {
                 java.util.List<java.util.Map<String,Object>> services = handlers.AdminServiceHandler.listServices();
                 request.setAttribute("services", services);
+            }
+
+            if ("/admin/events".equals(path)) {
+                java.util.List<models.Event> events = models.Event.getAllEvents();
+                request.setAttribute("events", events);
             }
 
             if ("/admin/users".equals(path)) {
