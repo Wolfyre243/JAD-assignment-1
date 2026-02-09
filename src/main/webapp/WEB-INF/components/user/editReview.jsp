@@ -1,13 +1,29 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
-<%@ page import="db.JDBC" %>
-<%--
-  Author: Lim Song Chern Jayden
-  Admin No: P2424093
-  Class: DIT-2B-01
-  Last Edited: 23/11/2025
-  Description: Users can update personal feedback 
---%>
+
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="models.Reviews" %>
+
+<%
+    Reviews feedback = (Reviews) request.getAttribute("feedback");
+    ArrayList<Reviews.Option> caregivers = (ArrayList<Reviews.Option>) request.getAttribute("caregivers");
+    ArrayList<Reviews.Option> products = (ArrayList<Reviews.Option>) request.getAttribute("products");
+
+    String msg = request.getParameter("msg");
+
+    if (feedback == null) {
+        out.println("<p style='color:red;'>Invalid review request.</p>");
+        return;
+    }
+
+    int feedbackId = feedback.getFeedbackId();
+    int caregiverId = (feedback.getCaregiverId() != null) ? feedback.getCaregiverId() : 0;
+    int productId = (feedback.getProductId() != null) ? feedback.getProductId() : 0;
+
+    int overallRating = feedback.getOverallRating();
+    int caregiverRating = feedback.getCaregiverRating();
+    String comments = feedback.getComments();
+%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,17 +31,9 @@
 <title>Edit Review</title>
 
 <style>
-    body {
-        margin: 0;
-        font-family: "Georgia", serif;
-        background: #ffdce4;
-    }
+    body { margin: 0; font-family: "Georgia", serif; background: #ffdce4; }
 
-    .page-container {
-        display: flex;
-        justify-content: center;
-        padding: 50px 0;
-    }
+    .page-container { display: flex; justify-content: center; padding: 50px 0; }
 
     .form-box {
         width: 60%;
@@ -36,37 +44,25 @@
         box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
     }
 
-    h2 {
-        margin-top: 0;
-        text-align: center;
-        font-size: 30px;
-        font-weight: 600;
+    h2 { margin-top: 0; text-align: center; font-size: 30px; font-weight: 600; }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: 20px;
+        padding: 10px 18px;
+        background: #ffe1ea;
+        color: black;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 16px;
+        border-radius: 15px;
+        box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
     }
+    .back-link:hover { background: #ffc7d6; }
 
-	.back-link {
-	    display: inline-block;
-	    margin-bottom: 20px;
-	    padding: 10px 18px;
-	    background: #ffe1ea;
-	    color: black;
-	    text-decoration: none;
-	    font-weight: bold;
-	    font-size: 16px;
-	    border-radius: 15px;
-	    box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
-	}
-	
-	.back-link:hover {
-	    background: #ffc7d6;
-	}
+    label { font-size: 18px; font-weight: 600; }
 
-
-    label {
-        font-size: 18px;
-        font-weight: 600;
-    }
-
-    select, textarea, input[type="number"] {
+    select, textarea {
         width: 100%;
         padding: 10px;
         border-radius: 12px;
@@ -77,10 +73,7 @@
         font-family: "Georgia";
     }
 
-    textarea {
-        resize: none;
-        height: 120px;
-    }
+    textarea { resize: none; height: 120px; }
 
     .btn-submit {
         width: 100%;
@@ -93,82 +86,17 @@
         cursor: pointer;
         margin-top: 10px;
     }
+    .btn-submit:hover { background: #ff9fb7; }
 
-    .btn-submit:hover {
-        background: #ff9fb7;
-    }
-
-    /* Message box */
-    .msg {
-        font-weight: bold;
-        padding: 10px;
-        border-radius: 10px;
-        margin-bottom: 15px;
-        text-align: center;
-    }
+    .msg { font-weight: bold; padding: 10px; border-radius: 10px; margin-bottom: 15px; text-align: center; }
     .error { background: #ffb3b3; color: #7a0000; }
     .success { background: #b3ffb5; color: #004d00; }
 </style>
-
 </head>
+
 <body>
 
-<!-- NAVBAR -->
 <jsp:include page="/WEB-INF/components/user/userNavBar.jsp"></jsp:include>
-
-<%
-    String feedbackIdStr = request.getParameter("feedbackId");
-    String msg = request.getParameter("msg");
-
-    if (feedbackIdStr == null) {
-        out.println("<p style='color:red;'>Invalid review request.</p>");
-        return;
-    }
-
-    int feedbackId = Integer.parseInt(feedbackIdStr);
-
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
-
-    int overallRating = 0;
-    int caregiverRating = 0;
-    String comments = "";
-    int caregiverId = 0;
-    int productId = 0;
-    int dbUserId = -1;
-
-    try {
-        conn = JDBC.connect();
-        String sql = "SELECT * FROM feedback WHERE feedback_id = ?";
-        pstmt = conn.prepareStatement(sql);
-        pstmt.setInt(1, feedbackId);
-        rs = pstmt.executeQuery();
-
-        if (!rs.next()) {
-            out.println("<p style='color:red;'>Review not found.</p>");
-            return;
-        }
-
-        dbUserId = rs.getInt("user_id");
-        caregiverId = rs.getInt("caregiver_id");
-        productId = rs.getInt("product_id");
-        overallRating = rs.getInt("overall_rating");
-        caregiverRating = rs.getInt("caregiver_rating");
-        comments = rs.getString("comments");
-
-        Integer currentUserId = (Integer) request.getAttribute("sessUserId");
-        if (currentUserId == null || dbUserId != currentUserId) {
-            out.println("<p style='color:red;'>You cannot edit another user's review.</p>");
-            return;
-        }
-
-    } finally {
-        try { if (rs != null) rs.close(); } catch (Exception ignored) {}
-        try { if (pstmt != null) pstmt.close(); } catch (Exception ignored) {}
-        try { if (conn != null) conn.close(); } catch (Exception ignored) {}
-    }
-%>
 
 <div class="page-container">
     <div class="form-box">
@@ -177,90 +105,55 @@
 
         <h2>Edit Your Review</h2>
 
-        <!-- SHOW MESSAGES -->
-        <% 
-            if (msg != null) {
-                String css = "error";
-                String text = "";
-
-                switch (msg) {
-                    case "invalid": text = "Invalid input. Please check your fields."; break;
-                    case "db_error": text = "A database error occurred. Please try again."; break;
-                    case "forbidden": text = "You cannot edit this review."; break;
-                    case "updated": 
-                        text = "Your review was updated successfully!";
-                        css = "success";
-                        break;
-                }
+        <% if (msg != null) {
+            String css = "error";
+            String text = "";
+            switch (msg) {
+                case "invalid": text = "Invalid input. Please check your fields."; break;
+                case "db_error": text = "A database error occurred. Please try again."; break;
+                case "forbidden": text = "You cannot edit this review."; break;
+                case "updated": text = "Your review was updated successfully!"; css = "success"; break;
+            }
         %>
             <div class="msg <%= css %>"><%= text %></div>
         <% } %>
 
-        <!-- FORM -->
         <form action="<%=request.getContextPath()%>/reviews" method="post">
             <input type="hidden" name="action" value="edit">
             <input type="hidden" name="feedbackId" value="<%= feedbackId %>">
 
-			<!-- CAREGIVER LIST -->
-			<label>Caregiver Name:</label>
-			<select name="caregiver_id" required>
-				   	<option value="">Please choose...</option>
-				
-					<%
-	                try {
-	                    Connection c2 = JDBC.connect();
-	                    PreparedStatement p2 = c2.prepareStatement(
-	                        "SELECT caregiver_id, first_name, last_name FROM caregiver ORDER BY first_name"
-	                    );
-	                    ResultSet r2 = p2.executeQuery();
-	
-	                    while (r2.next()) {
-	                        int cgId = r2.getInt("caregiver_id");
-	                        String cgName = r2.getString("first_name") + " " + r2.getString("last_name");
-	                %>
-	                        <option value="<%= cgId %>" <%= (cgId == caregiverId ? "selected" : "") %>>
-	                            <%= cgName %>
-	                        </option>
-	                <%
-	                    }
-	                    r2.close(); p2.close(); c2.close();
-	                } catch (Exception e) {
-	                    out.println("<option disabled>Error loading caregivers</option>");
-	                }
-	                %>
-	            </select>
-				
-				
-				<!-- SERVICE LIST -->
-				<label>Service Name:</label>
-				<select name="product_id" required>
-				    <option value="">Please choose...</option>
-				
-				<%
-                try {
-                    Connection c3 = JDBC.connect();
-                    PreparedStatement p3 = c3.prepareStatement(
-                        "SELECT product_id, name FROM product ORDER BY name"
-                    );
-                    ResultSet r3 = p3.executeQuery();
-
-                    while (r3.next()) {
-                        int pid = r3.getInt("product_id");
-                        String pname = r3.getString("name");
-                %>
-                        <option value="<%= pid %>" <%= (pid == productId ? "selected" : "") %>>
-                            <%= pname %>
-                        </option>
+            <label>Caregiver Name:</label>
+            <select name="caregiver_id" required>
+                <option value="">Please choose...</option>
                 <%
+                    if (caregivers != null) {
+                        for (Reviews.Option c : caregivers) {
+                %>
+                    <option value="<%= c.getId() %>" <%= (c.getId() == caregiverId ? "selected" : "") %>>
+                        <%= c.getName() %>
+                    </option>
+                <%
+                        }
                     }
-                    r3.close(); p3.close(); c3.close();
-                } catch (Exception e) {
-                    out.println("<option disabled>Error loading services</option>");
-                }
                 %>
             </select>
 
-				
+            <label>Service Name:</label>
+            <select name="product_id" required>
+                <option value="">Please choose...</option>
+                <%
+                    if (products != null) {
+                        for (Reviews.Option p : products) {
+                %>
+                    <option value="<%= p.getId() %>" <%= (p.getId() == productId ? "selected" : "") %>>
+                        <%= p.getName() %>
+                    </option>
+                <%
+                        }
+                    }
+                %>
+            </select>
+
             <label>Overall Rating (1–5):</label>
             <select name="overall_rating" required>
                 <option value="1" <%= overallRating==1?"selected":"" %>>1 - Poor</option>
