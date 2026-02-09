@@ -73,8 +73,10 @@ public class AdminServiceCaregiverServlet extends HttpServlet {
             request.setAttribute("service", service);
             request.setAttribute("assignedCaregivers", assignedCaregivers);
             request.setAttribute("availableCaregivers", availableCaregivers);
+            request.setAttribute("includeFile", "/WEB-INF/components/admin/adminServiceCaregivers.jsp");
+            request.setAttribute("activeNav", "services");
             
-            request.getRequestDispatcher("/WEB-INF/components/admin/adminServiceCaregivers.jsp").forward(request, response);
+            request.getRequestDispatcher("/admin/dashboard/index.jsp").forward(request, response);
             
         } catch (NumberFormatException e) {
             response.sendRedirect(request.getContextPath() + "/admin/services?msg=invalid");

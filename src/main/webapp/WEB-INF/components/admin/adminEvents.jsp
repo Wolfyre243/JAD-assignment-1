@@ -35,18 +35,47 @@
         }
     %>
 
-    <h2>All Events</h2>
-    <p><a href="#create" class="btn">+ Create New Event</a></p>
+    <%
+        // Check if we're editing an event
+        String action = request.getParameter("action");
+        String eventIdStr = request.getParameter("event_id");
+        Event editEvent = null;
+        boolean isEditing = false;
+        
+        if ("edit".equals(action) && eventIdStr != null && !eventIdStr.trim().isEmpty()) {
+            try {
+                int eventId = Integer.parseInt(eventIdStr.trim());
+                editEvent = Event.getEventById(eventId);
+                isEditing = (editEvent != null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    %>
+
+    <h2><%= isEditing ? "Edit Event" : "All Events" %></h2>
+    <% if (!isEditing) { %>
+        <p><a href="#create" class="btn">+ Create New Event</a></p>
+    <% } else { %>
+        <p><a href="<%= request.getContextPath() %>/admin/events" class="btn">← Cancel Edit</a></p>
+    <% } %>
 
     <div id="create" style="margin-top: 20px;">
       <form method="POST" action="<%= request.getContextPath() %>/admin/events/action">
-        <input type="hidden" name="action" value="create" />
+        <input type="hidden" name="action" value="<%= isEditing ? "update" : "create" %>" />
+        <% if (isEditing) { %>
+            <input type="hidden" name="event_id" value="<%= editEvent.getEventId() %>" />
+        <% } %>
+        
         <label>Title</label>
-        <input type="text" name="title" required />
+        <input type="text" name="title" value="<%= isEditing && editEvent.getTitle() != null ? editEvent.getTitle() : "" %>" required />
+        
         <label>Description</label>
-        <textarea name="description"></textarea>
+        <textarea name="description"><%= isEditing && editEvent.getDescription() != null ? editEvent.getDescription() : "" %></textarea>
+        
         <label>Location</label>
-        <input type="text" name="location" />
+        <input type="text" name="location" value="<%= isEditing && editEvent.getLocation() != null ? editEvent.getLocation() : "" %>" />
+        
         <div style="display: flex; gap: 15px;">
             <div style="flex: 1;">
               <label>Start Date</label>
@@ -63,17 +92,23 @@
           </div>
           <input type="hidden" name="start_time" id="start_time" />
           <input type="hidden" name="end_time" id="end_time" />
+          
         <label>Capacity</label>
-        <input type="number" name="capacity" value="0" />
+        <input type="number" name="capacity" value="<%= isEditing ? editEvent.getCapacity() : 0 %>" />
+        
         <label>
-          <input type="checkbox" name="is_active" style="width: auto; margin-right: 8px;" />
+          <input type="checkbox" name="is_active" <%= isEditing && editEvent.isActive() ? "checked" : "" %> style="width: auto; margin-right: 8px;" />
           Active
         </label>
         <br/>
-        <button class="btn" type="submit" onclick="return prepareDateTimes(this.form);">Create</button>
+        <button class="btn" type="submit" onclick="return prepareDateTimes(this.form);"><%= isEditing ? "Update Event" : "Create Event" %></button>
       </form>
     </div>
+    
+    <% if (!isEditing) { %>
 
+    
+    <% if (!isEditing) { %>
     <h2 style="margin-top: 30px;">Existing Events</h2>
     <%
         List<Event> events = (List<Event>) request.getAttribute("events");
@@ -131,11 +166,15 @@
         </table>
     <%
         }
+    } // end if (!isEditing)
     %>
 
     <script>
       // Populate time dropdowns (every 30 minutes from 08:00 to 18:00)
       (function(){
+        var isEditing = <%= isEditing ? "true" : "false" %>;
+        var editEvent = <%= isEditing && editEvent != null ? "{ startTime: '" + editEvent.getStartTime() + "', endTime: '" + editEvent.getEndTime() + "' }" : "null" %>;
+        
         function pad(n){ return n<10?('0'+n):(''+n); }
         var startSel = document.getElementById('start_time_select');
         var endSel = document.getElementById('end_time_select');
@@ -155,12 +194,31 @@
         var mm = ('0'+(today.getMonth()+1)).slice(-2);
         var dd = ('0'+today.getDate()).slice(-2);
         var todayStr = yyyy + '-' + mm + '-' + dd;
-        document.getElementById('start_date').value = todayStr;
-        document.getElementById('end_date').value = todayStr;
-
-        // default times
-        startSel.value = '09:00';
-        endSel.value = '10:00';
+        
+        if (isEditing && editEvent) {
+          // Parse start time: "2026-01-15 14:00:00.0" -> date and time
+          var startParts = editEvent.startTime.split(' ');
+          var endParts = editEvent.endTime.split(' ');
+          
+          if (startParts.length >= 2) {
+            document.getElementById('start_date').value = startParts[0]; // yyyy-MM-dd
+            var startTime = startParts[1].substring(0, 5); // HH:mm
+            startSel.value = startTime;
+          }
+          
+          if (endParts.length >= 2) {
+            document.getElementById('end_date').value = endParts[0]; // yyyy-MM-dd
+            var endTime = endParts[1].substring(0, 5); // HH:mm
+            endSel.value = endTime;
+          }
+        } else {
+          document.getElementById('start_date').value = todayStr;
+          document.getElementById('end_date').value = todayStr;
+          
+          // default times
+          startSel.value = '09:00';
+          endSel.value = '10:00';
+        }
       })();
 
       function prepareDateTimes(form){

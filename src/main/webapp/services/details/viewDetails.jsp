@@ -359,7 +359,7 @@ if ("1".equals(request.getParameter("ajaxTimeslots"))) {
             <div class="login-warning">
                 <% if (currentUserId == null) { %>
                     Login as a client guardian to add this service to your cart.
-                <% } else if (currentRoleId != 2 && currentRoleId != 3) { %>
+                <% } else if (currentRoleId != null && currentRoleId != 2 && currentRoleId != 3) { %>
                     Only clients and guardian can add services to cart.
                 <% } %>
             </div>
