@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import db.JDBC;
 
@@ -113,7 +114,9 @@ public class PaymentSuccessServlet extends HttpServlet {
 							// datetime-local returns format: "2024-01-15T14:30"
 							// Convert to SQL Timestamp: "2024-01-15 14:30:00"
 							String sqlTimestamp = timeslot.replace("T", " ");
-							pstmt.setString(6, sqlTimestamp);
+							sqlTimestamp += ":00";
+							// pstmt.setString(6, sqlTimestamp);
+							pstmt.setTimestamp(6, Timestamp.valueOf(sqlTimestamp));
 						} else {
 							pstmt.setNull(6, java.sql.Types.TIMESTAMP);
 						}
