@@ -167,10 +167,9 @@ public class AdminCaregiverHandler {
                     m.put("firstName", rs.getString("first_name"));
                     m.put("lastName", rs.getString("last_name"));
                     m.put("fullName", rs.getString("full_name"));
-                    m.put("specialization", rs.getString("qualifications"));
-                    m.put("yearsOfExperience", "");
+                    m.put("qualifications", rs.getString("qualifications"));
+                    m.put("hourlyRate", rs.getDouble("hourly_rate"));
                     m.put("profileImagePath", rs.getString("profile_image_path"));
-                    m.put("isAvailable", rs.getBoolean("is_available"));
                     m.put("isAvailable", rs.getBoolean("is_available"));
                     caregivers.add(m);
                 }
