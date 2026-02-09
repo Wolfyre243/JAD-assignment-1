@@ -177,7 +177,7 @@ public class CartHandler {
             pstmt.setInt(1, cartId);
             rs = pstmt.executeQuery();
 
-            bookingStmt = conn.prepareStatement("INSERT INTO booking (order_id, product_id, caregiver_id, client_id, special_requests, created_at, updated_at) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)");
+            bookingStmt = conn.prepareStatement("INSERT INTO booking (order_id, product_id, caregiver_id, client_id, special_requests, booking_timeslot, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)");
             int itemCount = 0;
             while (rs.next()) {
                 itemCount++;
