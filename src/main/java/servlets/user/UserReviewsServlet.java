@@ -48,7 +48,7 @@ public class UserReviewsServlet extends HttpServlet {
             String idStr = request.getParameter("feedbackId");
             try {
                 int feedbackId = Integer.parseInt(idStr);
-                Reviews f = Reviews.getById(feedbackId);
+                Reviews f = Reviews.getByIdWithNames(feedbackId);
                 if (f == null) {
                     response.sendRedirect(request.getContextPath() + "/reviews?msg=not_found");
                     return;
