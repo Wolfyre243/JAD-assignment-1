@@ -169,11 +169,22 @@
     } // end if (!isEditing)
     %>
 
+    <!-- JSP variables for JavaScript (using text/template to avoid JSP syntax errors in IDE) -->
+    <script type="text/template" id="adminEventsDataTemplate">
+      {
+        "isEditing": <%= isEditing %>,
+        "editEvent": <%= isEditing && editEvent != null ? "{ \"startTime\": \"" + editEvent.getStartTime() + "\", \"endTime\": \"" + editEvent.getEndTime() + "\" }" : "null" %>
+      }
+    </script>
+
     <script>
       // Populate time dropdowns (every 30 minutes from 08:00 to 18:00)
       (function(){
-        var isEditing = <%= isEditing ? "true" : "false" %>;
-        var editEvent = <%= isEditing && editEvent != null ? "{ startTime: '" + editEvent.getStartTime() + "', endTime: '" + editEvent.getEndTime() + "' }" : "null" %>;
+        // Parse data from template script
+        var dataTemplate = document.getElementById('adminEventsDataTemplate');
+        var data = JSON.parse(dataTemplate.textContent);
+        var isEditing = data.isEditing;
+        var editEvent = data.editEvent;
         
         function pad(n){ return n<10?('0'+n):(''+n); }
         var startSel = document.getElementById('start_time_select');
